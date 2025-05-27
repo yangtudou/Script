@@ -5,10 +5,6 @@
 作者: yangtudou
 FICalsh 版本: 0.8.84
 -------------------------------------
-可以自定义的参数包括:
-- 手动代理节点群组名称 proxyName
-- 
--------------------------------------
 脚本参考自：https://linux.do/t/topic/235314
 理论来讲也是适用于 mihomo (Clash Meta), 但我没做测试
 转载的话请保留以上注释
@@ -20,6 +16,7 @@ const proxyName = "节点选择";
 // 国家地区分类
 // 这里存在排列顺序
 const REGION_NAMES = ['香港', '台湾', '新加坡', '日本', '美国'];
+// 增加去广告规则
 const isAdRules = false;
 
 /* -------- 自定义参数部分 End -------- */
@@ -74,39 +71,47 @@ function overwriteRules(params) {
     "RULE-SET,秋风广告规则,REJECT" // 目前使用秋风广告规则，体验还行
   ];
   const customRules = [
-    "DOMAIN-SUFFIX,linux.do,节点选择",
-    "DOMAIN,limbopro.com,节点选择",
+    "DOMAIN-SUFFIX,linux.do," + proxyName,
+    "DOMAIN,limbopro.com," + proxyName,
     "DOMAIN-SUFFIX,y3-3am.top,DIRECT",
   ];
   // 基础分流规则
-  const rules = [
-    ...(isAdRules ? adRules : []), // 如果开启广告，插入最顶部
-    ...customRules, // 在顶部插入自定义分流规则
-    "GEOIP,lan,DIRECT,no-resolve",
-    `RULE-SET,github_domain,${proxyName}`,
-    `RULE-SET,twitter_domain,${proxyName}`,
-    `RULE-SET,youtube_domain,${proxyName}`,
-    `RULE-SET,google_domain,${proxyName}`,
-    `RULE-SET,telegram_domain,${proxyName}`,
-    "RULE-SET,bilibili_domain,DIRECT",
-    `RULE-SET,geolocation-!cn,${proxyName}`, // 漏网之鱼?
-    // geoip
-    `RULE-SET,google_ip,${proxyName}`,
-    `RULE-SET,telegram_ip,${proxyName}`,
-    "RULE-SET,cn_domain,DIRECT",
+  const baseRules = [
+    "RULE-SET,private_ip,DIRECT,no-resolve", // 局域网 eg: 路由器之类的
+    "RULE-SET,bilibili_domain,DIRECT", // b站 包括国际服
+    "RULE-SET,github_domain," + proxyName, // Github
+    "RULE-SET,twitter_domain," + proxyName, // Twitter
+    "RULE-SET,youtube_domain," + proxyName, // Youtube
+    "RULE-SET,google_domain," + proxyName, // Google
+    "RULE-SET,telegram_domain," + proxyName, // Telegram
+    "RULE-SET,netflix_domain," + proxyName, // Netfix 奈飞
+    "RULE-SET,bahamut_domain," + proxyName, // 巴哈姆特
+    "RULE-SET,spotify_domain," + proxyName, // Spotify
+    "RULE-SET,cn_domain," + proxyName, // 国内
+    "RULE-SET,geolocation-!cn," + proxyName, // 非国内
+    /** ipcidr */
+    "RULE-SET,google_ip," + proxyName,
+    "RULE-SET,netflix_ip," + proxyName,
+    "RULE-SET,telegram_ip," + proxyName,
+    "RULE-SET,twitter_ip," + proxyName,
     "RULE-SET,cn_ip,DIRECT",
     "MATCH,漏网之鱼",
   ];
+  // 整合所有 rules
+  const rules = [
+    ...(isAdRules ? adRules : []), // 如果开启广告，插入最顶部
+    ...customRules, // 在顶部插入自定义分流规则
+    ...baseRules,
+  ];
   // 定义 规则集
-  // 需要对应的上前面的分流规则，否则报错
   const GEO_CONFIG = {
-    geosite: {
-      baseUrl: "https://geosite-source.com/meta-rules-dat/meta/geo/geosite", // 独立 geosite 源
+    ruleSetDomain: {
+      baseUrl: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite", // 独立 domain 源
       behavior: "domain",
       keySuffix: "_domain" // 键名生成规则
     },
-    geoip: {
-      baseUrl: "https://geoip-source.net/meta-rules-dat/meta/geo/geoip", // 独立 geoip 源
+    ruleSetIp: {
+      baseUrl: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip", // 独立 ipcidr 源
       behavior: "ipcidr",
       keySuffix: "_ip" // 键名生成规则
     }
@@ -114,24 +119,39 @@ function overwriteRules(params) {
   const createRuleProviders = (name, type) => ({
     type: "http",
     interval: 86400,
-    format: "yaml",
+    format: "text",
     behavior: GEO_CONFIG[type].behavior,
-    url: `${GEO_CONFIG[type].baseUrl}/${name}.yaml`
+    url: `${GEO_CONFIG[type].baseUrl}/${name}.list`
   });
   const ruleProvidersList = [
-    // Geosite 配置组
+    // ruleSetDomain 配置组
     ...[
-      'github', 'twitter', 'youtube', 
-      'google', 'telegram', 'bilibili',
+      'private',
+      'bilibili',
+      'github',
+      'twitter',
+      'youtube', 
+      'google',
+      'telegram',
+      'netflix',
+      'bahamut',
+      'spotify',
       { customKey: 'geolocation-!cn', name: 'geolocation-!cn' },
       { customKey: 'cn_domain', name: 'cn' }
     ].map(item => ({
-      type: 'geosite',
-      ...(typeof item === 'string' ? { name: item } : item)
+      type: "ruleSetDomain",
+      ...(typeof item === "string" ? { name: item } : item)
     })),
-    // Geoip 配置组
-    ...['google', 'telegram', 'cn'].map(name => ({
-      type: 'geoip',
+    // ruleSetIp 配置组
+    ...[
+      'private',
+      'google',
+      'netflix',
+      'telegram',
+      'twitter',
+      'cn'
+    ].map(name => ({
+      type: 'ruleSetIp',
       name
     }))
   ];
@@ -232,8 +252,8 @@ function overwriteRules(params) {
   //   },
   // };
   // 写入规则集合&规则
-  params["rule-providers"] = ruleProviders;
   params["rules"] = rules;
+  params["rule-providers"] = ruleProviders;
 }
 
 // 定义过滤的函数
