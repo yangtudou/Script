@@ -1,2 +1,2 @@
-# Script
-Personal scripts
+> 一些自用的脚本
+- SubStore 用

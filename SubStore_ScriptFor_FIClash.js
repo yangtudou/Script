@@ -1,12 +1,11 @@
 /*
 -------------------------------------
-用于 SubStore 来覆写 FICalsh 配置的脚本
+用于 SubStore 来覆写 Calsh 配置的脚本
 版本 v1.0-250526
 作者: yangtudou
 FICalsh 版本: 0.8.84
 -------------------------------------
 脚本参考自：https://linux.do/t/topic/235314
-理论来讲也是适用于 mihomo (Clash Meta), 但我没做测试
 转载的话请保留以上注释
 */
 
@@ -136,8 +135,8 @@ function overwriteRules(params) {
       'netflix',
       'bahamut',
       'spotify',
-      { customKey: 'geolocation-!cn', name: 'geolocation-!cn' },
-      { customKey: 'cn_domain', name: 'cn' }
+      'cn',
+      { customKey: 'geolocation-!cn', name: 'geolocation-!cn' }
     ].map(item => ({
       type: "ruleSetDomain",
       ...(typeof item === "string" ? { name: item } : item)
@@ -172,85 +171,6 @@ function overwriteRules(params) {
   //       url: "https://gcore.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml",
   //     }
   //   }),
-  //   github_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.yaml"
-  //   },
-  //   twitter_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.yaml"
-  //   },
-  //   youtube_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.yaml"
-  //   },
-  //   google_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.yaml"
-  //   },
-  //   telegram_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.yaml"
-  //   },
-  //   bilibili_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.yaml"
-  //   },
-  //   "geolocation-!cn": {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.yaml"
-  //   },
-  //   cn_domain: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "domain",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml"
-  //   },
-  //   // geoip
-  //   google_ip: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "ipcidr",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.yaml"
-  //   },
-  //   telegram_ip: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "ipcidr",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.yaml"
-  //   },
-  //   cn_ip: {
-  //     type: "http",
-  //     interval: 86400,
-  //     behavior: "ipcidr",
-  //     format: "yaml",
-  //     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.yaml"
-  //   },
-  // };
   // 写入规则集合&规则
   params["rules"] = rules;
   params["rule-providers"] = ruleProviders;
@@ -314,22 +234,46 @@ function overwriteProxyGroups(params) {
 // DNS 部分
 // 防止 DNS 泄露
 function overwriteDns(params) {
-  const cnDnsList = ["https://223.5.5.5/dns-query", "https://1.12.12.12/dns-query"];
-  const trustDnsList = ["quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
   const dnsOptions = {
-    enable: true,
-    ipv6: false,
-    "prefer-h3": false,
-    "use-hosts": false,
-    "use-system-hosts": false,
-    "respect-rules": true,
-    "enhanced-mode": "fake-ip",
-    "fake-ip-range": "198.18.0.1/16",
-    "fake-ip-filter": ["+.lan", "+.local", "+.msftconnecttest.com", "+.msftncsi.com", "localhost.ptlogin2.qq.com", "localhost.sec.qq.com", "localhost.work.weixin.qq.com"],
-    "default-nameserver": ["tls://223.5.5.5", "tls://119.29.29.29"],
-    "nameserver": ["https://223.5.5.5/dns-query", "https://1.12.12.12/dns-query"],
-    "proxy-server-nameserver": ["https://doh.pub/dns-query"],
-    "direct-nameserver": ["https://doh.pub/dns-query", "https://dns.alidns.com/dns-query"],
+    'enable': true,
+    // 'ipv6': false,
+    'listen': ':53',
+    'enhanced-mode': 'fake-ip',
+    'fake-ip-range': '198.18.0.1/16',
+    'fake-ip-filter-mode': 'blacklist',
+    'prefer-h3': false,
+    'respect-rules': false,
+    'use-hosts': false,
+    'use-system-hosts': false,
+    'fake-ip-filter': [
+      '*.lan',
+      '*.local',
+      '*.arpa',
+      'time.*.com',
+      'ntp.*.com',
+      'time.*.com',
+      '+.market.xiaomi.com',
+      'localhost.ptlogin2.qq.com',
+      '*.msftncsi.com',
+      'www.msftconnecttest.com'
+    ],
+    'default-nameserver': [
+      'system',
+      '114.114.115.115',
+      '223.6.6.6'
+    ],
+    nameserver: [
+      'https://doh.pub/dns-query',
+      'https://dns.alidns.com/dns-query'
+    ],
+    'proxy-server-nameserver': [
+      'https://doh.pub/dns-query',
+      'https://dns.alidns.com/dns-query'
+    ],
+    'direct-nameserver': [
+      'https://doh.pub/dns-query',
+      'https://dns.alidns.com/dns-query'
+    ],
   };
 
   // geox-url
