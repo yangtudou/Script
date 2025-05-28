@@ -172,8 +172,8 @@ function overwriteRules(params) {
   //     }
   //   }),
   // 写入规则集合&规则
-  params["rules"] = rules;
   params["rule-providers"] = ruleProviders;
+  params["rules"] = rules;
 }
 
 // 定义过滤的函数
@@ -218,7 +218,7 @@ function overwriteProxyGroups(params) {
       name: "区域自动",
       type: "select",
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Auto.png",
-      proxies: [...countryRegions.flatMap(region => [`${region.name}自动`, ]), "DIRECT", ],
+      proxies: [...countryRegions.flatMap(region => [`${region.name}自动`, ]) ],
     },
     {
       name: "漏网之鱼",
@@ -231,8 +231,12 @@ function overwriteProxyGroups(params) {
   groups.push(...autoProxyGroups);
   params["proxy-groups"] = groups;
 }
-// DNS 部分
-// 防止 DNS 泄露
+
+/*
+DNS 部分
+防止 DNS 泄露，这部分真不太了解
+照抄了网上的一些，不知都有没有用
+*/
 function overwriteDns(params) {
   const dnsOptions = {
     'enable': true,
