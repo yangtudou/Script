@@ -19,5 +19,5 @@ tiles:
  
 script-providers:
   my-ip:
-    url: https://your-fancy-script.com/my-ip.js
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/Stash/js/my-ip.js
     interval: 86400
