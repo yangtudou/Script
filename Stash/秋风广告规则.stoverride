@@ -11,10 +11,10 @@ date: ‘2025-04-24T19:08:59Z (UTC)’
 version: ‘1.6.5-release’
 
 rules:
-  - RULE-SET,秋风去广告,REJECT
+  - RULE-SET,秋风广告规则,REJECT
 
 rule-providers:
-  秋风去广告:
+  秋风广告规则:
     behavior: domain
     format: yaml
     interval: 86400
