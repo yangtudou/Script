@@ -1,4 +1,4 @@
-name: 同步分流规则
+name: 拉取各种规则
 
 on:
   schedule:
@@ -39,8 +39,8 @@ jobs:
         run: |
           cd Script
           if [[ -n $(git status -s) ]]; then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
             git add . 
             git commit -m "Update rulesProvider $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
             git push origin HEAD
