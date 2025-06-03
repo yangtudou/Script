@@ -1,0 +1,60 @@
+name: 同步分流规则
+
+on:
+  schedule:
+    - cron: '0 */12 * * *' # 每6小时运行一次
+  workflow_dispatch: # 允许手动触发
+
+permissions:
+  actions: write
+  contents: write  
+
+jobs:
+  download_and_add_header:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: yangtudou/Script
+          path: Script
+
+      - name: a_dobe_dumb 规则
+        run: |
+          curl -o a_dobe_dumb.txt https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/refs/heads/main/list.txt
+          # 处理下载文件
+          # 去掉多余的内容
+          sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' a_dobe_dumb.txt
+          # 自定义部分插入头部
+          sed -i '1i\# 按照网上的修改过' a_dobe_dumb.txt
+          
+          # 创建目标目录 ruleProvides
+          mkdir -p Script/ruleProvides
+
+          # 移动文件 生成备份
+          mv -b --suffix=.bak a_dobe_dumb.txt Script/ruleProvides/a_dobe_dumb.list
+
+      - name: Commit and push changes
+        run: |
+          cd Script
+          if [[ -n $(git status -s) ]]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add . 
+            git commit -m "Update rulesProvider $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+            git push origin HEAD
+          else
+            echo "No changes to commit."
+          fi
+
+  clean_up_workflow:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clean up workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          retain_days: 0
+          keep_minimum_runs: 5
