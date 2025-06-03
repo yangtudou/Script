@@ -1,6 +1,5 @@
 # 说明
-> 自用规则，使用请谨慎。
-
+> **自用规则，使用请谨慎。**
 
 ## a_dobe_dumb 弹窗的规则
 > 适用于 FIClash、Mihomo Party、Stash
@@ -17,4 +16,5 @@ rule-providers:
     url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/a_dobe_dumb.list # 本仓库订阅地址
 ```
 
-参考自仓库：https://github.com/ignaciocastro/a-dove-is-dumb
+规则来源：https://github.com/ignaciocastro/a-dove-is-dumb
+
