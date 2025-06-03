@@ -6,9 +6,15 @@
 > 适用于 FIClash、Mihomo Party、Stash
 
 使用方法：
-```RULE-SET,a_dobe_dumb,REJECT```
-
-本仓库订阅地址：
-```https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/a_dobe_dumb.list```
+```
+rules:
+  RULE-SET,a_dobe_dumb,REJECT
+rule-providers:
+  a_dobe_dumb:
+    behavior: domain
+    format: text
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/a_dobe_dumb.list # 本仓库订阅地址
+```
 
 参考自仓库：https://github.com/ignaciocastro/a-dove-is-dumb
