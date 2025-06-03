@@ -25,8 +25,9 @@ jobs:
           curl -o a_dobe_dumb.txt https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/refs/heads/main/list.txt
           # 处理下载文件
           # 去掉多余的内容
-          sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' a_dobe_dumb.txt \
-          && sed -i '1i\# 按照网上的修改过' a_dobe_dumb.txt
+          sed -i -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' a_dobe_dumb.txt
+          # 在开头增加一行
+          sed -i '1i\# 按照网上的修改过' a_dobe_dumb.txt
 
           # 创建目标目录 ruleProvides
           mkdir -p Script/ruleProvides
