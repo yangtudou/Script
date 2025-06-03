@@ -35,6 +35,19 @@ jobs:
           # 移动文件 生成备份
           mv -b --suffix=.bak a_dobe_dumb.txt Script/ruleProviders/a_dobe_dumb.list
 
+      - name: 秋风广告规则
+        run: |
+          curl -o AWAvenue-Ads-Rule-Clash.yaml https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml
+
+          # 在开头增加一行
+          sed -i '1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule' AWAvenue-Ads-Rule-Clash.yaml
+
+          # 创建目标目录 ruleProvides
+          mkdir -p Script/ruleProvides
+
+          # 移动文件 生成备份
+          mv -b --suffix=.bak AWAvenue-Ads-Rule-Clash.yaml Script/ruleProviders/AWAvenue-Ads-Rule-Clash.yaml
+
       - name: Commit and push changes
         run: |
           cd Script
