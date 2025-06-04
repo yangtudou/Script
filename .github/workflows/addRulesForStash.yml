@@ -27,7 +27,9 @@ jobs:
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             format: 'yaml'
             processor: |
+              CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
               sed "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$TEMP_FILE" > "$PROCESSED_FILE"
+              sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
