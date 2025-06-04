@@ -1,0 +1,22 @@
+# 最后拉取时间: 北京时间 2025-06-04 20:20
+# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo
+payload:
+    - +.cdn-telegram.org
+    - +.comments.app
+    - +.contest.com
+    - +.fragment.com
+    - +.graph.org
+    - +.quiz.directory
+    - +.t.me
+    - +.tdesktop.com
+    - +.telega.one
+    - +.telegra.ph
+    - +.telegram-cdn.org
+    - +.telegram.dog
+    - +.telegram.me
+    - +.telegram.org
+    - +.telegram.space
+    - +.telesco.pe
+    - +.tg.dev
+    - +.tx.me
+    - +.usercontent.dev
