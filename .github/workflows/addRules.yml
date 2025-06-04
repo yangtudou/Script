@@ -1,4 +1,4 @@
-name: 自动化拉取规则管理
+name: 自动化规则管理
 
 on:
   schedule:
@@ -18,12 +18,14 @@ jobs:
           - name: 'a_dobe_dumb'
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             output: 'a_dobe_dumb.list'
-            processor: 'sed -n -e "/# Last update:/p" -e "/^0\.0\.0\.0/s/0\.0\.0\.0 //p" $FILE > $OUTPUT; sed -i "1i\# 按照网上的修改过" $OUTPUT'
+            processor: |
+              sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' $TEMP_FILE > $PROCESSED_FILE
+              sed -i '1i\# 按照网上的修改过' $PROCESSED_FILE
           
           - name: 'AWAvenue_Ads_Rule'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             output: 'AWAvenue-Ads-Rule-Clash.yaml'
-            processor: 'sed -i "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" $FILE'
+            processor: 'sed -i "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" $TEMP_FILE'
 
     steps:
       - name: 检出仓库
@@ -33,28 +35,31 @@ jobs:
           path: Script
 
       - name: 处理规则文件
+        env:
+          TEMP_FILE: "temp_${{ matrix.rule.name }}"
+          PROCESSED_FILE: "processed_${{ matrix.rule.name }}"
         run: |
           cd Script
           mkdir -p ruleProviders
           
-          FILE="${RANDOM}_temp"
-          OUTPUT="${RANDOM}_processed"
+          # 下载原始文件
+          curl -sS -o "$TEMP_FILE" "${{ matrix.rule.url }}"
           
-          # 下载并处理文件
-          curl -sS -o "$FILE" "${{ matrix.rule.url }}"
-          eval "${matrix.rule.processor//\$FILE/$FILE}"  # 动态执行处理命令
-          mv -f "$FILE" "ruleProviders/${{ matrix.rule.output }}"
+          # 执行处理命令
+          ${{ matrix.rule.processor }}
+          
+          # 移动最终文件
+          mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rule.output }}" || mv -f "$TEMP_FILE" "ruleProviders/${{ matrix.rule.output }}"
         shell: bash
 
       - name: 提交变更
-        if: always()  # 确保清理步骤始终执行
         run: |
           cd Script
           if [[ -n $(git status -s) ]]; then
             git config user.email "action@github.com"
             git config user.name "GitHub Action"
             git add ruleProviders
-            git commit -m "自动拉取更新规则: $(date +'%Y-%m-%d %H:%M')"
+            git commit -m "自动更新规则: $(date +'%Y-%m-%d %H:%M')"
             git push
           else
             echo "无变更可提交"
