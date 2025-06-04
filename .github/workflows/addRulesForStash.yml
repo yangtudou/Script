@@ -1,4 +1,3 @@
-
 name: 自动化拉取规则
 on:
   schedule:
@@ -110,6 +109,8 @@ jobs:
               CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
               sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
               sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+      max-parallel: 1 # 每次只运行一个矩阵任务 
+      fail-fast: false # 允许其他任失败也运行
   
     steps:
       - name: 检出仓库
@@ -134,23 +135,18 @@ jobs:
           mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/Stash/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
       
       - name: 提交变更
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-          force: true  # 相当于 --force-with-lease
-        # run: |
-        #   cd rules_temp/ruleProviders/Stash
+        run: |
+          cd rules_temp/ruleProviders/Stash
 
-        #   git config --local user.name "GitHub Action"
-        #   git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
 
-        #   if [[ $(git status --porcelain) ]]; then
-        #     git pull
-        #     git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
-        #     git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
-        #     git push origin main
-        #     echo "➕ 变更已提交"
-        #   else
-        #     echo "🟢 无变更可提交"
-        #   fi
+          if [[ $(git status --porcelain) ]]; then
+            git pull
+            git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
+            git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+            git push origin main
+            echo "➕ 变更已提交"
+          else
+            echo "🟢 无变更可提交"
+          fi
