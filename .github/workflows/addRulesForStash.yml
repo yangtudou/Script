@@ -19,8 +19,10 @@ jobs:
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             format: 'list'
             processor: |
+              CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
               sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
-              sed -i '1i\# 最后拉取时间' "$PROCESSED_FILE"
+              sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+
           - name: 'AWAvenue_Ads_Rule_Clash'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             format: 'yaml'
@@ -47,11 +49,11 @@ jobs:
           ${{ matrix.rules.processor }}
 
           # 移动最终文件 直接覆盖
-          mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
+          mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/Stash/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
       
       - name: 提交变更
         run: |
-          cd rules_temp/ruleProviders
+          cd rules_temp/ruleProviders/Stash
 
           git config --local user.name "GitHub Action"
           git config --local user.email "action@github.com"
