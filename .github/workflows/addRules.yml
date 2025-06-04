@@ -1,12 +1,11 @@
 name: 自动化拉取规则
 on:
   schedule:
-    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
-  workflow_dispatch:
+    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00 每天早上 9 点触发
+  workflow_dispatch:       # 允许手动触发
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
   rule_sync:
@@ -18,15 +17,14 @@ jobs:
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             format: 'list'
             processor: |
+              CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
               sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
-              sed -i '1i\# 最后拉取时间' "$PROCESSED_FILE"
-
+              sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
           - name: 'AWAvenue_Ads_Rule_Clash'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             format: 'yaml'
             processor: |
               sed "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$TEMP_FILE" > "$PROCESSED_FILE"
-
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
@@ -41,26 +39,42 @@ jobs:
           TEMP_FILE: "temp_${{ matrix.rules.name }}"
           PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
         run: |
-          mkdir "$TEMP_FILE" "$PROCESSED_FILE"
-          bash -c ls
-          echo $PWD
+          cd Script
+          mkdir -p ruleProviders
+          # 安全下载（带失败检测）
+          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
+          if [ ! -s "$TEMP_FILE" ]; then
+            echo "❌ 文件下载失败：${{ matrix.rules.name }}"
+            exit 1
+          fi
           
-
-      # - name: 提交变更
-      #   run: |
-      #     cd Script
-      #     git add ruleProviders
+          # 执行处理器命令
+          ${{ matrix.rules.processor }}
           
-      #     if [[ -n $(git status --porcelain ruleProviders) ]]; then
-      #       git config --local user.email "action@github.com"
-      #       git config --local user.name "GitHub Action"
-      #       git commit -m "拉取新规则: ${{ join(matrix.rules.*) }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
-      #       git push
-      #       echo "➕ 变更已提交"
-      #     else
-      #       echo "🟢 无变更可提交"
-      #     fi
-
+          # 严格验证输出文件
+          if [ ! -f "$PROCESSED_FILE" ]; then
+            echo "❌ 处理失败：$PROCESSED_FILE 未生成"
+            ls -la
+            exit 1
+          fi
+          
+          # 移动最终文件
+          mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
+          echo "✅ 目标文件已处理完成"
+      - name: 提交变更
+        run: |
+          cd Script/ruleProviders
+          
+          if [[ -n $(git status -s) ]]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+            git push origin HEAD
+            echo "➕ 变更已提交"
+          else
+            echo "🟢 无变更可提交"
+          fi
   cleanup:
     runs-on: ubuntu-latest
     needs: rule_sync
