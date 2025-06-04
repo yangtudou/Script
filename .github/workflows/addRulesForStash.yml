@@ -33,7 +33,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: yangtudou/Script
-          ref: main
           path: rules_temp
           fetch-depth: 1
 
