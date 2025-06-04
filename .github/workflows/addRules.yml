@@ -17,8 +17,9 @@ jobs:
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             format: 'list'
             processor: |
+              CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
               sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
-              sed -i '1i\# 最后拉取时间: $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')' "$PROCESSED_FILE"
+              sed -i "1i\# 最后拉取时间: $CURRENT_TIME" "$PROCESSED_FILE"
 
           - name: 'AWAvenue_Ads_Rule_Clash'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
