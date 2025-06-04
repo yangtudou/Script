@@ -37,11 +37,13 @@ jobs:
 
       - name: 处理规则文件
         env:
-          TEMP_FILE: "temp_${{ matrix.rules.name }}"
-          PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
+          TEMP_DIR: ".temp"  # 新增临时目录
+          TEMP_FILE: "$TEMP_DIR/temp_${{ matrix.rules.name }}"
+          PROCESSED_FILE: "$TEMP_DIR/processed_${{ matrix.rules.name }}"
         run: |
           cd Script
           mkdir -p ruleProviders
+          mkdir -p "$TEMP_DIR"  # 创建专用临时目录
 
           # 安全下载（带失败检测）
           curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
@@ -63,15 +65,20 @@ jobs:
           # 移动最终文件
           mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
           echo "✅ 目标文件已处理完成"
+          
+          # 最后清理整个临时目录
+          rm -rf "$TEMP_DIR"
 
       - name: 提交变更
         run: |
           cd Script/ruleProviders
+
+          # 只添加ruleProviders目录的变更
+          git add ruleProviders
           
-          if [[ -n $(git status -s) ]]; then
+          if [[ -n $(git status --porcelain ruleProviders) ]]; then
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            git add .
             git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
             git push origin HEAD
             echo "➕ 变更已提交"
