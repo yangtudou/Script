@@ -43,7 +43,6 @@ jobs:
           TEMP_FILE: "$GITHUB_WORKSPACE/Script/temp/temp_${{ matrix.rules.name }}"
           PROCESSED_FILE: "$GITHUB_WORKSPACE/Script/temp/processed_${{ matrix.rules.name }}"
         run: |
-          # 确保临时目录存在（重要修复点）
           mkdir -p "$TEMP_DIR"
           cd "$TEMP_DIR"
 
@@ -60,7 +59,8 @@ jobs:
           
           # 执行处理器命令（显式使用bash）
           echo "🔄 处理规则文件..."
-          bash -c "${{ matrix.rules.processor }}"
+          # bash -c "${{ matrix.rules.processor }}"
+          bash -c ls
           
           # 严格验证输出文件
           if [ ! -f "$PROCESSED_FILE" ]; then
