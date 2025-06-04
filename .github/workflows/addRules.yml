@@ -35,6 +35,7 @@ jobs:
         with:
           repository: yangtudou/Script
           path: Script
+          fetch-depth: 0  # 获取完整提交历史[5](@ref)
 
       - name: 处理规则文件
         env:
@@ -44,12 +45,12 @@ jobs:
           cd Script
           mkdir -p ruleProviders
           
-          # 带重定向处理的下载
+          # 下载文件（支持重定向）
           curl -sS -L -o "$TEMP_FILE" "${{ matrix.rule.url }}"
           
-          # 验证下载成功
-          if [ ! -f "$TEMP_FILE" ]; then
-            echo "错误：文件下载失败"
+          # 验证下载
+          if [ ! -s "$TEMP_FILE" ]; then
+            echo "❌ 文件下载失败或为空"
             exit 1
           fi
           
@@ -58,25 +59,37 @@ jobs:
           
           # 验证处理结果
           if [ ! -f "$PROCESSED_FILE" ]; then
-            echo "错误：文件处理失败"
+            echo "❌ 处理后文件未生成: $PROCESSED_FILE"
             exit 1
           fi
           
           # 移动最终文件
           mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rule.output }}"
+          
+          # 关键修复：清理临时文件[6,7](@ref)
+          rm -f "$TEMP_FILE" "$PROCESSED_FILE"
+          echo "✅ 临时文件已清理"
         shell: bash
 
       - name: 提交变更
         run: |
           cd Script
+          # 添加.gitignore防止临时文件被跟踪[7](@ref)
+          if [ ! -f .gitignore ]; then
+            echo "temp_*" >> .gitignore
+            echo "processed_*" >> .gitignore
+          fi
+          
+          git add .gitignore ruleProviders
+          
           if [[ -n $(git status -s) ]]; then
             git config user.email "action@github.com"
             git config user.name "GitHub Action"
-            git add ruleProviders
-            git commit -m "自动更新规则: $(date +'%Y-%m-%d %H:%M')"
+            git commit -m "自动更新规则: ${{ matrix.rule.name }} $(date +'%Y-%m-%d %H:%M')"
             git push
+            echo "✅ 变更已提交"
           else
-            echo "无变更可提交"
+            echo "🟢 无变更可提交"
           fi
 
   cleanup:
