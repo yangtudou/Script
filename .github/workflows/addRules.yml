@@ -64,9 +64,6 @@ jobs:
             ls -la
             exit 1
           fi
-
-          rm -f "$TEMP_FILE"  # 删除下载的原始文件
-          rm -f "$PROCESSED_FILE"  # 删除中间处理文件
           
           # 移动最终文件
           mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
