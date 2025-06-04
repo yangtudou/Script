@@ -40,8 +40,14 @@ jobs:
           TEMP_FILE: "temp_${{ matrix.rules.name }}"
           PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
         run: |
-          mkdir "$TEMP_FILE" "$PROCESSED_FILE"
+          cd Temp
+          mkdir "$TEMP_FILE"
           bash -c ls
+          echo $PWD
+          cd .. 
+          bash -c ls
+          echo $PWD
+          cd ..
           echo $PWD
 
   cleanup:
