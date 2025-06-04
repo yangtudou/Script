@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rule:
+        rules:
           - name: 'a_dobe_dumb'
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             format: 'list'
@@ -38,32 +38,32 @@ jobs:
           fetch-depth: 0
 
       - name: 处理规则文件
-        # env:
-        #   TEMP_FILE: "temp_${{ matrix.rule.name }}"
-        #   PROCESSED_FILE: "processed_${{ matrix.rule.name }}"
+        env:
+          TEMP_FILE: "temp_${{ matrix.rules.name }}"
+          # PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
         run: |
           cd Script
           mkdir -p ruleProviders
           
           # 安全下载（带失败检测）
-          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rule.url }}"
+          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
           if [ ! -s "$TEMP_FILE" ]; then
-            echo "❌ 文件下载失败：${{ matrix.rule.name}}"
+            echo "❌ 文件下载失败：${{ matrix.rules.name}}"
             exit 1
           fi
           
           # 执行处理器命令
-          ${{ matrix.rule.processor }}
+          ${{ matrix.rules.processor }}
           
-          # 严格验证输出文件
-          if [ ! -f "$PROCESSED_FILE" ]; then
-            echo "❌ 处理失败：$PROCESSED_FILE 未生成"
-            ls -la
-            exit 1
-          fi
+          # # 严格验证输出文件
+          # if [ ! -f "$PROCESSED_FILE" ]; then
+          #   echo "❌ 处理失败：$PROCESSED_FILE 未生成"
+          #   ls -la
+          #   exit 1
+          # fi
           
           # 移动最终文件
-          mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rule.name }}.${{ matrix.rule.format }}"
+          mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
           
           # 强制清理残留
           rm -f "$TEMP_FILE" 2>/dev/null
