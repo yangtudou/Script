@@ -43,15 +43,13 @@ jobs:
           TEMP_FILE: "$GITHUB_WORKSPACE/Script/temp/temp_${{ matrix.rules.name }}"
           PROCESSED_FILE: "$GITHUB_WORKSPACE/Script/temp/processed_${{ matrix.rules.name }}"
         run: |
-          cd Script
-          mkdir -p ruleProviders
-          
           # 确保临时目录存在（重要修复点）
           mkdir -p "$TEMP_DIR"
+          cd "$TEMP_DIR"
 
           # 安全下载（带失败检测）
           echo "▶️ 下载规则: ${{ matrix.rules.name}}"
-          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
+          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}" 
           
           # 增强错误检测
           if [ ! -s "$TEMP_FILE" ]; then
