@@ -1,12 +1,10 @@
 name: 自动化规则管理
-
 on:
   schedule:
     - cron: '0 12 * * *'  # 每天中午12点运行
   workflow_dispatch:       # 允许手动触发
 
 permissions:
-  actions: write
   contents: write
 
 jobs:
@@ -15,19 +13,22 @@ jobs:
     strategy:
       matrix:
         rule:
+          # 规则1：a_dobe_dumb（保持原逻辑）
           - name: 'a_dobe_dumb'
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             output: 'a_dobe_dumb.list'
             processor: |
+              # 直接生成处理后的文件
               sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
               sed -i '1i\# 按照网上的修改过' "$PROCESSED_FILE"
           
+          # 规则2：AWAvenue_Ads_Rule（关键修复）
           - name: 'AWAvenue_Ads_Rule'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             output: 'AWAvenue-Ads-Rule-Clash.yaml'
             processor: |
-              cp "$TEMP_FILE" "$PROCESSED_FILE"
-              sed -i "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$PROCESSED_FILE"
+              # 修复点：直接操作临时文件后输出到新文件
+              sed "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$TEMP_FILE" > "$PROCESSED_FILE"
 
     steps:
       - name: 检出仓库
@@ -35,7 +36,7 @@ jobs:
         with:
           repository: yangtudou/Script
           path: Script
-          fetch-depth: 0  # 获取完整提交历史[5](@ref)
+          fetch-depth: 0
 
       - name: 处理规则文件
         env:
@@ -45,48 +46,48 @@ jobs:
           cd Script
           mkdir -p ruleProviders
           
-          # 下载文件（支持重定向）
-          curl -sS -L -o "$TEMP_FILE" "${{ matrix.rule.url }}"
-          
-          # 验证下载
+          # 安全下载（带失败检测）
+          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rule.url }}"
           if [ ! -s "$TEMP_FILE" ]; then
-            echo "❌ 文件下载失败或为空"
+            echo "❌ 文件下载失败：${{ matrix.rule.url}}"
             exit 1
           fi
           
-          # 执行处理命令
+          # 执行处理器命令
           ${{ matrix.rule.processor }}
           
-          # 验证处理结果
+          # 严格验证输出文件
           if [ ! -f "$PROCESSED_FILE" ]; then
-            echo "❌ 处理后文件未生成: $PROCESSED_FILE"
+            echo "❌ 处理失败：$PROCESSED_FILE 未生成"
+            ls -la
             exit 1
           fi
           
           # 移动最终文件
           mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rule.output }}"
           
-          # 关键修复：清理临时文件[6,7](@ref)
-          rm -f "$TEMP_FILE" "$PROCESSED_FILE"
+          # 强制清理残留
+          rm -f "$TEMP_FILE" 2>/dev/null
           echo "✅ 临时文件已清理"
-        shell: bash
 
       - name: 提交变更
         run: |
           cd Script
-          # 添加.gitignore防止临时文件被跟踪[7](@ref)
-          if [ ! -f .gitignore ]; then
-            echo "temp_*" >> .gitignore
-            echo "processed_*" >> .gitignore
-          fi
+          # 幂等写入.gitignore
+          grep -q "temp_" .gitignore || echo "temp_*" >> .gitignore
+          grep -q "processed_" .gitignore || echo "processed_*" >> .gitignore
           
           git add .gitignore ruleProviders
           
           if [[ -n $(git status -s) ]]; then
             git config user.email "action@github.com"
             git config user.name "GitHub Action"
+            
+            # 分支同步防冲突
+            git pull --rebase origin main
+            
             git commit -m "自动更新规则: ${{ matrix.rule.name }} $(date +'%Y-%m-%d %H:%M')"
-            git push
+            git push origin main
             echo "✅ 变更已提交"
           else
             echo "🟢 无变更可提交"
