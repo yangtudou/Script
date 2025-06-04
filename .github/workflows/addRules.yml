@@ -43,6 +43,7 @@ jobs:
         run: |
           mkdir "$TEMP_FILE" "$PROCESSED_FILE"
           bash -c ls
+          echo $PWD
           
 
       # - name: 提交变更
