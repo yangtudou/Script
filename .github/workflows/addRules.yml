@@ -70,6 +70,8 @@ jobs:
       - name: 提交变更
         run: |
           cd Script
+
+          git add ruleProviders
           
           if [[ -n $(git status -s) ]]; then
             git config --local user.email "action@github.com"
