@@ -44,31 +44,8 @@ jobs:
           PROCESSED_FILE: "$GITHUB_WORKSPACE/Script/temp/processed_${{ matrix.rules.name }}"
         run: |
           mkdir -p "$TEMP_DIR"
-          cd "$TEMP_DIR"
-
-          # 安全下载（带失败检测）
-          echo "▶️ 下载规则: ${{ matrix.rules.name}}"
-          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}" 
           
-          # 增强错误检测
-          if [ ! -s "$TEMP_FILE" ]; then
-            echo "❌ 文件下载失败：${{ matrix.rules.name}}"
-            ls -la "$(dirname "$TEMP_FILE")"
-            exit 1
-          fi
-          
-          # 执行处理器命令（显式使用bash）
-          echo "🔄 处理规则文件..."
-          # bash -c "${{ matrix.rules.processor }}"
           bash -c ls
-          
-          # 严格验证输出文件
-          if [ ! -f "$PROCESSED_FILE" ]; then
-            echo "❌ 处理失败：$PROCESSED_FILE 未生成"
-            echo "临时目录内容:"
-            ls -la "$TEMP_DIR"
-            exit 1
-          fi
           
           # 移动最终文件
           mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
@@ -77,20 +54,20 @@ jobs:
           # 清理临时文件（保留目录）
           rm -f "$TEMP_FILE"
 
-      - name: 提交变更
-        run: |
-          cd Script
-          git add ruleProviders
+      # - name: 提交变更
+      #   run: |
+      #     cd Script
+      #     git add ruleProviders
           
-          if [[ -n $(git status --porcelain ruleProviders) ]]; then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git commit -m "拉取新规则: ${{ join(matrix.rules.*) }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
-            git push
-            echo "➕ 变更已提交"
-          else
-            echo "🟢 无变更可提交"
-          fi
+      #     if [[ -n $(git status --porcelain ruleProviders) ]]; then
+      #       git config --local user.email "action@github.com"
+      #       git config --local user.name "GitHub Action"
+      #       git commit -m "拉取新规则: ${{ join(matrix.rules.*) }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+      #       git push
+      #       echo "➕ 变更已提交"
+      #     else
+      #       echo "🟢 无变更可提交"
+      #     fi
 
   cleanup:
     runs-on: ubuntu-latest
