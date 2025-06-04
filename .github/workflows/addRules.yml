@@ -69,14 +69,12 @@ jobs:
 
       - name: 提交变更
         run: |
-          cd Script
+          cd ruleProviders
           
           if [[ -n $(git status -s) ]]; then
-            git add ruleProviders
+            git add .
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            # 分支同步防冲突Add commentMore actions
-            git pull --rebase origin main
             
             git commit -m "拉取新规则: ${{ matrix.rules.name }} $(date +'%Y-%m-%d %H:%M')"
             git push origin main
