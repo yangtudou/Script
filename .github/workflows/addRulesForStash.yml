@@ -96,7 +96,7 @@ jobs:
               sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
           
           - name: 'youtube_domain'
-            url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube_domain.yaml'
+            url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.yaml'
             format: 'yaml'
             processor: |
               CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
