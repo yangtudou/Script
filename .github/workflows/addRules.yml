@@ -22,6 +22,7 @@ jobs:
           # 将YAML转换为JSON矩阵
           MATRIX_JSON=$(yq eval -o=json .github/rules.yml | jq -c)
           echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          echo "matrix=$MATRIX_JSON"
 
   rule_sync:
     needs: prepare_rules
