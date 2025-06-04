@@ -72,7 +72,7 @@ jobs:
 
       - name: 提交变更
         run: |
-          cd Script/ruleProviders
+          cd Script
 
           # 只添加ruleProviders目录的变更
           git add ruleProviders
