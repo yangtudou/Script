@@ -74,9 +74,11 @@ jobs:
           if [[ -n $(git status -s) ]]; then
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            git add . 
+            # 分支同步防冲突Add commentMore actions
+            git pull --rebase origin main
+            
             git commit -m "拉取新规则: ${{ matrix.rules.name }} $(date +'%Y-%m-%d %H:%M')"
-            git push origin HEAD
+            git push origin main
             echo "✅ 变更已提交"
           else
             echo "🟢 无变更可提交"
