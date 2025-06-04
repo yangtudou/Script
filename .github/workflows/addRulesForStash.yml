@@ -1,16 +1,13 @@
+
 name: 自动化拉取规则
 on:
   schedule:
     - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
   workflow_dispatch:
 
-# 添加并发控制 - 防止多个工作流同时运行
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   contents: write
+  # actions: write
 
 jobs:
   rule_sync:
@@ -120,109 +117,35 @@ jobs:
         with:
           repository: yangtudou/Script
           path: rules_temp
-          # 获取完整历史记录
           fetch-depth: 0
 
       - name: 处理规则文件
         env:
-          # 添加唯一ID避免文件名冲突
-          TEMP_FILE: "temp_${{ matrix.rules.name }}_${{ github.run_id }}"
-          PROCESSED_FILE: "processed_${{ matrix.rules.name }}_${{ github.run_id }}"
+          TEMP_FILE: "temp_${{ matrix.rules.name }}"
+          PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
         run: |
-          # 下载文件
+          # 下载文件 保存为以 temp_ 为前缀的临时文件
           curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
 
-          # 执行处理器命令
+          # 执行处理器命令 并且更名为 processed_ 前缀的临时文件
           ${{ matrix.rules.processor }}
 
-          # 移动最终文件
+          # 移动最终文件 直接覆盖
           mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/Stash/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
-          
-          # 清理临时文件
-          rm -f "$TEMP_FILE"
       
-      # 保存处理后的文件为工作流产物
-      - name: 保存规则文件
-        uses: actions/upload-artifact@v3
-        with:
-          name: processed-rules
-          path: rules_temp/ruleProviders/Stash
-          retention-days: 1
-
-  # 添加统一提交任务
-  commit_and_push:
-    runs-on: ubuntu-latest
-    needs: rule_sync  # 依赖规则同步任务
-    steps:
-      - name: 检出仓库
-        uses: actions/checkout@v4
-        with:
-          repository: yangtudou/Script
-          path: target-repo
-          # 获取完整历史记录
-          fetch-depth: 0
-
-      - name: 下载处理后的规则文件
-        uses: actions/download-artifact@v3
-        with:
-          name: processed-rules
-          path: processed-rules
-
-      - name: 复制规则文件到仓库
+      - name: 提交变更
         run: |
-          # 复制所有规则文件到目标仓库
-          cp -r processed-rules/* target-repo/ruleProviders/Stash/
+          cd rules_temp/ruleProviders/Stash
 
-      - name: 设置Git用户
-        run: |
-          cd target-repo
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
 
-      - name: 检查变更
-        id: check-changes
-        run: |
-          cd target-repo
-          # 检查是否有文件变更
-          if git diff --quiet; then
-            echo "🟢 无变更可提交"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+          if [[ $(git status --porcelain) ]]; then
+            git pull
+            git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
+            git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+            git push origin main
+            echo "➕ 变更已提交"
           else
-            echo "🟠 检测到变更，准备提交"
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "🟢 无变更可提交"
           fi
-
-      - name: 提交并推送变更
-        if: steps.check-changes.outputs.has_changes == 'true'
-        run: |
-          cd target-repo
-          
-          # 添加所有变更
-          git add .
-          
-          # 创建提交
-          COMMIT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
-          git commit -m "批量更新规则: 北京时间 $COMMIT_TIME"
-          
-          # 带重试的安全推送
-          for i in {1,2,3}; do
-            echo "尝试推送 (第 $i 次)..."
-            git pull --rebase origin main
-            if git push origin main; then
-              echo "✅ 推送成功"
-              break
-            else
-              echo "🔄 推送失败，5秒后重试..."
-              sleep 5
-            fi
-          done
-          
-          # 如果三次尝试都失败，则标记失败
-          if [ $? -ne 0 ]; then
-            echo "❌ 推送失败，请手动检查"
-            exit 1
-          fi
-
-      - name: 无变更处理
-        if: steps.check-changes.outputs.has_changes == 'false'
-        run: echo "🟢 无变更，跳过提交步骤"
