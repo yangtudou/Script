@@ -1,4 +1,4 @@
-name: 自动化规则管理
+name: 自动化拉取规则
 on:
   schedule:
     - cron: '0 12 * * *'  # 每天中午12点运行
@@ -20,17 +20,15 @@ jobs:
               # 直接生成处理后的文件
               sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
               sed -i '1i\# 按照网上的修改过' "$PROCESSED_FILE"
-          
-          # 规则2：AWAvenue_Ads_Rule（关键修复）
+
           - name: 'AWAvenue_Ads_Rule'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             format: 'yaml'
             processor: |
-              # 修复点：直接操作临时文件后输出到新文件
               sed "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$TEMP_FILE" > "$PROCESSED_FILE"
 
     steps:
-      - name: 检出仓库
+      - name: 检查仓库
         uses: actions/checkout@v4
         with:
           repository: yangtudou/Script
@@ -85,7 +83,7 @@ jobs:
             # 分支同步防冲突
             git pull --rebase origin main
             
-            git commit -m "自动更新规则: ${{ matrix.rule.name }} $(date +'%Y-%m-%d %H:%M')"
+            git commit -m "拉取新规则: ${{ matrix.rules.name }} $(date +'%Y-%m-%d %H:%M')"
             git push origin main
             echo "✅ 变更已提交"
           else
