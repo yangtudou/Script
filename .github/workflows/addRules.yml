@@ -32,7 +32,7 @@ jobs:
         with:
           repository: yangtudou/Script
           ref: main
-          path: Temp
+          path: rules_temp
           fetch-depth: 1
 
       - name: 处理规则文件
@@ -40,15 +40,25 @@ jobs:
           TEMP_FILE: "temp_${{ matrix.rules.name }}"
           PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
         run: |
-          cd Temp
-          mkdir "$TEMP_FILE"
+          # 下载文件 保存为以 temp_ 为前缀的临时文件
+          curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
+
+          # 执行处理器命令 并且更名为 processed_ 前缀的临时文件
+          ${{ matrix.rules.processor }}
+
+          # 移动最终文件 直接覆盖
+          mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
+
+          echo $PWD
           bash -c ls
+
+          cd rules_temp
           echo $PWD
-          cd .. 
           bash -c ls
+
+          cd ruleProviders
           echo $PWD
-          cd ..
-          echo $PWD
+          bash -c ls
 
   cleanup:
     runs-on: ubuntu-latest
