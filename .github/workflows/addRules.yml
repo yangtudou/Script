@@ -19,13 +19,15 @@ jobs:
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             output: 'a_dobe_dumb.list'
             processor: |
-              sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' $TEMP_FILE > $PROCESSED_FILE
-              sed -i '1i\# 按照网上的修改过' $PROCESSED_FILE
+              sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
+              sed -i '1i\# 按照网上的修改过' "$PROCESSED_FILE"
           
           - name: 'AWAvenue_Ads_Rule'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             output: 'AWAvenue-Ads-Rule-Clash.yaml'
-            processor: 'sed -i "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" $TEMP_FILE'
+            processor: |
+              cp "$TEMP_FILE" "$PROCESSED_FILE"
+              sed -i "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$PROCESSED_FILE"
 
     steps:
       - name: 检出仓库
@@ -42,14 +44,26 @@ jobs:
           cd Script
           mkdir -p ruleProviders
           
-          # 下载原始文件
-          curl -sS -o "$TEMP_FILE" "${{ matrix.rule.url }}"
+          # 带重定向处理的下载
+          curl -sS -L -o "$TEMP_FILE" "${{ matrix.rule.url }}"
+          
+          # 验证下载成功
+          if [ ! -f "$TEMP_FILE" ]; then
+            echo "错误：文件下载失败"
+            exit 1
+          fi
           
           # 执行处理命令
           ${{ matrix.rule.processor }}
           
+          # 验证处理结果
+          if [ ! -f "$PROCESSED_FILE" ]; then
+            echo "错误：文件处理失败"
+            exit 1
+          fi
+          
           # 移动最终文件
-          mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rule.output }}" || mv -f "$TEMP_FILE" "ruleProviders/${{ matrix.rule.output }}"
+          mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rule.output }}"
         shell: bash
 
       - name: 提交变更
