@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: write
-  actions: write
+  # actions: write
 
 jobs:
   rule_sync:
@@ -48,18 +48,23 @@ jobs:
 
           # 移动最终文件 直接覆盖
           mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
+      
+      - name: 提交变更
+        run: |
+          cd rules_temp/ruleProviders
 
-          echo $PWD
-          bash -c ls
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
 
-          cd rules_temp
-          echo $PWD
-          bash -c ls
-
-          cd ruleProviders
-          echo $PWD
-          bash -c ls
-
+          if [[ $(git status --porcelain) ]]; then
+            git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
+            git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+            git push origin main
+            echo "➕ 变更已提交"
+          else
+            echo "🟢 无变更可提交"
+          fi
+            
   cleanup:
     runs-on: ubuntu-latest
     needs: rule_sync
