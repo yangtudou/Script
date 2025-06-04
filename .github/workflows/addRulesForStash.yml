@@ -134,18 +134,23 @@ jobs:
           mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/Stash/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
       
       - name: 提交变更
-        run: |
-          cd rules_temp/ruleProviders/Stash
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          force: true  # 相当于 --force-with-lease
+        # run: |
+        #   cd rules_temp/ruleProviders/Stash
 
-          git config --local user.name "GitHub Action"
-          git config --local user.email "action@github.com"
+        #   git config --local user.name "GitHub Action"
+        #   git config --local user.email "action@github.com"
 
-          if [[ $(git status --porcelain) ]]; then
-            git pull
-            git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
-            git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
-            git push origin main
-            echo "➕ 变更已提交"
-          else
-            echo "🟢 无变更可提交"
-          fi
+        #   if [[ $(git status --porcelain) ]]; then
+        #     git pull
+        #     git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
+        #     git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+        #     git push origin main
+        #     echo "➕ 变更已提交"
+        #   else
+        #     echo "🟢 无变更可提交"
+        #   fi
