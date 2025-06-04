@@ -39,9 +39,9 @@ jobs:
       - name: 处理规则文件
         env:
           # 使用绝对路径避免目录混乱
-          TEMP_DIR: "$GITHUB_WORKSPACE/Script/.temp"
-          TEMP_FILE: "$GITHUB_WORKSPACE/Script/.temp/temp_${{ matrix.rules.name }}"
-          PROCESSED_FILE: "$GITHUB_WORKSPACE/Script/.temp/processed_${{ matrix.rules.name }}"
+          TEMP_DIR: "$GITHUB_WORKSPACE/Script/temp"
+          TEMP_FILE: "$GITHUB_WORKSPACE/Script/temp/temp_${{ matrix.rules.name }}"
+          PROCESSED_FILE: "$GITHUB_WORKSPACE/Script/temp/processed_${{ matrix.rules.name }}"
         run: |
           cd Script
           mkdir -p ruleProviders
