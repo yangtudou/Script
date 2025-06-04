@@ -1,7 +1,7 @@
 name: 自动化拉取规则
 on:
   schedule:
-    - cron: '0 12 * * *'  # 每天中午12点运行
+    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00 每天早上 9 点触发
   workflow_dispatch:       # 允许手动触发
 
 permissions:
@@ -17,23 +17,23 @@ jobs:
             url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
             format: 'list'
             processor: |
-              # 直接生成处理后的文件
               sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
               sed -i '1i\# 按照网上的修改过' "$PROCESSED_FILE"
 
-          - name: 'AWAvenue_Ads_Rule'
+          - name: 'AWAvenue_Ads_Rule_Clash'
             url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
             format: 'yaml'
             processor: |
               sed "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$TEMP_FILE" > "$PROCESSED_FILE"
 
     steps:
-      - name: 检查仓库
+      - name: 检出仓库
         uses: actions/checkout@v4
         with:
           repository: yangtudou/Script
+          ref: main
           path: Script
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: 处理规则文件
         env:
@@ -42,11 +42,11 @@ jobs:
         run: |
           cd Script
           mkdir -p ruleProviders
-          
+
           # 安全下载（带失败检测）
           curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
           if [ ! -s "$TEMP_FILE" ]; then
-            echo "❌ 文件下载失败：${{ matrix.rules.url }}"
+            echo "❌ 文件下载失败：${{ matrix.rules.name }}"
             exit 1
           fi
           
@@ -62,10 +62,7 @@ jobs:
           
           # 移动最终文件
           mv -f "$PROCESSED_FILE" "ruleProviders/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
-          
-          # # 强制清理残留
-          # rm -f "$TEMP_FILE" 2>/dev/null
-          # echo "✅ 临时文件已清理"
+          echo "✅ 目标文件已处理完成"
 
       - name: 提交变更
         run: |
@@ -90,4 +87,4 @@ jobs:
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          keep_minimum_runs: 5
+          keep_minimum_runs: 2
