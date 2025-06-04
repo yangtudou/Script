@@ -34,7 +34,7 @@ jobs:
           repository: yangtudou/Script
           ref: main
           path: Script
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: 处理规则文件
         env:
