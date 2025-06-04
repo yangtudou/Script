@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: write
-  # actions: write
 
 jobs:
   rule_sync:
@@ -73,8 +72,8 @@ jobs:
           cd Script
           
           if [[ -n $(git status -s) ]]; then
-            git config user.email "action@github.com"
-            git config user.name "GitHub Action"
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
             git add . 
             git commit -m "拉取新规则: ${{ matrix.rules.name }} $(date +'%Y-%m-%d %H:%M')"
             git push origin HEAD
