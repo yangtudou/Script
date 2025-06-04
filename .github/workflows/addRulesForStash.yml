@@ -60,6 +60,7 @@ jobs:
           git config --local user.email "action@github.com"
 
           if [[ $(git status --porcelain) ]]; then
+            git pull
             git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
             git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
             git push origin main
