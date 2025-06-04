@@ -46,7 +46,7 @@ jobs:
           # 安全下载（带失败检测）
           curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
           if [ ! -s "$TEMP_FILE" ]; then
-            echo "❌ 文件下载失败：${{ matrix.rules.name}}"
+            echo "❌ 文件下载失败：${{ matrix.rules.url }}"
             exit 1
           fi
           
