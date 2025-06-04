@@ -1,73 +1,71 @@
-name: 拉取各种规则
+name: 自动化拉取规则管理
 
 on:
   schedule:
-    - cron: '0 12 * * *' # 每天中午12点整运行
-  workflow_dispatch: # 允许手动触发
+    - cron: '0 12 * * *'  # 每天中午12点运行
+  workflow_dispatch:       # 允许手动触发
 
 permissions:
   actions: write
-  contents: write  
+  contents: write
 
 jobs:
-  download_and_add_header:
+  process_rules:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rule:
+          - name: 'a_dobe_dumb'
+            url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
+            output: 'a_dobe_dumb.list'
+            processor: 'sed -n -e "/# Last update:/p" -e "/^0\.0\.0\.0/s/0\.0\.0\.0 //p" $FILE > $OUTPUT; sed -i "1i\# 按照网上的修改过" $OUTPUT'
+          
+          - name: 'AWAvenue_Ads_Rule'
+            url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
+            output: 'AWAvenue-Ads-Rule-Clash.yaml'
+            processor: 'sed -i "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" $FILE'
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: 检出仓库
+        uses: actions/checkout@v4
         with:
           repository: yangtudou/Script
           path: Script
 
-      - name: a_dobe_dumb 规则
+      - name: 处理规则文件
         run: |
-          curl -o a_dobe_dumb.txt https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/refs/heads/main/list.txt
-          # 处理下载文件
-          # 去掉多余的内容
-          sed -i -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' a_dobe_dumb.txt
-          # 在开头增加一行
-          sed -i '1i\# 按照网上的修改过' a_dobe_dumb.txt
+          cd Script
+          mkdir -p ruleProviders
+          
+          FILE="${RANDOM}_temp"
+          OUTPUT="${RANDOM}_processed"
+          
+          # 下载并处理文件
+          curl -sS -o "$FILE" "${{ matrix.rule.url }}"
+          eval "${matrix.rule.processor//\$FILE/$FILE}"  # 动态执行处理命令
+          mv -f "$FILE" "ruleProviders/${{ matrix.rule.output }}"
+        shell: bash
 
-          # 创建目标目录 ruleProvides
-          mkdir -p Script/ruleProvides
-
-          # 移动文件 生成备份
-          mv -b --suffix=.bak a_dobe_dumb.txt Script/ruleProviders/a_dobe_dumb.list
-
-      - name: 秋风广告规则
-        run: |
-          curl -o AWAvenue-Ads-Rule-Clash.yaml https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml
-
-          # 在开头增加一行
-          sed -i '1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule' AWAvenue-Ads-Rule-Clash.yaml
-
-          # 创建目标目录 ruleProvides
-          mkdir -p Script/ruleProvides
-
-          # 移动文件 生成备份
-          mv -b --suffix=.bak AWAvenue-Ads-Rule-Clash.yaml Script/ruleProviders/AWAvenue-Ads-Rule-Clash.yaml
-
-      - name: Commit and push changes
+      - name: 提交变更
+        if: always()  # 确保清理步骤始终执行
         run: |
           cd Script
           if [[ -n $(git status -s) ]]; then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action[bot]"
-            git add . 
-            git commit -m "Update rulesProvider $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
-            git push origin HEAD
+            git config user.email "action@github.com"
+            git config user.name "GitHub Action"
+            git add ruleProviders
+            git commit -m "自动拉取更新规则: $(date +'%Y-%m-%d %H:%M')"
+            git push
           else
-            echo "No changes to commit."
+            echo "无变更可提交"
           fi
 
-  clean_up_workflow:
+  cleanup:
     runs-on: ubuntu-latest
-
+    needs: process_rules
     steps:
-      - name: Clean up workflow runs
-        uses: Mattraks/delete-workflow-runs@main
+      - name: 清理工作流
+        uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          retain_days: 0
           keep_minimum_runs: 5
