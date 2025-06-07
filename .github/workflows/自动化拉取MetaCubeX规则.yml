@@ -42,6 +42,12 @@ jobs:
             --include="telegram.yaml" \
             --include="youtube.yaml" \
             --include="github.yaml" \
+            --include="apple.yaml" \
+            --include="meta.yaml" \
+            --include="cloudflare.yaml" \
+            --include="microsoft.yaml" \
+            --include="private.yaml" \
+            --include="speedtest.yaml" \
             --exclude="*" \
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
@@ -56,6 +62,12 @@ jobs:
             "telegram.yaml"
             "youtube.yaml"
             "github.yaml"
+            "apple.yaml"
+            "meta.yaml" 
+            "cloudflare.yaml"
+            "microsoft.yaml"
+            "private.yaml"
+            "speedtest.yaml"
           )
           
           for file in "${TARGET_FILES[@]}"; do
