@@ -33,7 +33,7 @@ jobs:
         run: |
           cd rule_sync_temp
           git config --local user.name "GitHub Action"
-          git config --local user.email "actions@users.noreply.github.com"
+          git config --local user.email "action@github.com"
 
           if [[ $(git status --porcelain) ]]; then
             git add .
@@ -43,6 +43,8 @@ jobs:
           else
             echo "🟢 无变更可提交"
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用token推送
 
 
   # rule_sync:
