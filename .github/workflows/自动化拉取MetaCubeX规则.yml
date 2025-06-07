@@ -48,14 +48,23 @@ jobs:
           # 进入目标目录处理
           cd rule_sync_temp/ruleProviders/Stash
 
-          # 批量重命名（排除geolocation-!cn.yaml）
-          for file in *.yaml; do
-            if [ "$file" != "geolocation-!cn.yaml" ]; then
-              new_name="${file%.yaml}_domain.yaml"
-              mv -vf "$file" "$new_name"
-              echo "已重命名: $file → $new_name"
+          # 只处理您明确列出的文件
+          TARGET_FILES=(
+            "cn.yaml"
+            "google.yaml"
+            "spotify.yaml"
+            "telegram.yaml"
+            "youtube.yaml"
+          )
+          
+          for file in "${TARGET_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              # 提取文件名（不含扩展名）
+              base_name="${file%.yaml}"
+              # 添加_domain后缀
+              mv -v "$file" "${base_name}_domain.yaml"
             else
-              echo "保留原始文件: $file"
+              echo "警告: 缺少文件 - $file"
             fi
           done
 
