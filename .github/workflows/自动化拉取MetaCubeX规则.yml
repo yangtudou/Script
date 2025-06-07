@@ -24,7 +24,7 @@ jobs:
           ref: meta
           path: meta-rules-dat
       
-      - name: 创建目标目录（如不存在）
+      - name: 创建目标目录
         run: |
           mkdir -p rule_sync_temp/ruleProviders/Stash
           
@@ -34,14 +34,15 @@ jobs:
           TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
           
           # 使用rsync替代cp，确保目录结构和文件属性一致
-          rsync -av --exclude="*" \
+          rsync -av \
+            --exclude="*" \
             --include="geolocation-!cn.yaml" \
             --include="cn.yaml" \
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
           # 重命名文件并添加时间戳
-          mv rule_sync_temp/ruleProviders/Stash/cn.yaml \
-             rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
+          # mv rule_sync_temp/ruleProviders/Stash/cn.yaml \
+          #    rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
           
           # 添加时间戳到文件内容（可选）
           echo "# Updated by GitHub Actions at $TIMESTAMP" >> \
