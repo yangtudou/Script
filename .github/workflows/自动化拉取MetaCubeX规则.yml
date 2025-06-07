@@ -34,10 +34,10 @@ jobs:
           TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
           
           # 使用rsync替代cp，确保目录结构和文件属性一致
-          rsync -av \
-            --exclude='*'' \
-            --include='geolocation-!cn.yaml' \
-            --include='cn.yaml' \
+          rsync -av --exclude="*" \
+            --include="geolocation-!cn.yaml" \
+            --include="cn.yaml" \
+            --include="google.yaml" \
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
           # 重命名文件并添加时间戳
@@ -85,6 +85,22 @@ jobs:
             fi
           fi
 
+      - name: 状态通知（可选）
+        if: ${{ always() && github.event_name != 'schedule' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const hasChanges = '${{ steps.commit-changes.outputs.has_changes }}' === 'true';
+            const message = hasChanges 
+              ? '规则已成功更新✅' 
+              : '规则未变更，本次无更新🔄';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 规则同步结果\n\n${message}`
+            });
 
 
 
