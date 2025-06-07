@@ -1,5 +1,3 @@
-# 最后拉取时间: 北京时间 2025-06-07 10:29
-# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo
 payload:
     - +.cdn-telegram.org
     - +.comments.app
