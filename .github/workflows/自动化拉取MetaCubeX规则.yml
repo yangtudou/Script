@@ -2,11 +2,10 @@ name: 自动化拉取 MetaCubeX 规则
 on:
   schedule:
     - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
-  workflow_dispatch: # 允许手动触发
+  workflow_dispatch:        # 允许手动触发
 
 permissions:
   contents: write
-  # actions: write
 
 jobs:
   rule_sync:
@@ -15,7 +14,8 @@ jobs:
       - name: 检出当前仓库
         uses: actions/checkout@v4
         with:
-          path: rule_sync_temp  # 避免文件冲突
+          path: rule_sync_temp
+          fetch-depth: 0  # 获取完整历史记录，便于差异比较
 
       - name: 检出 MetaCubeX/meta-rules-dat
         uses: actions/checkout@v4
@@ -23,26 +23,85 @@ jobs:
           repository: MetaCubeX/meta-rules-dat
           ref: meta
           path: meta-rules-dat
-          # token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: 拉取规则文件
+      - name: 创建目标目录（如不存在）
         run: |
-          cp -f meta-rules-dat/geo/geosite/geolocation-!cn.yaml rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
-      
-      - name: Commit changes
+          mkdir -p rule_sync_temp/ruleProviders/Stash
+          
+      - name: 拉取&处理DOMAIN规则文件
+        run: |
+          # 添加时间戳到文件名，便于追踪更新历史
+          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          
+          # 使用rsync替代cp，确保目录结构和文件属性一致
+          rsync -av --exclude="*" \
+            --include="geolocation-!cn.yaml" \
+            --include="cn.yaml" \
+            meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
+          
+          # 重命名文件并添加时间戳
+          mv rule_sync_temp/ruleProviders/Stash/cn.yaml \
+             rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
+          
+          # 添加时间戳到文件内容（可选）
+          echo "# Updated by GitHub Actions at $TIMESTAMP" >> \
+            rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
+
+      - name: 提交变更
+        id: commit-changes
         run: |
           cd rule_sync_temp
-          git config --local user.name "GitHub Action"
-          git config --local user.email "action@github.com"
-
-          if [[ $(git status --porcelain) ]]; then
-            git add .
-            git commit -m "test Add public repo content"
-            git push origin main
-            echo "➕ 变更已提交"
-          else
+          
+          # 设置Git身份
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
+          
+          # 仅当有变更时提交
+          git add ruleProviders/Stash
+          
+          if git diff-index --quiet HEAD --; then
             echo "🟢 无变更可提交"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "➕ 检测到变更，准备提交"
+            git commit -m "自动更新规则 ($(date +'%Y-%m-%d %H:%M:%S'))"
+            
+            # 重试机制：先拉取最新变更再推送
+            for i in {1..3}; do
+              if git pull --rebase origin main && git push origin main; then
+                echo "✅ 变更已成功提交"
+                echo "has_changes=true" >> $GITHUB_OUTPUT
+                break
+              else
+                echo "⚠️ 推送失败，重试中 ($i/3)..."
+                sleep 2
+              fi
+            done
+            
+            if [ $? -ne 0 ]; then
+              echo "❌ 错误：提交失败"
+              exit 1
+            fi
           fi
+
+      - name: 状态通知（可选）
+        if: ${{ always() && github.event_name != 'schedule' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const hasChanges = '${{ steps.commit-changes.outputs.has_changes }}' === 'true';
+            const message = hasChanges 
+              ? '规则已成功更新✅' 
+              : '规则未变更，本次无更新🔄';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 规则同步结果\n\n${message}`
+            });
+
+
 
 
   # rule_sync:
