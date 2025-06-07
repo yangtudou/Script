@@ -4,9 +4,9 @@ on:
     - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
   workflow_dispatch: # 允许手动触发
 
-# permissions:
-#   contents: write
-#   # actions: write
+permissions:
+  contents: write
+  # actions: write
 
 jobs:
   rule_sync:
@@ -43,8 +43,6 @@ jobs:
           else
             echo "🟢 无变更可提交"
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用token推送
 
 
   # rule_sync:
