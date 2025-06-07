@@ -46,7 +46,8 @@ jobs:
           #    rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
           
           # 添加时间戳到文件内容（可选）
-          sed -i "1i\# Updated by GitHub Actions at 北京时间 $BEIJIN_TIME" rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
+          sed -i '1i\# 最后拉取时间: 北京时间 $BEIJIN_TIME' 'rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml'
+            
 
       - name: 提交变更
         id: commit-changes
