@@ -42,16 +42,17 @@ jobs:
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
           # 重命名文件并添加时间戳
-          # mv rule_sync_temp/ruleProviders/Stash/cn.yaml \
-          #    rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
+          mv -f rule_sync_temp/ruleProviders/Stash/cn.yaml \
+             rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
           
           # 添加时间戳到文件内容（可选）
-          echo "# Updated by GitHub Actions at $TIMESTAMP" >> \
-            rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
+          # echo "# Updated by GitHub Actions at $TIMESTAMP" >> \
+          #   rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
 
       - name: 提交变更
         id: commit-changes
         run: |
+          BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
           cd rule_sync_temp
           
           # 设置Git身份
@@ -66,7 +67,7 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "➕ 检测到变更，准备提交"
-            git commit -m "自动更新规则 ($(date +'%Y-%m-%d %H:%M:%S'))"
+            git commit -m "自动更新规则 $BEIJIN_TIME"
             
             # 重试机制：先拉取最新变更再推送
             for i in {1..3}; do
