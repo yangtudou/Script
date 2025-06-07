@@ -35,19 +35,29 @@ jobs:
           
           # 使用rsync替代cp，确保目录结构和文件属性一致
           rsync -av \
-            --include="geolocation-!cn.yaml" \
             --include="cn.yaml" \
+            --include="geolocation-!cn.yaml" \
             --include="google.yaml" \
+            --include="spotify.yaml" \
+            --include="telegram.yaml" \
+            --include="youtube.yaml" \
+            --include="youtube.yaml" \
             --exclude="*" \
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
-          # 重命名文件并添加时间戳
-          mv -f rule_sync_temp/ruleProviders/Stash/cn.yaml \
-             rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
-          
-          # 添加时间戳到文件内容（可选）
-          # echo "# Updated by GitHub Actions at $TIMESTAMP" >> \
-          #   rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
+          # 进入目标目录处理
+          cd rule_sync_temp/ruleProviders/Stash
+
+          # 批量重命名（排除geolocation-!cn.yaml）
+          for file in *.yaml; do
+            if [ "$file" != "geolocation-!cn.yaml" ]; then
+              new_name="${file%.yaml}_domain.yaml"
+              mv -vf "$file" "$new_name"
+              echo "已重命名: $file → $new_name"
+            else
+              echo "保留原始文件: $file"
+            fi
+          done
 
       - name: 提交变更
         id: commit-changes
