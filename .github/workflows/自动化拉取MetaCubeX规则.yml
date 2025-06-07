@@ -32,12 +32,13 @@ jobs:
         run: |
           # 添加时间戳到文件名，便于追踪更新历史
           TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
           
           # 使用rsync替代cp，确保目录结构和文件属性一致
           rsync -av \
-            --exclude="*" \
-            --include="geolocation-!cn.yaml" \
-            --include="cn.yaml" \
+            --exclude='*'' \
+            --include='geolocation-!cn.yaml' \
+            --include='cn.yaml' \
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
           # 重命名文件并添加时间戳
@@ -45,8 +46,7 @@ jobs:
           #    rule_sync_temp/ruleProviders/Stash/cn_domain.yaml
           
           # 添加时间戳到文件内容（可选）
-          echo "# Updated by GitHub Actions at $TIMESTAMP" >> \
-            rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
+          sed -i "1i\# Updated by GitHub Actions at 北京时间 $BEIJIN_TIME" rule_sync_temp/ruleProviders/Stash/geolocation-!cn.yaml
 
       - name: 提交变更
         id: commit-changes
@@ -85,22 +85,6 @@ jobs:
             fi
           fi
 
-      - name: 状态通知（可选）
-        if: ${{ always() && github.event_name != 'schedule' }}
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const hasChanges = '${{ steps.commit-changes.outputs.has_changes }}' === 'true';
-            const message = hasChanges 
-              ? '规则已成功更新✅' 
-              : '规则未变更，本次无更新🔄';
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 规则同步结果\n\n${message}`
-            });
 
 
 
