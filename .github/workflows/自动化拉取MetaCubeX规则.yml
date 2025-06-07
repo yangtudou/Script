@@ -41,7 +41,7 @@ jobs:
             --include="spotify.yaml" \
             --include="telegram.yaml" \
             --include="youtube.yaml" \
-            --include="youtube.yaml" \
+            --include="github.yaml" \
             --exclude="*" \
             meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
           
@@ -55,6 +55,7 @@ jobs:
             "spotify.yaml"
             "telegram.yaml"
             "youtube.yaml"
+            "github.yaml"
           )
           
           for file in "${TARGET_FILES[@]}"; do
