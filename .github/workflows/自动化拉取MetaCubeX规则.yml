@@ -32,7 +32,6 @@ jobs:
         run: |
           # 添加时间戳到文件名，便于追踪更新历史
           TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-          BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
           
           # 使用rsync替代cp，确保目录结构和文件属性一致
           rsync -av \
