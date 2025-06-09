@@ -30,6 +30,7 @@ jobs:
           
       - name: 拉取&处理 a-dove-is-dumb 规则文件
         run: |
+          set -x  # 开启详细日志
           rsync -av \
             --include="clash.yaml" \
             --exclude="*" \
@@ -47,7 +48,7 @@ jobs:
       - name: 提交变更
         id: commit-changes
         run: |
-          set -x  # 开启详细日志
+          # set -x  # 开启详细日志
           BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
           cd rule_sync_temp
           
