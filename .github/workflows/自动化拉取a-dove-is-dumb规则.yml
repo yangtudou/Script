@@ -47,6 +47,7 @@ jobs:
       - name: 提交变更
         id: commit-changes
         run: |
+          set -x  # 开启详细日志
           BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
           cd rule_sync_temp
           
@@ -80,3 +81,4 @@ jobs:
               echo "❌ 错误：提交失败"
               exit 1
             fi
+          fi
