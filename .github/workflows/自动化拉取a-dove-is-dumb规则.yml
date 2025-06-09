@@ -43,7 +43,7 @@ jobs:
           mv -vf clash.yaml a-dove-is-dumb.yaml
 
           # 删掉行首 DOMAIN, 部分
-          sed -i 's/^DOMAIN,//' a-dove-is-dumb.yaml
+          sed -i 's/DOMAIN,//g' a-dove-is-dumb.yaml
 
       - name: 提交变更
         id: commit-changes
