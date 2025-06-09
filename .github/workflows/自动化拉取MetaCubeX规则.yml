@@ -126,7 +126,7 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "➕ 检测到变更，准备提交"
-            git commit -m "自动更新规则 $BEIJIN_TIME UTC+8"
+            git commit -m "Update From MetaCubeX at $BEIJIN_TIME(UTC+8)"
             
             # 重试机制：先拉取最新变更再推送
             for i in {1..3}; do
