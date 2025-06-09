@@ -22,7 +22,7 @@ jobs:
         with:
           repository: ignaciocastro/a-dove-is-dumb
           ref: main
-          path: main
+          path: a-dove-is-dumb
       
       - name: 创建目标目录
         run: |
@@ -33,7 +33,7 @@ jobs:
           rsync -av \
             --include="clash.yaml" \
             --exclude="*" \
-            main/ rule_sync_temp/ruleProviders/Stash/
+            a-dove-is-dumb/ rule_sync_temp/ruleProviders/Stash/
           
           # 进入目标目录处理
           cd rule_sync_temp/ruleProviders/Stash
