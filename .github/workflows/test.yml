@@ -32,35 +32,35 @@ jobs:
         run: |
           # ==============================================
           # GitHub Actions 专用文件处理脚本
-          # 配置部分 - 清晰定义所有规则文件映射
           # ==============================================
           
           # 文件处理配置数组
           declare -a FILE_MAPPING=(
-            # 格式: 源文件 | 目标文件 | 规则类型 | 描述
+            # 格式: 源文件位置（需包含文件名称） | 目标文件名称（包含后缀） | 规则类型 | 头部描述
+            # 格式: src=$1 | dest=$2 | type=$3 | description=$4
             # -------------------------------
-            # 域名规则 (geosite)
+            # DOMAIN 规则 (geosite)
+            "meta-rules-dat/geo/geosite/geolocation-!cn.yaml geolocation-!cn.yaml domain '非中国域名规则'" # 不用增加 "_domain" 后缀
             "meta-rules-dat/geo/geosite/cn.yaml cn_domain.yaml domain '中国域名规则'"
-            "meta-rules-dat/geo/geosite/geolocation-!cn.yaml geolocation-!cn_domain.yaml domain '非中国定位域名规则'"
-            "meta-rules-dat/geo/geosite/google.yaml google_domain.yaml domain 'Google服务域名规则'"
-            "meta-rules-dat/geo/geosite/spotify.yaml spotify_domain.yaml domain 'Spotify域名规则'"
-            "meta-rules-dat/geo/geosite/telegram.yaml telegram_domain.yaml domain 'Telegram域名规则'"
-            "meta-rules-dat/geo/geosite/youtube.yaml youtube_domain.yaml domain 'YouTube域名规则'"
-            "meta-rules-dat/geo/geosite/github.yaml github_domain.yaml domain 'GitHub域名规则'"
-            "meta-rules-dat/geo/geosite/apple.yaml apple_domain.yaml domain 'Apple服务域名规则'"
-            "meta-rules-dat/geo/geosite/meta.yaml meta_domain.yaml domain 'Meta服务域名规则'"
-            "meta-rules-dat/geo/geosite/cloudflare.yaml cloudflare_domain.yaml domain 'Cloudflare域名规则'"
-            "meta-rules-dat/geo/geosite/microsoft.yaml microsoft_domain.yaml domain 'Microsoft域名规则'"
+            "meta-rules-dat/geo/geosite/google.yaml google_domain.yaml domain 'Google 服务域名规则'"
+            "meta-rules-dat/geo/geosite/spotify.yaml spotify_domain.yaml domain 'Spotify 域名规则'"
+            "meta-rules-dat/geo/geosite/telegram.yaml telegram_domain.yaml domain 'Telegram 域名规则'"
+            "meta-rules-dat/geo/geosite/youtube.yaml youtube_domain.yaml domain 'YouTube 域名规则'"
+            "meta-rules-dat/geo/geosite/github.yaml github_domain.yaml domain 'GitHub 域名规则'"
+            "meta-rules-dat/geo/geosite/apple.yaml apple_domain.yaml domain 'Apple 服务域名规则'"
+            "meta-rules-dat/geo/geosite/meta.yaml meta_domain.yaml domain 'Meta 服务域名规则'"
+            "meta-rules-dat/geo/geosite/cloudflare.yaml cloudflare_domain.yaml domain 'Cloudflare 域名规则'"
+            "meta-rules-dat/geo/geosite/microsoft.yaml microsoft_domain.yaml domain 'Microsoft 域名规则'"
             "meta-rules-dat/geo/geosite/private.yaml private_domain.yaml domain '私有网络域名规则'"
             "meta-rules-dat/geo/geosite/speedtest.yaml speedtest_domain.yaml domain '测速服务域名规则'"
             
             # -------------------------------
-            # IP规则 (geoip)
-            "meta-rules-dat/geo/geoip/cloudflare.yaml cloudflare_ip.yaml ip 'Cloudflare IP规则'"
-            "meta-rules-dat/geo/geoip/cn.yaml cn_ip.yaml ip '中国IP规则'"
-            "meta-rules-dat/geo/geoip/google.yaml google_ip.yaml ip 'Google服务IP规则'"
-            "meta-rules-dat/geo/geoip/private.yaml private_ip.yaml ip '私有网络IP规则'"
-            "meta-rules-dat/geo/geoip/telegram.yaml telegram_ip.yaml ip 'Telegram IP规则'"
+            # IP 规则 (geoip)
+            "meta-rules-dat/geo/geoip/cloudflare.yaml cloudflare_ip.yaml ip 'Cloudflare IP 规则'"
+            "meta-rules-dat/geo/geoip/cn.yaml cn_ip.yaml ip '中国 IP 规则'"
+            "meta-rules-dat/geo/geoip/google.yaml google_ip.yaml ip 'Google 服务 IP 规则'"
+            "meta-rules-dat/geo/geoip/private.yaml private_ip.yaml ip '私有网络 IP 规则'"
+            "meta-rules-dat/geo/geoip/telegram.yaml telegram_ip.yaml ip 'Telegram IP 规则'"
           )
           
           # 文件处理函数
@@ -81,13 +81,13 @@ jobs:
             
             # 创建目标文件并添加头部信息
             {
-              echo "# ========================================="
-              echo "# 来源: MetaCubeX/meta-rules-dat"
+              echo "# ============================================================="
+              echo "# 来源: https://github.com/MetaCubeX/meta-rules-dat/tree/meta"
               echo "# 原始文件: $(basename "$src")"
               echo "# 描述: $description"
               echo "# 类型: $type"
               echo "# 更新时间: $BEIJING_TIME (UTC+8)"
-              echo "# ========================================="
+              echo "# ============================================================="
               echo ""
               cat "$src"
             } > "rule_sync_temp/ruleProviders/Stash/$dest"
