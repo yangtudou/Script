@@ -1,7 +1,7 @@
 name: 自动化拉取 MetaCubeX 规则
 on:
-  schedule:
-    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
+  # schedule:
+    # - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
   workflow_dispatch:        # 允许手动触发
 
 permissions:
