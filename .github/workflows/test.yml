@@ -106,7 +106,7 @@ jobs:
             eval "args=($mapping)"
             
             # 调用处理函数
-            process_rule_file "${args[0]}" "${args[1]}" "${args[2]}" "${args[3]}"
+            process_rule_file "${args[0]}" "${args[1]}" "${args[2]}" "${args[3]}" "${args[4]}"
           done
           
           echo "::group::文件处理结果"
