@@ -24,6 +24,13 @@ jobs:
           repository: MetaCubeX/meta-rules-dat
           ref: meta
           path: meta-rules-dat
+
+      - name: 检出 a-dove-is-dumb 规则
+        uses: actions/checkout@v4
+        with:
+          repository: ignaciocastro/a-dove-is-dumb
+          ref: main
+          path: a-dove-is-dumb
           
       - name: 准备目标目录
         run: mkdir -p rule_sync_temp/ruleProviders/Stash
@@ -64,6 +71,8 @@ jobs:
             "meta-rules-dat/geo/geoip/telegram.yaml telegram_ip.yaml MetaCubeX ip 'Telegram IP 规则'"
             # ------------------------------- MetaCubeX 部分 End -------------------------------
 
+            # a-dove-is-dumb
+            "a-dove-is-dumb/clash.yaml a-dove-is-dumb.yaml domain a-dove-is-dumb '通用规则'"
             
           )
           
@@ -94,7 +103,12 @@ jobs:
               echo "# 更新时间: $BEIJING_TIME (UTC+8)"
               echo "# ============================================================="
               echo ""
-              cat "$src"
+              if [[ "$source" == "a-dove-is-dumb" ]]; then
+                sed -i 's/DOMAIN,//g' "$src"
+                cat "$src"
+              else
+                cat "$src"
+              fi
             } > "rule_sync_temp/ruleProviders/Stash/$dest"
             
             echo "✅ 处理完成: $dest"
