@@ -1,3 +1,11 @@
+# =========================================
+# 来源: MetaCubeX/meta-rules-dat
+# 原始文件: spotify.yaml
+# 描述: Spotify域名规则
+# 类型: domain
+# 更新时间: 2025-06-11 14:47 (UTC+8)
+# =========================================
+
 payload:
     - audio-ak-spotify-com.akamaized.net
     - audio4-ak-spotify-com.akamaized.net
