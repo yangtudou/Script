@@ -31,6 +31,13 @@ jobs:
           repository: ignaciocastro/a-dove-is-dumb
           ref: main
           path: a-dove-is-dumb
+
+      - name: 检出秋风广告规则
+        uses: actions/checkout@v4
+        with:
+          repository: TG-Twilight/AWAvenue-Ads-Rule
+          ref: main
+          path: AWAvenue-Ads-Rule
           
       - name: 准备目标目录
         run: mkdir -p rule_sync_temp/ruleProviders/Stash
@@ -73,7 +80,8 @@ jobs:
 
             # a-dove-is-dumb
             "a-dove-is-dumb/clash.yaml a-dove-is-dumb.yaml domain a-dove-is-dumb '通用规则'"
-            
+            # 秋风广告规则
+            "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml AWAvenue-Ads-Rule-Clash.yaml domain AWAvenue-Ads-Rule-Clash '去广告规则'"
           )
           
           # 文件处理函数
