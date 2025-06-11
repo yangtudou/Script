@@ -1,7 +1,7 @@
-name: Rule Sync Test
+name: Rule Sync
 on:
-  # schedule:
-  #   - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
+  schedule:
+    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
   workflow_dispatch:        # 允许手动触发
 
 permissions:
@@ -104,7 +104,7 @@ jobs:
             # 创建目标文件并添加头部信息
             {
               echo "# ============================================================="
-              echo "# 来源: $source"
+              echo "# 来源: $src"
               echo "# 原始文件: $(basename "$src")"
               echo "# 描述: $description"
               echo "# 类型: $type"
