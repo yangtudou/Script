@@ -3,7 +3,7 @@
 # 原始文件: geolocation-!cn.yaml
 # 描述: 非中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-06-12 10:48 (UTC+8)
+# 更新时间: 2025-06-13 10:50 (UTC+8)
 # =============================================================
 
 payload:
@@ -7528,6 +7528,7 @@ payload:
     - +.waigaobu.com
     - +.wahas.com
     - +.waffle1999.com
+    - +.cpu-monkey.com
     - +.cpz.to
     - +.cq99.us
     - +.cqcorea.com
@@ -7864,8 +7865,8 @@ payload:
     - +.czechstreets.com
     - +.czechvr.com
     - +.czechwifeswap.com
-    - +.cztv117.shop
     - +.k-doujin.net
+    - +.d-fukyu.com
     - +.d-trust.net
     - +.d-upp.com
     - +.d.cash
@@ -14279,7 +14280,6 @@ payload:
     - +.hwadzan.tw
     - +.tibetheritagefund.org
     - +.hwgo.com
-    - +.hwinfo.com
     - +.tibethaus.com
     - +.tibetgermany.de
     - +.hwslabs.com
@@ -16172,7 +16172,7 @@ payload:
     - +.jwt.ms
     - +.miaomwu.com
     - +.12joursdecadeauxdeitunes.com
-    - +.d-fukyu.com
+    - +.cztv117.shop
     - +.k8s.io
     - +.k9vidz.com
     - +.ka-wai.com
