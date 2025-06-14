@@ -1,0 +1,253 @@
+mode: rule #!replace
+log-level: info #!replace
+script: #!replace
+  shortcuts:
+    youtube-quic: network == 'udp' and dst_port == 443 and match_geosite('youtube')
+    instagram-quic: network == 'udp' and dst_port == 443 and match_geosite('instagram')
+dns: #!replace
+  default-nameserver:
+    - 223.5.5.5
+    - 114.114.114.114
+    - system
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  skip-cert-verify: null
+  nameserver-policy: null
+  fake-ip-filter:
+    - +.lan
+    - +.local
+    - +.msftconnecttest.com
+    - localhost.work.weixin.qq.com
+    - '*.msftncsi.com'
+    - '*.msftconnecttest.com'
+proxy-groups: #!replace
+  - name: 选择代理
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 台湾自动
+      - 日本自动
+      - 新加坡自动
+      - 美国自动
+      - 手动选择
+  - name: Telegram
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 手动选择
+  - name: Spotify
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Spotify.png
+    type: select
+    lazy: true
+    proxies:
+      - DIRECT
+      - 香港自动
+      - 日本自动
+      - 美国自动
+  - name: YouTube
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 日本自动
+      - 美国自动
+  - name: Google
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 日本自动
+      - 美国自动
+  - name: 香港自动
+    filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png
+    interval: 600
+    lazy: true
+    tolerance: 50
+    type: url-test
+    include-all: true
+    hidden: null
+    use: null
+  - name: 台湾自动
+    filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png
+    interval: 600
+    lazy: true
+    tolerance: 50
+    type: url-test
+    include-all: true
+    hidden: null
+  - name: 日本自动
+    filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png
+    interval: 600
+    lazy: true
+    tolerance: 50
+    type: url-test
+    include-all: true
+    hidden: null
+  - name: 新加坡自动
+    filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png
+    interval: 600
+    lazy: true
+    tolerance: 50
+    type: url-test
+    include-all: true
+    hidden: null
+  - name: 美国自动
+    filter: "(?i)(美|🇺🇲|us|states|america|硅)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png
+    interval: 600
+    lazy: true
+    tolerance: 50
+    type: url-test
+    include-all: true
+    hidden: null
+  - filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
+    include-all: true
+    lazy: true
+    name: 其他区域
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AmyTelecom.png
+  - name: 手动选择
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png
+    interval: 600
+    lazy: true
+    type: select
+    include-all: null
+    proxies:
+      - DIRECT
+      - 其他区域
+  - name: 默认
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
+    type: select
+    lazy: true
+    proxies:
+      - DIRECT
+      - 选择代理
+rules: #!replace
+  - RULE-SET,秋风广告规则,REJECT-DROP,no-track
+  - SCRIPT,instagram-quic,REJECT,no-track
+  - SCRIPT,youtube-quic,REJECT,no-track
+  - RULE-SET,private_ip,DIRECT,no-resolve
+  - RULE-SET,private_domain,DIRECT
+  - RULE-SET,github_domain,香港自动
+  - RULE-SET,microsoft_domain,DIRECT
+  - RULE-SET,speedtest_domain,DIRECT
+  - RULE-SET,meta_domain,香港自动
+  - RULE-SET,cloudflare_domain,香港自动
+  - RULE-SET,spotify_domain,Spotify
+  - RULE-SET,telegram_domain,Telegram
+  - RULE-SET,youtube_domain,YouTube
+  - RULE-SET,google_domain,Google
+  - RULE-SET,apple_domain,DIRECT
+  - DOMAIN-SUFFIX,iphone-ld.apple.com,DIRECT
+  - DOMAIN-SUFFIX,lcdn-locator.apple.com,DIRECT
+  - DOMAIN-SUFFIX,lcdn-registration.apple.com,DIRECT
+  - DOMAIN-SUFFIX,push.apple.com,DIRECT
+  - RULE-SET,geolocation-!cn,选择代理
+  - RULE-SET,google_ip,Google
+  - RULE-SET,telegram_ip,Telegram
+  - RULE-SET,cn_domain,DIRECT
+  - RULE-SET,cn_ip,DIRECT
+  - MATCH,默认
+rule-providers: #!replace
+  cn_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/cn_domain.yaml
+  github_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/github_domain.yaml
+  youtube_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/youtube_domain.yaml
+  google_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/google_domain.yaml
+  telegram_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/telegram_domain.yaml
+  spotify_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/spotify_domain.yaml
+    # behavior: ipcidr
+  private_ip:
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/private_ip.yaml
+  cn_ip:
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/cn_ip.yaml
+  google_ip:
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/google_ip.yaml
+  telegram_ip:
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/telegram_ip.yaml
+  geolocation-!cn:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/geolocation-!cn.yaml
+  秋风广告规则:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/AWAvenue-Ads-Rule-Clash.yaml
+  apple_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/apple_domain.yaml
+  cloudflare_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/cloudflare_domain.yaml
+  meta_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/meta_domain.yaml
+  microsoft_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/microsoft_domain.yaml
+  private_domain:
+    behavior: "domain"
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/private_domain.yaml
+    format: yaml
+  speedtest_domain:
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/speedtest_domain.yaml
