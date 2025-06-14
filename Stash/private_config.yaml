@@ -133,7 +133,7 @@ proxy-groups: #!replace
     proxies:
       - DIRECT
       - 选择代理
-rules: #!replace
+rules:
   - RULE-SET,秋风广告规则,REJECT-DROP,no-track
   - SCRIPT,instagram-quic,REJECT,no-track
   - SCRIPT,youtube-quic,REJECT,no-track
@@ -159,7 +159,7 @@ rules: #!replace
   - RULE-SET,cn_domain,DIRECT
   - RULE-SET,cn_ip,DIRECT
   - MATCH,默认
-rule-providers: #!replace
+rule-providers:
   cn_domain:
     behavior: domain
     format: yaml
