@@ -1,0 +1,85 @@
+name: 自动化拉取 a-dove-is-dumb 规则
+on:
+  # schedule:
+    # - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rule_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出当前仓库
+        uses: actions/checkout@v4
+        with:
+          path: rule_sync_temp
+          fetch-depth: 0  # 获取完整历史记录，便于差异比
+
+      - name: 检出 ignaciocastro/a-dove-is-dumb
+        uses: actions/checkout@v4
+        with:
+          repository: ignaciocastro/a-dove-is-dumb
+          ref: main
+          path: a-dove-is-dumb
+      
+      - name: 创建目标目录
+        run: |
+          mkdir -p rule_sync_temp/ruleProviders/Stash
+          
+      - name: 拉取&处理 a-dove-is-dumb 规则文件
+        run: |
+          set -x  # 开启详细日志
+          rsync -av \
+            --include="clash.yaml" \
+            --exclude="*" \
+            a-dove-is-dumb/ rule_sync_temp/ruleProviders/Stash/
+          
+          # 进入目标目录处理
+          cd rule_sync_temp/ruleProviders/Stash
+
+          # 改个名字
+          mv -vf clash.yaml a-dove-is-dumb.yaml
+
+          # 删掉行首 DOMAIN, 部分
+          sed -i 's/DOMAIN,//g' a-dove-is-dumb.yaml
+
+      - name: 提交变更
+        id: commit-changes
+        run: |
+          # set -x  # 开启详细日志
+          BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+          cd rule_sync_temp
+          
+          # 设置Git身份
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
+          
+          # 仅当有变更时提交
+          git add ruleProviders/Stash
+          
+          if git diff-index --quiet HEAD --; then
+            echo "🟢 无变更可提交"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "➕ 检测到变更，准备提交"
+            git commit -m "Update From ignaciocastro at $BEIJIN_TIME(UTC+8)"
+            
+            # 重试机制：先拉取最新变更再推送
+            for i in {1..3}; do
+              if git pull --rebase origin main && git push origin main; then
+                echo "✅ 变更已成功提交"
+                echo "has_changes=true" >> $GITHUB_OUTPUT
+                break
+              else
+                echo "⚠️ 推送失败，重试中 ($i/3)..."
+                sleep 2
+              fi
+            done
+            
+            if [ $? -ne 0 ]; then
+              echo "❌ 错误：提交失败"
+              exit 1
+            fi
+          fi

@@ -1,0 +1,293 @@
+name: 自动化拉取 MetaCubeX 规则
+on:
+  # schedule:
+    # - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
+  workflow_dispatch:        # 允许手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  rule_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出当前仓库
+        uses: actions/checkout@v4
+        with:
+          path: rule_sync_temp
+          fetch-depth: 0  # 获取完整历史记录，便于差异比较
+
+      - name: 检出 MetaCubeX/meta-rules-dat
+        uses: actions/checkout@v4
+        with:
+          repository: MetaCubeX/meta-rules-dat
+          ref: meta
+          path: meta-rules-dat
+      
+      - name: 创建目标目录
+        run: |
+          mkdir -p rule_sync_temp/ruleProviders/Stash
+          
+      - name: 拉取&处理DOMAIN规则文件
+        run: |
+          # 使用rsync替代cp，确保目录结构和文件属性一致
+          rsync -av \
+            --include="cn.yaml" \
+            --include="geolocation-!cn.yaml" \
+            --include="google.yaml" \
+            --include="spotify.yaml" \
+            --include="telegram.yaml" \
+            --include="youtube.yaml" \
+            --include="github.yaml" \
+            --include="apple.yaml" \
+            --include="meta.yaml" \
+            --include="cloudflare.yaml" \
+            --include="microsoft.yaml" \
+            --include="private.yaml" \
+            --include="speedtest.yaml" \
+            --exclude="*" \
+            meta-rules-dat/geo/geosite/ rule_sync_temp/ruleProviders/Stash/
+          
+          # 进入目标目录处理
+          cd rule_sync_temp/ruleProviders/Stash
+
+          # 只处理您明确列出的文件
+          TARGET_FILES=(
+            "cn.yaml"
+            "google.yaml"
+            "spotify.yaml"
+            "telegram.yaml"
+            "youtube.yaml"
+            "github.yaml"
+            "apple.yaml"
+            "meta.yaml" 
+            "cloudflare.yaml"
+            "microsoft.yaml"
+            "private.yaml"
+            "speedtest.yaml"
+          )
+          
+          for file in "${TARGET_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              # 提取文件名（不含扩展名）
+              base_name="${file%.yaml}"
+              # 添加_domain后缀
+              mv -vf "$file" "${base_name}_domain.yaml"
+            else
+              echo "警告: 缺少文件 - $file"
+            fi
+          done
+
+      - name: 拉取&处理ipcider规则文件
+        run: |
+          rsync -av \
+            --include="cloudflare.yaml" \
+            --include="cn.yaml" \
+            --include="google.yaml" \
+            --include="private.yaml" \
+            --include="telegram.yaml" \
+            --exclude="*" \
+            meta-rules-dat/geo/geoip/ rule_sync_temp/ruleProviders/Stash/
+          
+          cd rule_sync_temp/ruleProviders/Stash
+
+          TARGET_FILES=(
+            "cloudflare.yaml"
+            "cn.yaml"
+            "google.yaml"
+            "private.yaml"
+            "telegram.yaml"
+          )
+          
+          for file in "${TARGET_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              base_name="${file%.yaml}"
+              mv -vf "$file" "${base_name}_ip.yaml"
+            else
+              echo "警告: 缺少文件 - $file"
+            fi
+          done
+
+      - name: 提交变更
+        id: commit-changes
+        run: |
+          BEIJIN_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+          cd rule_sync_temp
+          
+          # 设置Git身份
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
+          
+          # 仅当有变更时提交
+          git add ruleProviders/Stash
+          
+          if git diff-index --quiet HEAD --; then
+            echo "🟢 无变更可提交"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "➕ 检测到变更，准备提交"
+            git commit -m "Update From MetaCubeX at $BEIJIN_TIME(UTC+8)"
+            
+            # 重试机制：先拉取最新变更再推送
+            for i in {1..3}; do
+              if git pull --rebase origin main && git push origin main; then
+                echo "✅ 变更已成功提交"
+                echo "has_changes=true" >> $GITHUB_OUTPUT
+                break
+              else
+                echo "⚠️ 推送失败，重试中 ($i/3)..."
+                sleep 2
+              fi
+            done
+            
+            if [ $? -ne 0 ]; then
+              echo "❌ 错误：提交失败"
+              exit 1
+            fi
+          fi
+
+
+
+
+
+  # rule_sync:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       rules:
+  #         - name: 'a_dobe_dumb'
+  #           url: 'https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/list.txt'
+  #           format: 'list'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed -n -e '/# Last update:/p' -e '/^0\.0\.0\.0/s/0\.0\.0\.0 //p' "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+
+  #         - name: 'AWAvenue_Ads_Rule_Clash'
+  #           url: 'https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/TG-Twilight/AWAvenue-Ads-Rule" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+          
+  #         - name: 'telegram_domain'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+ 
+  #         - name: 'telegram_ip'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+
+  #         - name: 'google_domain'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+ 
+  #         - name: 'google_ip'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+
+  #         - name: 'spotify_domain'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+
+  #         - name: 'cn_domain'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+          
+  #         - name: 'cn_ip'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+          
+  #         - name: 'geolocation-!cn'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+          
+  #         - name: 'youtube_domain'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+          
+  #         - name: 'private_ip'
+  #           url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.yaml'
+  #           format: 'yaml'
+  #           processor: |
+  #             CURRENT_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+  #             sed "1i\# 原始仓库: https://github.com/MetaCubeX/meta-rules-dat/tree/meta/geo" "$TEMP_FILE" > "$PROCESSED_FILE"
+  #             sed -i "1i\# 最后拉取时间: 北京时间 $CURRENT_TIME" "$PROCESSED_FILE"
+  #     max-parallel: 1 # 每次只运行一个矩阵任务 
+  #     fail-fast: false # 允许其他任失败也运行
+  
+  #   steps:
+  #     - name: 检出仓库
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: yangtudou/Script
+  #         path: rules_temp
+  #         fetch-depth: 0
+
+  #     - name: 处理规则文件
+  #       env:
+  #         TEMP_FILE: "temp_${{ matrix.rules.name }}"
+  #         PROCESSED_FILE: "processed_${{ matrix.rules.name }}"
+  #       run: |
+  #         # 下载文件 保存为以 temp_ 为前缀的临时文件
+  #         curl -fsSL -o "$TEMP_FILE" "${{ matrix.rules.url }}"
+
+  #         # 执行处理器命令 并且更名为 processed_ 前缀的临时文件
+  #         ${{ matrix.rules.processor }}
+
+  #         # 移动最终文件 直接覆盖
+  #         mv -f "$PROCESSED_FILE" "rules_temp/ruleProviders/Stash/${{ matrix.rules.name }}.${{ matrix.rules.format }}"
+      
+  #     - name: 提交变更
+  #       run: |
+  #         cd rules_temp/ruleProviders/Stash
+
+  #         git config --local user.name "GitHub Action"
+  #         git config --local user.email "action@github.com"
+
+  #         if [[ $(git status --porcelain) ]]; then
+  #           git pull
+  #           git add ${{ matrix.rules.name }}.${{ matrix.rules.format }}
+  #           git commit -m "拉取新规则: ${{ matrix.rules.name }} $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+  #           git push origin main
+  #           echo "➕ 变更已提交"
+  #         else
+  #           echo "🟢 无变更可提交"
+  #         fi

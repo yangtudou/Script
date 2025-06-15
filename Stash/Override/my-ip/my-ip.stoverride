@@ -1,0 +1,23 @@
+name: ip 信息
+desc: |-
+  显示当前 ip 地址
+author: |-
+  '洋 san 芋'
+icon: 'theatermasks.circle.fill'
+category: '洋 san 芋覆写模块'
+date: ‘2025-06-02’
+version: ‘1.0-beta’
+
+
+tiles:
+  - name: my-ip
+    interval: 600
+    title: 'ip 信息'
+    content: '返回当前 ip 信息'
+    icon: 'theatermasks.circle.fill' # 或 https://stash.ws/amazing.png
+    backgroundColor: '#663399'
+ 
+script-providers:
+  my-ip:
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/Stash/js/my-ip.js
+    interval: 86400
