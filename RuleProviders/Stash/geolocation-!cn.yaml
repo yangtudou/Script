@@ -3,7 +3,7 @@
 # 原始文件: geolocation-!cn.yaml
 # 描述: 非中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-06-22 10:58 (UTC+8)
+# 更新时间: 2025-06-23 10:58 (UTC+8)
 # =============================================================
 
 payload:
@@ -649,7 +649,7 @@ payload:
     - +.and
     - +.amazon
     - +.justdied.com
-    - +.sockscap64.com
+    - +.macbookair.kr
     - +.1337x.gd
     - +.1337x.is
     - +.1337x.st
@@ -2907,6 +2907,7 @@ payload:
     - +.artsy.net
     - +.yesasia.com
     - +.yes.xxx
+    - +.arvanstorage.ir
     - +.arxiv.org
     - +.arzon.jp
     - +.as-hp.ca
@@ -10171,7 +10172,7 @@ payload:
     - +.facebookloginhelp.net
     - +.facebooklogs.com
     - +.facebookmail.com
-    - +.jwpltx.com
+    - +.facebookmail.tv
     - +.facebookmanager.info
     - +.facebookmarketing.info
     - +.facebookmarketingpartner.com
@@ -12463,6 +12464,7 @@ payload:
     - +.gotrusted.com
     - +.gotw.ca
     - +.gouri.xyz
+    - +.gov.ir
     - +.gov.taipei
     - +.gov.tw
     - +.governmentengineer.com
@@ -12650,7 +12652,7 @@ payload:
     - +.gvt1.com
     - +.gvt2-cn.com
     - +.gvt2.com
-    - +.gvt3.com
+    - +.jwplatform.com
     - +.gvt5.com
     - +.gvt6.com
     - +.gvt7.com
@@ -12835,7 +12837,7 @@ payload:
     - +.hbfile.net
     - +.hbg.com
     - +.hbo.com
-    - +.trannygem.com
+    - +.jwmusic.org
     - +.hboasia.com
     - +.tranny.one
     - +.hbogo.com
@@ -15174,6 +15176,7 @@ payload:
     - +.iqq2.cc
     - +.iqq3.cc
     - +.iqqtv.net
+    - +.irangov.ir
     - +.iranianboobs.com
     - +.iranlms.ir
     - +.iransextv.com
@@ -15186,6 +15189,7 @@ payload:
     - +.iridiumbrowser.de
     - +.tellmewhygame.com
     - +.tellme.pw
+    - +.irna.ir
     - +.ironna.jp
     - +.ironpython.net
     - +.ironsocket.com
@@ -15854,11 +15858,11 @@ payload:
     - +.tanflix.com
     - +.tandfonline.com
     - +.tandberg.com
-    - +.jwmusic.org
-    - +.jwpcdn.com
-    - +.monsterbeatsbydreshop.com
+    - +.trannygem.com
     - +.12vpn.net
-    - +.facebookmail.tv
+    - +.gvt3.com
+    - +.jwplayer.com
+    - +.jwpltx.com
     - +.jwpsrv.com
     - +.jwt.ms
     - +.jyxf.net
@@ -17144,7 +17148,7 @@ payload:
     - +.macbookair.es
     - +.macbookair.hk
     - +.macbookair.jp
-    - +.macbookair.kr
+    - +.jwpcdn.com
     - +.macbookair.net
     - +.macbookpro.co
     - +.macbookpro.com
@@ -18192,7 +18196,7 @@ payload:
     - +.10beasts.net
     - +.socrec.org
     - +.sockslist.net
-    - +.jwplayer.com
+    - +.sockscap64.com
     - +.socks-proxy.net
     - +.sociolotron.com
     - +.socialmediagirls.com
@@ -18598,7 +18602,7 @@ payload:
     - +.monsterbeatsbydrefactory.com
     - +.monsterbeatsbydrenew.com
     - +.monsterbeatsbydres.com
-    - +.jwplatform.com
+    - +.monsterbeatsbydreshop.com
     - +.monsterbeatscasques.com
     - +.monsterbeatscommunity.com
     - +.monsterbeatsdrdrecheap.com
@@ -22331,6 +22335,7 @@ payload:
     - +.presentation.new
     - +.presentationzen.com
     - +.riseup.net
+    - +.president.ir
     - +.presidentlee.tw
     - +.press.vin
     - +.prestige-av.com
