@@ -1,10 +1,12 @@
-mode: rule #!replace
-log-level: info #!replace
-script: #!replace
+mode: rule
+log-level: info
+
+script:
   shortcuts:
     youtube-quic: network == 'udp' and dst_port == 443 and match_geosite('youtube')
     instagram-quic: network == 'udp' and dst_port == 443 and match_geosite('instagram')
-dns: #!replace
+
+dns:
   default-nameserver:
     - 223.5.5.5
     - 114.114.114.114
@@ -21,11 +23,32 @@ dns: #!replace
     - localhost.work.weixin.qq.com
     - '*.msftncsi.com'
     - '*.msftconnecttest.com'
-proxy-groups: #!replace
+
+# 策略组
+# 定义策略组锚点
+proxy-groups_defaults: &proxy-groups_defaults
+  icon:
+  type:
+  interval: 600
+  tolerance: 50
+  lazy: true
+  hidden:
+  use:
+  include-all:
+
+proxy-groups_select: &proxy-groups_select
+  <<: *proxy-groups_defaults
+  type: select
+
+proxy-groups_url-test: &proxy-groups_url-test
+  <<: *proxy-groups_defaults
+  type: url-test
+
+proxy-groups:
+
   - name: 选择代理
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
-    type: select
-    lazy: true
+    <<: *proxy-groups_select
     proxies:
       - 香港自动
       - 台湾自动
@@ -33,6 +56,17 @@ proxy-groups: #!replace
       - 新加坡自动
       - 美国自动
       - 手动选择
+
+  - name: 手动选择
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png
+    interval: 600
+    lazy: true
+    type: select
+    include-all: null
+    proxies:
+      - DIRECT
+      - 其他区域
+
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     type: select
@@ -40,6 +74,7 @@ proxy-groups: #!replace
     proxies:
       - 香港自动
       - 手动选择
+
   - name: Spotify
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Spotify.png
     type: select
@@ -49,6 +84,7 @@ proxy-groups: #!replace
       - 香港自动
       - 日本自动
       - 美国自动
+
   - name: YouTube
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png
     type: select
@@ -57,6 +93,7 @@ proxy-groups: #!replace
       - 香港自动
       - 日本自动
       - 美国自动
+
   - name: Google
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
     type: select
@@ -65,6 +102,16 @@ proxy-groups: #!replace
       - 香港自动
       - 日本自动
       - 美国自动
+  
+  - name: 默认
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
+    type: select
+    lazy: true
+    proxies:
+      - DIRECT
+      - 选择代理
+
+  # 按区域分类的 策略组
   - name: 香港自动
     filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png
@@ -75,6 +122,7 @@ proxy-groups: #!replace
     include-all: true
     hidden: null
     use: null
+
   - name: 台湾自动
     filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png
@@ -84,6 +132,7 @@ proxy-groups: #!replace
     type: url-test
     include-all: true
     hidden: null
+
   - name: 日本自动
     filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png
@@ -93,6 +142,7 @@ proxy-groups: #!replace
     type: url-test
     include-all: true
     hidden: null
+
   - name: 新加坡自动
     filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png
@@ -102,6 +152,7 @@ proxy-groups: #!replace
     type: url-test
     include-all: true
     hidden: null
+
   - name: 美国自动
     filter: "(?i)(美|🇺🇲|us|states|america|硅)"
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png
@@ -111,28 +162,15 @@ proxy-groups: #!replace
     type: url-test
     include-all: true
     hidden: null
+
   - filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
     include-all: true
     lazy: true
     name: 其他区域
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AmyTelecom.png
-  - name: 手动选择
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png
-    interval: 600
-    lazy: true
-    type: select
-    include-all: null
-    proxies:
-      - DIRECT
-      - 其他区域
-  - name: 默认
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
-    type: select
-    lazy: true
-    proxies:
-      - DIRECT
-      - 选择代理
+
+# 分流规则
 rules:
   - RULE-SET,秋风广告规则,REJECT-DROP,no-track
   - SCRIPT,instagram-quic,REJECT,no-track
@@ -159,95 +197,91 @@ rules:
   - RULE-SET,cn_domain,DIRECT
   - RULE-SET,cn_ip,DIRECT
   - MATCH,默认
+
+# 定义规则集的锚点
+rule-providers_defaults: &rule-providers_defaults
+  format: yaml
+  interval: 86400
+
+rule-providers_domain: &rule-providers_domain
+  <<: *rule-providers_defaults
+  behavior: domain
+
+rule-providers_ip: &rule-providers_ip
+  <<: *rule-providers_defaults
+  behavior: ipcidr
+
 rule-providers:
-  cn_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/cn_domain.yaml
-  github_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/github_domain.yaml
-  youtube_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/youtube_domain.yaml
-  google_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/google_domain.yaml
-  telegram_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/telegram_domain.yaml
-  spotify_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/spotify_domain.yaml
-    # behavior: ipcidr
-  private_ip:
-    behavior: ipcidr
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/private_ip.yaml
-  cn_ip:
-    behavior: ipcidr
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/cn_ip.yaml
-  google_ip:
-    behavior: ipcidr
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/google_ip.yaml
-  telegram_ip:
-    behavior: ipcidr
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/telegram_ip.yaml
-  geolocation-!cn:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/geolocation-!cn.yaml
+
   秋风广告规则:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/AWAvenue-Ads-Rule-Clash.yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/AWAvenue-Ads-Rule-Clash.yaml
+    
+  cn_domain:
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/cn_domain.yaml
+    
+  github_domain:
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/github_domain.yaml
+    
+  youtube_domain:
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/youtube_domain.yaml
+    
+  google_domain:
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/google_domain.yaml
+    
+  telegram_domain:
+   <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/telegram_domain.yaml
+    
+  spotify_domain:
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/spotify_domain.yaml
+    
+  geolocation-!cn:
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/geolocation-!cn.yaml
+    
   apple_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/apple_domain.yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/apple_domain.yaml
+    
   cloudflare_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/cloudflare_domain.yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/cloudflare_domain.yaml
+    
   meta_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/meta_domain.yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/meta_domain.yaml
+    
   microsoft_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/microsoft_domain.yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/microsoft_domain.yaml
+    
   private_domain:
-    behavior: "domain"
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/private_domain.yaml
-    format: yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/private_domain.yaml
+
   speedtest_domain:
-    behavior: domain
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/ruleProviders/Stash/speedtest_domain.yaml
+    <<: *rule-providers_domain
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/speedtest_domain.yaml
+
+  # behavior: ipcidr
+  private_ip:
+    <<: *rule-providers_ip
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/private_ip.yaml
+    
+  cn_ip:
+    <<: *rule-providers_ip
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/cn_ip.yaml
+    
+  google_ip:
+    <<: *rule-providers_ip
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/google_ip.yaml
+    
+  telegram_ip:
+    <<: *rule-providers_ip
+    url: https://raw.githubusercontent.com/yangtudou/Script/refs/heads/main/RuleProviders/Stash/telegram_ip.yaml
