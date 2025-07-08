@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-07-07 10:57 (UTC+8)
+# 更新时间: 2025-07-08 10:52 (UTC+8)
 # =============================================================
 
 payload:
@@ -14,10 +14,6 @@ payload:
     - statics-marketingsites-eas-ms-com.akamaized.net
     - statics-marketingsites-eus-ms-com.akamaized.net
     - statics-marketingsites-wcus-ms-com.akamaized.net
-    - crl.microsoft.com
-    - mscrl.microsoft.com
-    - ocsp.microsoft.com
-    - oneocsp.microsoft.com
     - flightsimulator.azureedge.net
     - prodforza.blob.core.windows.net
     - azure.microsoft.com
@@ -39,6 +35,10 @@ payload:
     - vscode.blob.core.windows.net
     - vscode.search.windows.net
     - vsmarketplacebadge.apphb.com
+    - crl.microsoft.com
+    - mscrl.microsoft.com
+    - ocsp.microsoft.com
+    - oneocsp.microsoft.com
     - +.microsoft
     - +.hotmail
     - +.office
@@ -55,7 +55,7 @@ payload:
     - +.microsoft.cz
     - +.microsoft.de
     - +.microsoft.dk
-    - +.xamarin.com
+    - +.msocsp.com
     - +.microsoft.es
     - +.microsoft.eu
     - +.microsoft.fi
@@ -204,7 +204,7 @@ payload:
     - +.msftncsi.com
     - +.msftnet.org
     - +.msgamesresearch.com
-    - +.microsoftnews.com
+    - +.microsoftnews.net
     - +.mshome.net
     - +.msidentity.com
     - +.msocdn.com
@@ -284,12 +284,12 @@ payload:
     - +.microsoft.ch
     - +.winhec.net
     - +.yammer.com
-    - +.msocsp.com
     - +.microsoftnews.cc
-    - +.vscode-unpkg.net
+    - +.microsoftnews.com
+    - +.xamarin.com
     - +.microsoft.ee
     - +.microsoft.cl
-    - +.microsoftnews.org
+    - +.onedrive.com
     - +.microsoftnewsforkids.com
     - +.microsoftnewsforkids.net
     - +.microsoftnewsforkids.org
@@ -305,11 +305,11 @@ payload:
     - +.start.com
     - +.microsoft.cat
     - +.microsoft.ca
-    - +.microsoftnews.net
-    - +.onedrive.com
+    - +.microsoftnews.org
     - +.1drv.com
     - +.livefilestore.com
     - +.sharepoint.cn
+    - +.vscode-unpkg.net
     - +.vscode-cdn.net
     - +.vscode.dev
     - +.vsassets.io
@@ -318,7 +318,6 @@ payload:
     - +.visualstudio.net
     - +.visualstudio.eu
     - +.visualstudio.co
-    - +.visualstudio.com
     - +.microsoft.by
     - +.gamepass.com
     - +.orithegame.com
@@ -343,12 +342,6 @@ payload:
     - +.xboxservices.com
     - +.xboxstudios.com
     - +.xbx.lv
-    - +.callersbane.com
-    - +.minecraft-services.net
-    - +.minecraft.net
-    - +.minecraftservices.com
-    - +.minecraftshop.com
-    - +.mojang.com
     - +.asobostudio.com
     - +.flightsimulator.com
     - +.beth.games
@@ -361,6 +354,12 @@ payload:
     - +.forzamotorsport.net
     - +.forzaracingchampionship.com
     - +.forzarc.com
+    - +.callersbane.com
+    - +.minecraft-services.net
+    - +.minecraft.net
+    - +.minecraftservices.com
+    - +.minecraftshop.com
+    - +.mojang.com
     - +.microsoft.be
     - +.aadrm.com
     - +.azure-devices-int.net
@@ -445,7 +444,7 @@ payload:
     - +.office365love.com
     - +.office365tw.com
     - +.renovacionoffice.com
-    - +.visualstudio-staging.com
+    - +.visualstudio.com
     - +.githubhackathon.com
     - +.ghcr.io
     - +.githubnext.com
@@ -471,7 +470,7 @@ payload:
     - +.atom.io
     - +.npm.community
     - +.npmjs.com
-    - +.uwpcommunitytoolkit.com
+    - +.visualstudio-staging.com
     - +.adaptivecards.io
     - +.api-extractor.com
     - +.apisof.net
@@ -509,9 +508,10 @@ payload:
     - +.sankie.net
     - +.sqlserveronlinux.com
     - +.timelinestoryteller.com
+    - +.uwpcommunitytoolkit.com
     - +.spoprod-a.akamaihd.net
-    - +.visualstudio.co.uk
     - +.microsoftstore.com.hk
+    - +.visualstudio.co.uk
     - +.skype-edf.akadns.net
     - +.skypedata.akadns.net
     - +.live.com.au
@@ -591,7 +591,6 @@ payload:
     - wscont1.apps.microsoft.com
     - wscont2.apps.microsoft.com
     - xb.dlservice.microsoft.com
-    - www.microsoft.com
     - +.microsoftnews.cn
     - +.msn.cn
     - +.xboxlive.cn
@@ -692,3 +691,4 @@ payload:
     - +.microsoftreactor.cn
     - +.microsoftreactor.com.cn
     - +.reactorms.com.cn
+    - www.microsoft.com
