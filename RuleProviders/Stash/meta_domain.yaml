@@ -3,57 +3,14 @@
 # 原始文件: meta.yaml
 # 描述: Meta 服务域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-07-20 11:09 (UTC+8)
+# 更新时间: 2025-07-21 11:07 (UTC+8)
 # =============================================================
 
 payload:
-    - developers.facebook.com
     - fbcdn-a.akamaihd.net
+    - developers.facebook.com
     - +.meta.ai
     - +.meta.com
-    - +.accountkit.com
-    - +.atscaleconference.com
-    - +.botorch.org
-    - +.buck.build
-    - +.buckbuild.com
-    - +.componentkit.org
-    - +.draftjs.org
-    - +.f8.com
-    - +.facebookappcenter.info
-    - +.facebookappcenter.net
-    - +.facebookappcenter.org
-    - +.facebookconnect.com
-    - +.facebookdevelopergarage.com
-    - +.faciometrics.com
-    - +.fasttext.cc
-    - +.fbf8.com
-    - +.fbinfer.com
-    - +.fblitho.com
-    - +.fbredex.com
-    - +.fbrell.com
-    - +.flow.dev
-    - +.flow.org
-    - +.flowtype.org
-    - +.frescolib.org
-    - +.hacklang.org
-    - +.hhvm.com
-    - +.makeitopen.com
-    - +.mcrouter.net
-    - +.mcrouter.org
-    - +.messengerdevelopers.com
-    - +.ogp.me
-    - +.opengraphprotocol.com
-    - +.opengraphprotocol.org
-    - +.parse.com
-    - +.pyrobot.org
-    - +.react.com
-    - +.reactjs.com
-    - +.reactjs.org
-    - +.recoiljs.org
-    - +.rocksdb.com
-    - +.rocksdb.net
-    - +.rocksdb.org
-    - +.yogalayout.com
     - +.achat-followers-instagram.com
     - +.acheter-followers-instagram.com
     - +.acheterdesfollowersinstagram.com
@@ -531,6 +488,7 @@ payload:
     - +.online-deals.net
     - +.opencreate.org
     - +.reachtheworldonfacebook.com
+    - +.rocksdb.org
     - +.shopfacebook.com
     - +.sportsfacebook.com
     - +.sportstream.com
@@ -553,6 +511,48 @@ payload:
     - +.redkix.com
     - +.workplace.com
     - +.workplaceusecases.com
+    - +.accountkit.com
+    - +.atscaleconference.com
+    - +.botorch.org
+    - +.buck.build
+    - +.buckbuild.com
+    - +.componentkit.org
+    - +.draftjs.org
+    - +.f8.com
+    - +.facebookappcenter.info
+    - +.facebookappcenter.net
+    - +.facebookappcenter.org
+    - +.facebookconnect.com
+    - +.facebookdevelopergarage.com
+    - +.faciometrics.com
+    - +.fasttext.cc
+    - +.fbf8.com
+    - +.fbinfer.com
+    - +.fblitho.com
+    - +.fbredex.com
+    - +.fbrell.com
+    - +.flow.dev
+    - +.flow.org
+    - +.flowtype.org
+    - +.frescolib.org
+    - +.hacklang.org
+    - +.hhvm.com
+    - +.makeitopen.com
+    - +.mcrouter.net
+    - +.mcrouter.org
+    - +.messengerdevelopers.com
+    - +.ogp.me
+    - +.opengraphprotocol.com
+    - +.opengraphprotocol.org
+    - +.parse.com
+    - +.pyrobot.org
+    - +.react.com
+    - +.reactjs.com
+    - +.reactjs.org
+    - +.recoiljs.org
+    - +.rocksdb.com
+    - +.rocksdb.net
+    - +.yogalayout.com
     - +.graph.instagram.com
     - +.graph-fallback.instagram.com
     - +.graph.whatsapp.com
