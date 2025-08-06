@@ -3,7 +3,7 @@
 # 原始文件: cn.yaml
 # 描述: 中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-08-05 11:08 (UTC+8)
+# 更新时间: 2025-08-06 11:06 (UTC+8)
 # =============================================================
 
 payload:
@@ -51,9 +51,8 @@ payload:
     - +.citic
     - +.baidu
     - +.alipay
-    - +.juhomai.com
-    - +.scientrans.com
-    - +.028ip.com
+    - +.juhuiwan.com
+    - +.513zz.com
     - +.028kuaidai.com
     - +.028ltzx.com
     - +.028office.com
@@ -438,7 +437,6 @@ payload:
     - +.0755bdqn.com
     - +.0755bzf.com
     - +.0755caibao.com
-    - +.0755car.com
     - +.0755cts.com
     - +.0755fm.com
     - +.0755gty.com
@@ -4623,7 +4621,7 @@ payload:
     - +.51386.com
     - +.5138zhuan.com
     - +.513zp.com
-    - +.513zz.com
+    - +.junrunrenli.com
     - +.514193.com
     - +.514200.com
     - +.5144wan.com
@@ -6963,7 +6961,6 @@ payload:
     - +.70yx.com
     - +.71.net
     - +.7114.com
-    - +.zzzzzz.me
     - +.7116.com
     - +.7116dns.com
     - +.711hospital.com
@@ -8101,7 +8098,6 @@ payload:
     - +.90576.com
     - +.90686.com
     - +.906you.com
-    - +.90907.com
     - +.9090cdndns.com
     - +.90ao.com
     - +.90c6.com
@@ -9292,11 +9288,9 @@ payload:
     - +.abckantu.com
     - +.abcleasing.com
     - +.abclogs.com
-    - +.zzzzaaaa.com
-    - +.zzzyyy.com
-    - +.zzzyy.com
     - +.abcrcw.com
     - +.abcs8.com
+    - +.zzzzzz.me
     - +.abcsbank.com
     - +.abcsee.net
     - +.abctime.com
@@ -9389,7 +9383,9 @@ payload:
     - +.accgame.com
     - +.acconsys.com
     - +.accopower.com
-    - +.zzzymjg.com
+    - +.zzzzaaaa.com
+    - +.zzzyyy.com
+    - +.zzzyy.com
     - +.accr.cc
     - +.accsh.org
     - +.acctdns.com
@@ -9691,7 +9687,6 @@ payload:
     - +.adxqd.com
     - +.adxwork.com
     - +.adxyun.com
-    - +.adyea.com
     - +.adyoc.com
     - +.adyounger.com
     - +.adyuedong.com
@@ -9779,7 +9774,7 @@ payload:
     - +.afjob88.com
     - +.aflink.com
     - +.aflytec.com
-    - +.zzzyk.com
+    - +.zzzymjg.com
     - +.afpchinesesports.com
     - +.african-styles.com
     - +.afriendx.com
@@ -10274,6 +10269,7 @@ payload:
     - +.aiganggu.com
     - +.aigc-cloud.com
     - +.aigc369.com
+    - +.aigcarena.com
     - +.aigccdn.com
     - +.aigcxm.com
     - +.aige010.com
@@ -10510,7 +10506,7 @@ payload:
     - +.airmobyte.com
     - +.airmzp.com
     - +.airnut.com
-    - +.zzzyb.com
+    - +.zzzyk.com
     - +.airpipetech.com
     - +.airportcip.com
     - +.airportcn.com
@@ -10877,20 +10873,20 @@ payload:
     - +.aliapp-inc.com
     - +.aliapp.com
     - +.aliappcdn.com
-    - +.028f.com
+    - +.028hema.com
     - +.alibaba-inc.com
     - +.alibaba.com
     - +.alibaba.net
     - +.alibabacapital.com
     - +.alibabachengdun.com
     - +.alibabachengdun.net
-    - +.zzzxwh.net
+    - +.zzzyb.com
     - +.alibabacloud.com
+    - +.zzzxwh.net
     - +.zzzsxx.com
     - +.zzzqqp.com
     - +.zzzppp.com
     - +.zzznkq.com
-    - +.zzzlsh.com
     - +.alibabacorp.com
     - +.alibabadesign-enable.com
     - +.alibabadesign.com
@@ -10988,7 +10984,7 @@ payload:
     - +.alionexpo.com
     - +.alipan.com
     - +.alipansou.com
-    - +.028desite.com
+    - +.028f.com
     - +.alipay-corp.com
     - +.alipay-eco.com
     - +.alipay-inc.com
@@ -11487,7 +11483,7 @@ payload:
     - +.android-studio.org
     - +.androidesk.com
     - +.androidga.com
-    - +.zzzla.com
+    - +.zzzlsh.com
     - +.androidinvest.com
     - +.androidmi.com
     - +.androidmov.com
@@ -12041,8 +12037,8 @@ payload:
     - +.aphidic.com
     - +.api-forwards.com
     - +.api-m.com
+    - +.zzzla.com
     - +.zzzj.com
-    - +.zzzhtc.com
     - +.api.so
     - +.apiairasia.com
     - +.apiandroid.com
@@ -12416,6 +12412,7 @@ payload:
     - +.artisan-cloud.com
     - +.artisan-tek.com
     - +.artistry-club.com
+    - +.artistrylab.net
     - +.artlianhe.com
     - +.artlinkart.com
     - +.artlnk.com
@@ -12484,7 +12481,6 @@ payload:
     - +.asdf010.com
     - +.asdlkjf.com
     - +.asdx.io
-    - +.asdyf.com
     - +.asean-china-center.org
     - +.aseann.com
     - +.aseanparts.com
@@ -12609,11 +12605,11 @@ payload:
     - +.asrmicro.com
     - +.assassinscreedcodenamejade.com
     - +.assemblydragon.com
+    - +.zzzhtc.com
     - +.zzzfgjj.com
     - +.zzzdm.com
     - +.zzzdc.com
     - +.zzz4.com
-    - +.zzyyrl.com
     - +.assrt.net
     - +.assyrb.com
     - +.astaobao.com
@@ -12718,7 +12714,7 @@ payload:
     - +.atsws.com
     - +.attacker.fit
     - +.attainsgroup.com
-    - +.junpinhui.com
+    - +.attendees.link
     - +.attomotion.com
     - +.attop.com
     - +.attri.mobi
@@ -13189,6 +13185,7 @@ payload:
     - +.aysbxxh.com
     - +.aysdt.com
     - +.ayshq.com
+    - +.aysjhod.xyz
     - +.aysjyjjh.com
     - +.aysxdp.com
     - +.ayudasalud.com
@@ -13245,10 +13242,10 @@ payload:
     - +.azure-wave.com
     - +.azure.cc
     - +.azureflying.com
+    - +.zzyyrl.com
     - +.zzyyds.com
     - +.zzyxxw.com
     - +.zzyugang.com
-    - +.zzykcd.com
     - +.azuretouch.net
     - +.azurew.com
     - +.azureyun.com
@@ -13263,7 +13260,6 @@ payload:
     - +.b-eurochina.com
     - +.b-fairy.com
     - +.b-k-automation.com
-    - +.b-learn.com
     - +.b-raymedia.com
     - +.b.biz
     - +.b01.net
@@ -13457,7 +13453,7 @@ payload:
     - +.baideye.com
     - +.baidiapp.com
     - +.baidinet.com
-    - +.028csc.com
+    - +.028desite.com
     - +.baidu-bank.com
     - +.baidu-cdn.com
     - +.baidu-cdn.net
@@ -13470,7 +13466,7 @@ payload:
     - +.baidu.cc
     - +.baidu.cm
     - +.baidu.com
-    - +.zzyjs.com
+    - +.zzykcd.com
     - +.baidu.hk
     - +.baidu.mobi
     - +.baidu.to
@@ -13900,9 +13896,9 @@ payload:
     - +.bank-of-tianjin.com
     - +.bankalliance.net
     - +.bankcomm.com
+    - +.zzyjs.com
     - +.zzyiquan.com
     - +.zzygxh.com
-    - +.zzyfjc.com
     - +.bankcz.com
     - +.bankgz.com
     - +.bankhr.com
@@ -13939,7 +13935,7 @@ payload:
     - +.banmayingyu.com
     - +.banmi.mobi
     - +.bannei.com
-    - +.zzyfdj.com
+    - +.zzyfjc.com
     - +.banqumusic.com
     - +.bansha.com
     - +.banshangong.com
@@ -14698,7 +14694,6 @@ payload:
     - +.beihaiwuyeguanli.com
     - +.beihaiwz.com
     - +.beihan.net
-    - +.beihangonline.com
     - +.beihansoft.com
     - +.beihaobao.com
     - +.beihuasoft.com
@@ -15710,7 +15705,6 @@ payload:
     - +.biqugao.cc
     - +.biquge.info
     - +.biquge.la
-    - +.biquge.vip
     - +.biquge365.com
     - +.biquge8.com
     - +.biquge9.cc
@@ -15931,7 +15925,7 @@ payload:
     - +.bj-zywh.com
     - +.bj003.com
     - +.bj0yx.com
-    - +.zzyedu.org
+    - +.zzyfdj.com
     - +.bj1000e.com
     - +.bj148.org
     - +.bj159zx.com
@@ -16609,8 +16603,8 @@ payload:
     - +.blockmeta.com
     - +.blockob.com
     - +.blocrepresents.com
+    - +.zzyedu.org
     - +.zzyecc.com
-    - +.zzydb.com
     - +.blog120.com
     - +.blogbus.com
     - +.blogcdn-dns.net
@@ -17123,7 +17117,7 @@ payload:
     - +.bosen-fuji.com
     - +.bosenrui.com
     - +.bosera.com
-    - +.zzycpa.com
+    - +.zzydb.com
     - +.boshangchuanmei.com
     - +.boshgame.com
     - +.boshi.tv
@@ -17339,7 +17333,7 @@ payload:
     - +.brother-bsh.com
     - +.brother-cn.net
     - +.brother-movie.com
-    - +.zzyauto.com
+    - +.zzycpa.com
     - +.brotherchem.com
     - +.browserleaks.com
     - +.browurl.com
@@ -17893,6 +17887,7 @@ payload:
     - +.byte-gslb.com
     - +.byte-test.com
     - +.byte-test.net
+    - +.byte-ticket.com
     - +.byte.online
     - +.byte00.com
     - +.byte00.net
@@ -17911,6 +17906,7 @@ payload:
     - +.byteactivity16.com
     - +.byteadverts.com
     - +.byteapi.com
+    - +.byteapk.com
     - +.bytecdn.com
     - +.bytecdn.net
     - +.bytecdntp.com
@@ -17928,6 +17924,7 @@ payload:
     - +.bytedance.org
     - +.bytedanceapi.com
     - +.bytedancehermestest.com
+    - +.bytedanceoss.net
     - +.bytedancevod.com
     - +.bytedcdn.com
     - +.bytedeliver.com
@@ -17987,6 +17984,7 @@ payload:
     - +.bytesmanager.com
     - +.bytesslb.net
     - +.bytesus.com
+    - +.bytesyscdn.com
     - +.bytetcc.com
     - +.bytetech.info
     - +.bytetos.com
@@ -18097,7 +18095,6 @@ payload:
     - +.bzxzk.net
     - +.bzy.net
     - +.bzy2015.com
-    - +.bzyxch.com
     - +.bzzpw.com
     - +.c-119.com
     - +.c-3.moe
@@ -18292,7 +18289,6 @@ payload:
     - +.caibihui.com
     - +.caibowen.net
     - +.caicao.net
-    - +.caichong.com
     - +.caidan2.com
     - +.caidao1.com
     - +.caidao8.com
@@ -18633,6 +18629,7 @@ payload:
     - +.capsuleshanghai.com
     - +.captain-cro.com
     - +.capture7.com
+    - +.capturetheflag.fun
     - +.capvision.com
     - +.capwhale.com
     - +.caqzlsgs.com
@@ -18825,7 +18822,7 @@ payload:
     - +.cbd263.com
     - +.cbdcn.com
     - +.cbdio.com
-    - +.zzyan360.com
+    - +.zzyauto.com
     - +.cbe21.com
     - +.cbea.com
     - +.cbec365.com
@@ -18918,7 +18915,7 @@ payload:
     - +.ccbfutures.com
     - +.ccbhome.net
     - +.ccbiam.com
-    - +.zzy2001.com
+    - +.zzyan360.com
     - +.ccbleasing.com
     - +.ccbnd.com
     - +.ccbookfair.com
@@ -19093,8 +19090,8 @@ payload:
     - +.ccmama.com
     - +.ccmbv.com
     - +.ccmcgc.com
+    - +.zzy2001.com
     - +.zzxy.net
-    - +.zzxxswkj.com
     - +.ccme.cc
     - +.ccmfcm.com
     - +.ccmicroera.com
@@ -19452,22 +19449,24 @@ payload:
     - +.cdmjwater.com
     - +.cdmmlxs.com
     - +.cdms-china.com
+    - +.cdn-build.com
+    - +.cdn-build.net
     - +.cdn-cba.com
     - +.cdn-cdn.net
     - +.cdn-dodo.com
     - +.cdn-gw-dv.net
     - +.cdn-hotels.com
     - +.cdn-speed.com
-    - +.zzxx.org
+    - +.zzxxswkj.com
     - +.cdn-uc.cc
     - +.cdn-v.com
     - +.cdn.fun
+    - +.zzxx.org
     - +.zzxworld.com
     - +.zzxw.net
-    - +.zzxmys.com
     - +.cdn.show
     - +.cdn.vin
-    - +.zzxhns.com
+    - +.zzxmys.com
     - +.cdn08.com
     - +.cdn1008.com
     - +.cdn1218.com
@@ -21216,7 +21215,7 @@ payload:
     - +.china-zrg.com
     - +.china-zysj.com
     - +.china.com
-    - +.zzxfjxzz.com
+    - +.zzxhns.com
     - +.china000799.com
     - +.china001.com
     - +.china12345.net
@@ -21972,8 +21971,8 @@ payload:
     - +.chinatalentgroup.com
     - +.chinatat.com
     - +.chinatelecom-h.com
+    - +.zzxfjxzz.com
     - +.zzxdc.com
-    - +.zzxcy.com
     - +.chinatelecomglobal.com
     - +.chinatelecomhk.com
     - +.chinatelecomiot.com
@@ -22027,7 +22026,7 @@ payload:
     - +.chinaun.net
     - +.chinaunicom-a.com
     - +.chinaunicom.com
-    - +.zzxca.com
+    - +.zzxcy.com
     - +.chinaunicomglobal.com
     - +.chinaunionpay.com
     - +.chinaunionpay.net
@@ -22067,7 +22066,6 @@ payload:
     - +.chinawebmap.com
     - +.chinaweiyu.com
     - +.chinaweizheng.com
-    - +.chinawenben.com
     - +.chinawepon.com
     - +.chinawerewolf.com
     - +.chinawie.com
@@ -22857,7 +22855,7 @@ payload:
     - +.citexpo.org
     - +.citgc.com
     - +.citiais.com
-    - +.028brother.com
+    - +.028csc.com
     - +.citic-wealth.com
     - +.citic.com
     - +.citicbank.com
@@ -22874,7 +22872,7 @@ payload:
     - +.citicleasing.com
     - +.citicnetworks.com
     - +.citics.com
-    - +.zzxbn.com
+    - +.zzxca.com
     - +.citicsf.com
     - +.citicsinfo.com
     - +.citicsteel.com
@@ -23121,7 +23119,7 @@ payload:
     - +.classcms.com
     - +.classic023.com
     - +.classinpaas.com
-    - +.zzwzj.com
+    - +.zzxbn.com
     - +.classmateer.com
     - +.classpassincn.com
     - +.classpod.com
@@ -23218,7 +23216,7 @@ payload:
     - +.cloud-industry-delivery.site
     - +.cloud-link.com
     - +.cloud-links.net
-    - +.zzwtjx.com
+    - +.zzwzj.com
     - +.cloud-ningbo.com
     - +.cloud-ordos.com
     - +.cloud-rtc.com
@@ -23427,7 +23425,7 @@ payload:
     - +.cltt.org
     - +.club-pc.com
     - +.clubcarev.com
-    - +.zzwro.com
+    - +.zzwtjx.com
     - +.cluerich.com
     - +.clwhk.com
     - +.clx360.com
@@ -23448,8 +23446,8 @@ payload:
     - +.cm-inv.com
     - +.cm-iov.com
     - +.cm-worklink.com
+    - +.zzwro.com
     - +.zzwqqx.com
-    - +.zzwonder.com
     - +.cm1881.com
     - +.cm233.com
     - +.cm3721.com
@@ -23468,7 +23466,7 @@ payload:
     - +.cmbchina.com
     - +.cmbchina.net
     - +.cmbchinawm.com
-    - +.zzwljc.com
+    - +.zzwonder.com
     - +.cmbimg.com
     - +.cmbuat.com
     - +.cmbwinglungbank.com
@@ -23615,7 +23613,7 @@ payload:
     - +.cmzi.com
     - +.cmzj.net
     - +.cmzyk.com
-    - +.0283home.com
+    - +.028brother.com
     - +.cn-5.com
     - +.cn-ab.com
     - +.cn-aci.com
@@ -23626,7 +23624,7 @@ payload:
     - +.cn-caa.com
     - +.cn-cav.com
     - +.cn-cddc.com
-    - +.zzwl.info
+    - +.zzwljc.com
     - +.cn-ceramic.com
     - +.cn-cg.com
     - +.cn-chenguang.com
@@ -23679,13 +23677,13 @@ payload:
     - +.cn-xsl.com
     - +.cn-zhentai.com
     - +.cn-zhongrui.com
+    - +.zzwl.info
     - +.zzwgd.com
     - +.zzwenxue.com
-    - +.zzwanshou.com
     - +.cn.net
-    - +.zzwah.com
+    - +.zzwanshou.com
     - +.cn.vc
-    - +.zzw-hb.com
+    - +.zzwah.com
     - +.cn0-6.com
     - +.cn006.com
     - +.cn010w.com
@@ -23701,7 +23699,6 @@ payload:
     - +.cn18k.com
     - +.cn2030.com
     - +.cn22.net
-    - +.cn2599.com
     - +.cn2che.com
     - +.cn2rv.com
     - +.cn314.com
@@ -23813,7 +23810,7 @@ payload:
     - +.cncbinternational.com
     - +.cncbk.vip
     - +.cncbpc.com
-    - +.zzusah.com
+    - +.zzw-hb.com
     - +.cnccac.com
     - +.cnccchina.com
     - +.cnccdn.com
@@ -24102,7 +24099,7 @@ payload:
     - +.cnidea.net
     - +.cnielts.com
     - +.cniiib.com
-    - +.zzun777.com
+    - +.zzusah.com
     - +.cninfo.net
     - +.cninfos.com
     - +.cninj.com
@@ -24660,7 +24657,6 @@ payload:
     - +.coach-japanese.com
     - +.coahr.net
     - +.coalcloud.net
-    - +.coalcn.com
     - +.coalstudy.com
     - +.coantec.com
     - +.coaoo.com
@@ -24842,8 +24838,8 @@ payload:
     - +.colineapp.com
     - +.colinker.com
     - +.colipu.com
+    - +.zzun777.com
     - +.zztyscl.com
-    - +.zztxt.net
     - +.collect-med.com
     - +.college-ing.com
     - +.colly-pink.com
@@ -24964,7 +24960,7 @@ payload:
     - +.conodmedical.com
     - +.conoha.vip
     - +.conpak.com
-    - +.zztxkj.com
+    - +.zztxt.net
     - +.conshow.com
     - +.conslive.com
     - +.consmation.com
@@ -24976,7 +24972,7 @@ payload:
     - +.content4ads.com
     - +.contentchina.com
     - +.contentchina.net
-    - +.zztvzd.com
+    - +.zztxkj.com
     - +.controlinai.com
     - +.conuo.com
     - +.convergemob.com
@@ -25083,7 +25079,7 @@ payload:
     - +.coowor.com
     - +.cooyun.com
     - +.copcsc.org
-    - +.zztv.tv
+    - +.zztvzd.com
     - +.copperalliance.asia
     - +.copperhome.net
     - +.copy-manga.com
@@ -25238,7 +25234,6 @@ payload:
     - +.cpo.xyz
     - +.cpo2o.com
     - +.cpolar.com
-    - +.cpolar.io
     - +.cpolive.com
     - +.cpooo.com
     - +.cpp-prog.com
@@ -25496,7 +25491,6 @@ payload:
     - +.cqhncd.com
     - +.cqhongshuangda.com
     - +.cqhouse.net
-    - +.cqhpoldi.com
     - +.cqhrjd.com
     - +.cqhsgy.com
     - +.cqhsjs.com
@@ -25686,7 +25680,6 @@ payload:
     - +.cqpfmz.com
     - +.cqph.com
     - +.cqphar.com
-    - +.cqpinjian.com
     - +.cqpix.com
     - +.cqpost.com
     - +.cqpump.com
@@ -25699,7 +25692,6 @@ payload:
     - +.cqqgsafe.com
     - +.cqqgx.com
     - +.cqqianggu.com
-    - +.cqqigao.com
     - +.cqqiujing.com
     - +.cqqiyi.com
     - +.cqqjyy.com
@@ -26019,7 +26011,7 @@ payload:
     - +.crbeverage.com
     - +.crbiopharm.com
     - +.crc-bj.com
-    - +.zztuku.com
+    - +.zztv.tv
     - +.crc.hk
     - +.crc81.com
     - +.crcapm.com
@@ -26094,7 +26086,7 @@ payload:
     - +.crggcn.com
     - +.crgkxl.com
     - +.crgy.com
-    - +.zztlj.com
+    - +.zztuku.com
     - +.cri-grandera.com
     - +.cri-on.com
     - +.criankara.com
@@ -26122,8 +26114,8 @@ payload:
     - +.critokyo.com
     - +.criwashington.com
     - +.crjfw.com
+    - +.zztlj.com
     - +.zztline.com
-    - +.zzthjixie.com
     - +.crlf0710.com
     - +.crlg.com
     - +.crlintex.com
@@ -26562,7 +26554,7 @@ payload:
     - +.ctex.org
     - +.ctexcel.ca
     - +.ctexcel.com
-    - +.zztfly.com
+    - +.zzthjixie.com
     - +.ctexcel.fr
     - +.ctexcel.us
     - +.ctexw.com
@@ -26630,11 +26622,11 @@ payload:
     - +.ctracer.net
     - +.ctrcw.net
     - +.ctrip-ttd.hk
+    - +.zztfly.com
     - +.zztender.com
     - +.zzteacher.com
-    - +.zzt9.com
     - +.ctrip.com
-    - +.zzszxyy.com
+    - +.zzt9.com
     - +.ctrip.my
     - +.ctrip.sg
     - +.ctripbiz.com
@@ -27324,7 +27316,7 @@ payload:
     - +.d3zone.com
     - +.d4000.com
     - +.d44.cc
-    - +.zzszbsw.com
+    - +.zzszxyy.com
     - +.d58.net
     - +.d5h.net
     - +.d5power.com
@@ -27344,7 +27336,7 @@ payload:
     - +.da-mai.com
     - +.da-qian.com
     - +.da-quan.net
-    - +.zzstep.com
+    - +.zzszbsw.com
     - +.da01.com
     - +.da3h.com
     - +.da88.net
@@ -27657,7 +27649,7 @@ payload:
     - +.dalvhe.com
     - +.dalvlaw.com
     - +.dalyfeds.com
-    - +.zzsteel.com
+    - +.zzstep.com
     - +.damai.com
     - +.damaicheng.com
     - +.damaimed.com
@@ -27990,7 +27982,7 @@ payload:
     - +.dataoke.com
     - +.datarelab.com
     - +.datarj.com
-    - +.zzssptop.com
+    - +.zzsteel.com
     - +.datasheet.hk
     - +.datasheet5.com
     - +.datastoragesummit.com
@@ -28009,7 +28001,7 @@ payload:
     - +.datesdata.com
     - +.datia-inspect.com
     - +.datianmen.com
-    - +.zzsspnode.com
+    - +.zzssptop.com
     - +.datongjianshe.com
     - +.datongtaxi.com
     - +.datuc.com
@@ -28250,7 +28242,7 @@ payload:
     - +.dcement.com
     - +.dcetax.com
     - +.dcf365.com
-    - +.zzspider.com
+    - +.zzsspnode.com
     - +.dcg123.com
     - +.dcgqt.com
     - +.dcgsi.com
@@ -28268,8 +28260,8 @@ payload:
     - +.dclygroup.com
     - +.dcmagcn.com
     - +.dcmk17.com
+    - +.zzspider.com
     - +.zzsnewell.com
-    - +.zzsmt.com
     - +.dcpc.com
     - +.dcpfb.com
     - +.dcqsq.com
@@ -28382,7 +28374,6 @@ payload:
     - +.ddsk.la
     - +.ddsm.com
     - +.ddstarapp.com
-    - +.ddswcm.com
     - +.ddsy.com
     - +.ddtk.vip
     - +.ddtsg.com
@@ -28718,12 +28709,12 @@ payload:
     - +.dev59.com
     - +.devashen.com
     - +.devask.net
-    - +.zzslyy.com
+    - +.zzsmt.com
     - +.devclub.cc
     - +.devedu.net
+    - +.zzslyy.com
     - +.zzsjzyxh.com
     - +.zzsin.com
-    - +.zzsiji.com
     - +.developers.pub
     - +.develpress.com
     - +.devemi.com
@@ -29333,7 +29324,7 @@ payload:
     - +.dididapiao.com
     - +.dididi88.com
     - +.didiglobal.com
-    - +.zzsi.com
+    - +.zzsiji.com
     - +.didimobility.com
     - +.didiopenapi.com
     - +.didipai.com
@@ -29556,7 +29547,6 @@ payload:
     - +.dionly.com
     - +.diopic.net
     - +.dious-f.com
-    - +.dious.cc
     - +.dipephoto.com
     - +.dipont.com
     - +.dippstar.com
@@ -29599,7 +29589,7 @@ payload:
     - +.ditiem.com
     - +.ditiezu.com
     - +.ditiezu.net
-    - +.zzshe.com
+    - +.zzsi.com
     - +.dituhui.com
     - +.dituw.net
     - +.dituwuyou.com
@@ -29651,7 +29641,6 @@ payload:
     - +.diyosl.com
     - +.diypda.com
     - +.diyring.cc
-    - +.diywoju.com
     - +.diyyh.com
     - +.diyzhen.com
     - +.dizalpharma.com
@@ -29785,7 +29774,7 @@ payload:
     - +.dl-kg.com
     - +.dl-meitu.com
     - +.dl-rc.com
-    - +.zzsh21.com
+    - +.zzshe.com
     - +.dl0728.com
     - +.dl23zx.com
     - +.dl2link.com
@@ -30157,7 +30146,7 @@ payload:
     - +.docodgroup.com
     - +.docoi.cc
     - +.docpe.com
-    - +.zzsgjj.com
+    - +.zzsh21.com
     - +.docschina.org
     - +.docshare.org
     - +.docsj.com
@@ -30507,6 +30496,7 @@ payload:
     - +.dotwe.org
     - +.dou.bz
     - +.dou.li
+    - +.dou.top
     - +.dou6.cc
     - +.doubaijiu.com
     - +.douban.com
@@ -30660,10 +30650,10 @@ payload:
     - +.downke.com
     - +.downkr.com
     - +.downkuai.com
+    - +.zzsgjj.com
     - +.zzsggzy.com
     - +.zzsf.com
     - +.zzsey.com
-    - +.zzsdyrmyy.com
     - +.downloads.ltd
     - +.downok.com
     - +.downos.com
@@ -30776,7 +30766,7 @@ payload:
     - +.draftstatic.com
     - +.drageasy.com
     - +.dragon-chem.com
-    - +.zzs5.info
+    - +.zzsdyrmyy.com
     - +.dragon-guide.net
     - +.dragon-hotel.com
     - +.dragonarea.com
@@ -30824,8 +30814,8 @@ payload:
     - +.dreampiggy.com
     - +.dreams-travel.com
     - +.dreamshell.cc
+    - +.zzs5.info
     - +.zzs5.com
-    - +.zzrseng.com
     - +.drearry.com
     - +.dreawer.com
     - +.dressmeup-hk.com
@@ -30939,7 +30929,7 @@ payload:
     - +.dsssp.com
     - +.dsstudio.tech
     - +.dssz.com
-    - +.zzrmyy.com
+    - +.zzrseng.com
     - +.dstcar.com
     - +.dstfsbc.com
     - +.dstguanwang.com
@@ -31347,7 +31337,7 @@ payload:
     - +.dvbbs.net
     - +.dvbcn.com
     - +.dvbei.com
-    - +.zzrcw.net
+    - +.zzrmyy.com
     - +.dvdc100.com
     - +.dvidc.com
     - +.dvkors.com
@@ -32443,7 +32433,6 @@ payload:
     - +.eecnt.com
     - +.eecourse.com
     - +.eecso.com
-    - +.eecxsl.com
     - +.eedevice.com
     - +.eedns.com
     - +.eee-eee.com
@@ -33551,9 +33540,9 @@ payload:
     - +.eurochinesedaily.com
     - +.eurofinscn.com
     - +.europapa.com
-    - +.zzrc.net
+    - +.zzrcw.net
     - +.europewatch.com
-    - +.zzqzz.com
+    - +.zzrc.net
     - +.eursell.com
     - +.eusercenter.com
     - +.eushophq.com
@@ -33739,7 +33728,6 @@ payload:
     - +.exchen.net
     - +.excm.net
     - +.exd.design
-    - +.exdak.com
     - +.exdoll.com
     - +.exeedcars.com
     - +.exexm.com
@@ -34527,7 +34515,6 @@ payload:
     - +.fc0531.com
     - +.fc0633.com
     - +.fc169.net
-    - +.fc187.com
     - +.fc571.com
     - +.fc62.com
     - +.fc811.com
@@ -35744,7 +35731,7 @@ payload:
     - +.fmbimg.com
     - +.fmc123.com
     - +.fmcf.cc
-    - +.zzqxs.com
+    - +.zzqzz.com
     - +.fmd360.com
     - +.fmetro.net
     - +.fmi33.com
@@ -36033,7 +36020,7 @@ payload:
     - +.fpdisplay.com
     - +.fpdvision.com
     - +.fpe-china.com
-    - +.zzqudu.com
+    - +.zzqxs.com
     - +.fpga-china.com
     - +.fpgabbs.com
     - +.fpgakey.com
@@ -36132,7 +36119,7 @@ payload:
     - +.freessl.org
     - +.freestman.com
     - +.freestyle666.com
-    - +.zzquan9.com
+    - +.zzqudu.com
     - +.freetiku.com
     - +.freeuid.com
     - +.freevm.com
@@ -36248,7 +36235,7 @@ payload:
     - +.fs-eliza.com
     - +.fs-qiyun.com
     - +.fs-yld.net
-    - +.zzqss.com
+    - +.zzquan9.com
     - +.fs0757.com
     - +.fs121.com
     - +.fs1982.com
@@ -36525,6 +36512,7 @@ payload:
     - +.fuliti.com
     - +.fuliw.net
     - +.full-way.com
+    - +.0283home.com
     - +.028-xhxgt.com
     - +.027zpw.com
     - +.027zikao.com
@@ -36676,7 +36664,6 @@ payload:
     - +.01yuanma.com
     - +.01yo.com
     - +.01wb.com
-    - +.01w.com
     - +.01teacher.com
     - +.01studio.cc
     - +.01skjj.com
@@ -37258,7 +37245,6 @@ payload:
     - +.g12e.org
     - +.g188.net
     - +.g1d.net
-    - +.g1jnmyj2yu.com
     - +.g1yx.com
     - +.g2.link
     - +.g20chn.org
@@ -37698,7 +37684,7 @@ payload:
     - +.gaspim.com
     - +.gasshow.com
     - +.gastank-china.com
-    - +.zzqklm.com
+    - +.zzqss.com
     - +.gaszx.com
     - +.gate-dhgames.com
     - +.gateface.com
@@ -38444,9 +38430,9 @@ payload:
     - +.geely-motors.com
     - +.geely-test.com
     - +.geely.com
-    - +.zzqiyou.com
+    - +.zzqklm.com
     - +.geely.pe
-    - +.zzqfte.com
+    - +.zzqiyou.com
     - +.geelycv.com
     - +.geelydesign.com
     - +.geelyholding.com
@@ -38578,7 +38564,7 @@ payload:
     - +.genvict.com
     - +.genway.net
     - +.geo-compass.com
-    - +.zzqckj.com
+    - +.zzqfte.com
     - +.geo2k.com
     - +.geoai.com
     - +.geoforcechip.com
@@ -39658,7 +39644,7 @@ payload:
     - +.glnewstar.com
     - +.gloamingtechnology.com
     - +.global-dba.com
-    - +.zzpzh.com
+    - +.zzqckj.com
     - +.global-harbor.com
     - +.global-idc.net
     - +.global-jf.com
@@ -40643,7 +40629,7 @@ payload:
     - +.groupshenxi.com
     - +.growatt.com
     - +.growful.com
-    - +.zzpuke.com
+    - +.zzpzh.com
     - +.growthbegins.com
     - +.growthbox.net
     - +.grpindex.com
@@ -40671,7 +40657,7 @@ payload:
     - +.gs12122.com
     - +.gs14.com
     - +.gs1cn.org
-    - +.zzptech.com
+    - +.zzpuke.com
     - +.gs2012.com
     - +.gs5000.com
     - +.gs6699.com
@@ -40760,7 +40746,7 @@ payload:
     - +.gsstsdgs.com
     - +.gsswtz.com
     - +.gst-china.net
-    - +.zzprotect.com
+    - +.zzptech.com
     - +.gstarcad.com
     - +.gsthq.com
     - +.gstjs.com
@@ -41574,7 +41560,7 @@ payload:
     - +.gvwyuik.com
     - +.gvzen.com
     - +.gw-ec.com
-    - +.zznyy.com
+    - +.zzprotect.com
     - +.gw4.cc
     - +.gw66.vip
     - +.gwacoe.com
@@ -42858,7 +42844,6 @@ payload:
     - +.gxphc.com
     - +.gxphd.com
     - +.gxphj.com
-    - +.gxpiao.com
     - +.gxpingen.com
     - +.gxpinn.com
     - +.gxpjzs.com
@@ -43694,7 +43679,6 @@ payload:
     - +.gyqcw.com
     - +.gyqqd.com
     - +.gyqrmyy.com
-    - +.gyqzby.com
     - +.gyr.cc
     - +.gyrcw.com
     - +.gyrmyy.com
@@ -44393,7 +44377,7 @@ payload:
     - +.h2weilai.com
     - +.h389.com
     - +.h3c.com
-    - +.zznst.com
+    - +.zznyy.com
     - +.h3cfuwuqi.com
     - +.h3dns.net
     - +.h3ue2s.com
@@ -44964,7 +44948,6 @@ payload:
     - +.hanihanrf.com
     - +.hanjea.com
     - +.hanjianbing.org
-    - +.hanjiangsanguo.com
     - +.hanjiaying.com
     - +.hanjie.biz
     - +.hanjjl.com
@@ -45088,7 +45071,7 @@ payload:
     - +.hao120.cc
     - +.hao123-hao123.com
     - +.hao123.com
-    - +.zznah001.com
+    - +.zznst.com
     - +.hao123.net
     - +.hao123.ph
     - +.hao123.sh
@@ -46903,7 +46886,7 @@ payload:
     - +.hexsen.com
     - +.hextower.com
     - +.hexun.com
-    - +.zzmyt.com
+    - +.zznah001.com
     - +.hexuncaizhi.com
     - +.hexuu.com
     - +.heyang.cc
@@ -47246,7 +47229,7 @@ payload:
     - +.hhsw6688hxcdn.com
     - +.hhtmm.com
     - +.hhtravel.com
-    - +.zzmy.net
+    - +.zzmyt.com
     - +.hhtv.cc
     - +.hhup.com
     - +.hhusz.com
@@ -47419,6 +47402,7 @@ payload:
     - +.hiigame.net
     - +.hiiibrand.com
     - +.hiiyun.com
+    - +.hijackorg.net
     - +.hijiangxi.com
     - +.hijiaoshi.com
     - +.hijoys.com
@@ -47703,7 +47687,7 @@ payload:
     - +.hkance.xyz
     - +.hkanews.com
     - +.hkaohua.com
-    - +.zzmxbc.com
+    - +.zzmy.net
     - +.hkbchina.com
     - +.hkca.club
     - +.hkcd.com
@@ -47865,7 +47849,6 @@ payload:
     - +.hljyestar.com
     - +.hljyqnj.com
     - +.hljyushi.com
-    - +.hljyzy.com
     - +.hljzc.net
     - +.hljzl.icu
     - +.hlkd.pro
@@ -48212,7 +48195,6 @@ payload:
     - +.hnmsw.com
     - +.hnmudi.com
     - +.hnmuseum.com
-    - +.hnmyhk.com
     - +.hnmyjt.com
     - +.hnmzbg.com
     - +.hnmzmy.com
@@ -48239,7 +48221,7 @@ payload:
     - +.hnpolice.com
     - +.hnpta.com
     - +.hnptschool.net
-    - +.zzms.com
+    - +.zzmxbc.com
     - +.hnqczy.com
     - +.hnqfseed.com
     - +.hnqinshi.com
@@ -48825,7 +48807,7 @@ payload:
     - +.hopenoah.com
     - +.hoperun.com
     - +.hopes-tech.com
-    - +.zzmlb.com
+    - +.zzms.com
     - +.hopexr.com
     - +.hophingfood.com
     - +.hopoot.com
@@ -49213,7 +49195,7 @@ payload:
     - +.hrgxyy.com
     - +.hrhuiyi.com
     - +.hrhy365.com
-    - +.zzmingtai.com
+    - +.zzmlb.com
     - +.hrjkjt.com
     - +.hrloo.com
     - +.hrm100.com
@@ -51232,7 +51214,6 @@ payload:
     - +.hywx.com
     - +.hyx1927.com
     - +.hyxiang888.xyz
-    - +.hyxny888.com
     - +.hyxrmt.com
     - +.hyxt.com
     - +.hyy99.com
@@ -51789,8 +51770,8 @@ payload:
     - +.i-xinnuo.com
     - +.i-xoron.com
     - +.i-z-e.com
+    - +.zzmingtai.com
     - +.zzmetro.com
-    - +.zzmama.net
     - +.i007.vip
     - +.i027.com
     - +.i0349.com
@@ -52083,6 +52064,7 @@ payload:
     - +.icbc-us.com
     - +.icbc.ae
     - +.icbc.be
+    - +.zzmama.net
     - +.zzlvwang.com
     - +.zzlvjuren.com
     - +.zzluohang.com
@@ -52099,7 +52081,6 @@ payload:
     - +.zzkjgy.com
     - +.zzkehui.com
     - +.zzkcjq.com
-    - +.zzk001.com
     - +.icbc.de
     - +.icbc.eu
     - +.icbc.jp
@@ -52107,8 +52088,8 @@ payload:
     - +.icbcalmaty.kz
     - +.icbcamg.com
     - +.icbcasia.com
+    - +.zzk001.com
     - +.zzjyi.com
-    - +.zzjxbg.com
     - +.icbcina.com
     - +.icbcindia.com
     - +.icbcit.com
@@ -53161,7 +53142,7 @@ payload:
     - +.imagerjt.com
     - +.images-amazon.com
     - +.images-cache.com
-    - +.zzjunzhi.com
+    - +.zzjxbg.com
     - +.imagestoryai.com
     - +.imagetotxt.com
     - +.imagewa.com
@@ -53236,7 +53217,7 @@ payload:
     - +.img.beauty
     - +.img.ink
     - +.img.run
-    - +.zzjsled.com
+    - +.zzjunzhi.com
     - +.img.vin
     - +.img001.com
     - +.img005.com
@@ -53693,7 +53674,7 @@ payload:
     - +.interchinawater.com
     - +.interface003.com
     - +.intergreat.com
-    - +.zzjob88.com
+    - +.zzjsled.com
     - +.internationalbrand.net
     - +.internbird.com
     - +.internetke.com
@@ -53998,7 +53979,7 @@ payload:
     - +.iqinzhou.com
     - +.iqishu.la
     - +.iqiyi.com
-    - +.zzjldsx.com
+    - +.zzjob88.com
     - +.iqiyiedge.com
     - +.iqiyiedge.net
     - +.iqiyih5.com
@@ -54121,7 +54102,6 @@ payload:
     - +.iseekids.com
     - +.isellerpal.com
     - +.isenruan.com
-    - +.isenxwsc.com
     - +.iseoku.com
     - +.isf.ink
     - +.isfashion.com
@@ -54303,8 +54283,8 @@ payload:
     - +.it9g.com
     - +.ita-alliance.com
     - +.itab.link
+    - +.zzjldsx.com
     - +.zzjidi.com
-    - +.zzjianyun.com
     - +.itaconicacid.com
     - +.itaic.org
     - +.itailai.com
@@ -54625,7 +54605,6 @@ payload:
     - +.iwanoutdoor.com
     - +.iwanshow.com
     - +.iwanws.com
-    - +.iwanyl.com
     - +.iwapan.com
     - +.iwatani-gz.com
     - +.iwatch365.com
@@ -55203,7 +55182,7 @@ payload:
     - +.jd-link.com
     - +.jd-zd.com
     - +.jd.co
-    - +.zzjdgcxx.com
+    - +.zzjianyun.com
     - +.jd.com
     - +.jd.hk
     - +.jd.id
@@ -57250,6 +57229,8 @@ payload:
     - +.jixunlyq.com
     - +.jiyaogroup.com
     - +.jiyi.art
+    - +.jiyi.biz
+    - +.jiyi.top
     - +.jiyida-logistics.com
     - +.jiyifa.com
     - +.jiyikj.com
@@ -58998,12 +58979,12 @@ payload:
     - +.juhebang.com
     - +.juhepen.com
     - +.juheweb.com
-    - +.0.zone
+    - +.juhomai.com
     - +.juhome.net
     - +.juhuasuan.com
     - +.juhui581.com
     - +.juhuicloud.com
-    - +.juhuiwan.com
+    - +.0.zone
     - +.juhuiwan.net
     - +.jui.org
     - +.juiceevapes.com
@@ -59147,14 +59128,14 @@ payload:
     - +.junph.com
     - +.junpin.com
     - +.junpin360.com
-    - +.zgjxcad.com
-    - +.028hema.com
-    - +.attendees.link
+    - +.junpinclub.com
+    - +.junpinghui.com
+    - +.junpinhui.com
     - +.junpinmall.com
     - +.junpinzhi.com
-    - +.junqing360.com
-    - +.junrunrenli.com
-    - +.junsaozg.com
+    - +.snapplay.com
+    - +.028ip.com
+    - +.kkdzpt.com
     - +.junshanggame.com
     - +.junshencm.com
     - +.junshi.com
@@ -59481,7 +59462,7 @@ payload:
     - +.jxksw.net
     - +.jxlgjd.com
     - +.jxln.com
-    - +.zzidc.com
+    - +.zzjdgcxx.com
     - +.jxlong.com
     - +.jxlpjt.com
     - +.jxlsxy.com
@@ -59812,6 +59793,7 @@ payload:
     - +.jzkoo.net
     - +.jzlt100.com
     - +.jzmbti.com
+    - +.jzmjtjn.xyz
     - +.jzmlzy.com
     - +.jzmob.com
     - +.jzmsmj.com
@@ -60280,7 +60262,7 @@ payload:
     - +.kaojionline.com
     - +.kaojuan.com
     - +.kaola.com
-    - +.zzicpa.com
+    - +.zzidc.com
     - +.kaola100.com
     - +.kaolacam.net
     - +.kaolacdn.com
@@ -60835,7 +60817,6 @@ payload:
     - +.kgipr.com
     - +.kgnmkj.com
     - +.kgogame.com
-    - +.kgou.cc
     - +.kgrestrg.com
     - +.kgzyy.com
     - +.kh-zx.com
@@ -60924,7 +60905,7 @@ payload:
     - +.kingdaychina.com
     - +.kingdee-soft.com
     - +.kingdee.com
-    - +.zzhybz.com
+    - +.zzicpa.com
     - +.kingdee.org
     - +.kingdeemall.com
     - +.kingdeestar.com
@@ -61140,7 +61121,7 @@ payload:
     - +.kkdict.com
     - +.kkdnsv1.com
     - +.kkdownload.com
-    - +.kkdzpt.com
+    - +.junsaozg.com
     - +.kkeji.com
     - +.kkfesw.com
     - +.kkffdns.com
@@ -61334,6 +61315,7 @@ payload:
     - +.knewsmart.com
     - +.knfeco.com
     - +.knight-un.com
+    - +.knightedge.com
     - +.knightli.com
     - +.knightyoung.asia
     - +.kninebox.com
@@ -61610,7 +61592,7 @@ payload:
     - +.ks365.org
     - +.ks51.com
     - +.ks5u.com
-    - +.zzhx56.com
+    - +.zzhybz.com
     - +.ksapisrv.com
     - +.ksbao.cc
     - +.ksbao.com
@@ -61677,7 +61659,7 @@ payload:
     - +.ksrmyy.org
     - +.ksruanjian.com
     - +.kss4.com
-    - +.zzhuanruan.com
+    - +.zzhx56.com
     - +.kssjkj.com
     - +.ksslxh.com
     - +.kst-cn.com
@@ -61956,7 +61938,6 @@ payload:
     - +.kuajinzhifu.com
     - +.kuakao.com
     - +.kuakao.net
-    - +.kuake666.com
     - +.kuake8.com
     - +.kuamarketer.com
     - +.kuaming.com
@@ -62710,7 +62691,6 @@ payload:
     - +.langxi.xyz
     - +.langxingys.com
     - +.langxiyuyou.com
-    - +.langyabang.com
     - +.langzezs.com
     - +.lanh.love
     - +.lanhaicaijing.com
@@ -62878,7 +62858,7 @@ payload:
     - +.laodublog.com
     - +.laoduo.net
     - +.laoduzhe.com
-    - +.zzhfkm.com
+    - +.zzhuanruan.com
     - +.laofengwei.com
     - +.laofu.online
     - +.laofuzhou.net
@@ -62977,8 +62957,8 @@ payload:
     - +.larkrooms.com
     - +.larksuite-pre.com
     - +.larksuite.com
+    - +.zzhfkm.com
     - +.zzhbgs.com
-    - +.zzhaoz.com
     - +.larksuitecdn.com
     - +.larksuiteimg-boe.com
     - +.larksuiteimg-pre.com
@@ -63021,6 +63001,7 @@ payload:
     - +.lavandehotels.com
     - +.lavapm.com
     - +.lavaradio.com
+    - +.lavdrzv.xyz
     - +.law-lib.com
     - +.law-star.com
     - +.law01.net
@@ -63068,11 +63049,11 @@ payload:
     - +.layui.com
     - +.layuicdn.com
     - +.layz.net
+    - +.zzhaoz.com
     - +.zzhaofang.com
-    - +.zzh789.com
     - +.lazada.com
+    - +.zzh789.com
     - +.zzguifan.com
-    - +.zzguest.com
     - +.lazada.sg
     - +.lazada.vn
     - +.lazcdn.com
@@ -63360,7 +63341,7 @@ payload:
     - +.leapmmw.com
     - +.leapmotor.com
     - +.learn-quantum.com
-    - +.zzgtjtgs.com
+    - +.zzguest.com
     - +.learndiary.com
     - +.learnfuture.com
     - +.learning-archive.org
@@ -63463,7 +63444,7 @@ payload:
     - +.legendsec.com
     - +.legendsemi.com
     - +.legendtkl.com
-    - +.zzgkyy.com
+    - +.zzgtjtgs.com
     - +.legou456.com
     - +.legowechat.com
     - +.legu.cc
@@ -63609,7 +63590,7 @@ payload:
     - +.lenosoft.net
     - +.lenovator.com
     - +.lenovo.com
-    - +.zzgjj.com
+    - +.zzgkyy.com
     - +.lenovo.net
     - +.lenovocloudos.com
     - +.lenovoconnect.com
@@ -63759,7 +63740,7 @@ payload:
     - +.lewenss.com
     - +.lewenxsw.com
     - +.lewifi.com
-    - +.zzgeli.net
+    - +.zzgjj.com
     - +.lexar.com
     - +.lexed.org
     - +.lexiaigame.com
@@ -63770,7 +63751,7 @@ payload:
     - +.lexin001.com
     - +.lexinchina.com
     - +.lexpq.com
-    - +.zzgdapp.com
+    - +.zzgeli.net
     - +.lexue-cloud.com
     - +.lexue.com
     - +.lexueying.com
@@ -64111,7 +64092,7 @@ payload:
     - +.liaobagua.com
     - +.liaocheng.cc
     - +.liaochuo.com
-    - +.zzgd.tv
+    - +.zzgdapp.com
     - +.liaogu.com
     - +.liaogx.com
     - +.liaoing.com
@@ -65004,8 +64985,8 @@ payload:
     - +.livesone.net
     - +.livesupport24x7.com
     - +.liveuc.net
+    - +.zzgd.tv
     - +.zzgcjyzx.com
-    - +.zzfwb.com
     - +.livevideostack.com
     - +.living.ai
     - +.livnj.com
@@ -66464,7 +66445,7 @@ payload:
     - +.lvluowang.com
     - +.lvlvlvyou.com
     - +.lvmae.com
-    - +.zzfriend.com
+    - +.zzfwb.com
     - +.lvmama.com
     - +.lvmenglvye.com
     - +.lvmifo.com
@@ -66508,7 +66489,7 @@ payload:
     - +.lvxing.net
     - +.lvxunlaw.com
     - +.lvxxing.com
-    - +.zzfreshair.com
+    - +.zzfriend.com
     - +.lvye.com
     - +.lvye.org
     - +.lvyestudy.com
@@ -66568,11 +66549,11 @@ payload:
     - +.lwxs.com
     - +.lwxstxt.com
     - +.lwzls.com
-    - +.zzfly.net
+    - +.zzfreshair.com
     - +.lx.pub
     - +.lx.run
     - +.lx138.com
-    - +.zzfeilu.com
+    - +.zzfly.net
     - +.lx598.com
     - +.lxapk.com
     - +.lxbbt.com
@@ -67102,7 +67083,7 @@ payload:
     - +.m-hero.com
     - +.m-rainbow.com
     - +.m.biz
-    - +.zzfcw.com
+    - +.zzfeilu.com
     - +.m1.run
     - +.m123.com
     - +.m1315.com
@@ -67158,7 +67139,7 @@ payload:
     - +.mac69.com
     - +.mac89.com
     - +.macabc.com
-    - +.zzepa.org
+    - +.zzfcw.com
     - +.macapp8.com
     - +.macappbox.com
     - +.macat.vip
@@ -67806,7 +67787,7 @@ payload:
     - +.mate.vip
     - +.mateair.com
     - +.mater-rep.com
-    - +.zzect.com
+    - +.zzepa.org
     - +.matfron.com
     - +.math168.com
     - +.mathartsys.com
@@ -67968,7 +67949,7 @@ payload:
     - +.mblu.com
     - +.mbo-china.com
     - +.mbokee.com
-    - +.zzdtec.com
+    - +.zzect.com
     - +.mbsifu.com
     - +.mbti16cc.com
     - +.mbwxzx.hk
@@ -67994,7 +67975,7 @@ payload:
     - +.mcbbs.net
     - +.mcbeam.pro
     - +.mcc0.com
-    - +.zzdsj.com
+    - +.zzdtec.com
     - +.mccbim.com
     - +.mccchina.com
     - +.mcchina.com
@@ -68003,7 +67984,7 @@ payload:
     - +.mcdchina.net
     - +.mcdsusan.com
     - +.mcdvisa.com
-    - +.zzdnews.com
+    - +.zzdsj.com
     - +.mcearnmore.com
     - +.mcecy.com
     - +.mceebbs.com
@@ -68073,7 +68054,7 @@ payload:
     - +.mczz.net
     - +.md-hmjt.com
     - +.md-pms.com
-    - +.zzdl.com
+    - +.zzdnews.com
     - +.md5ma.com
     - +.md6v3pq.com
     - +.mdapp.tv
@@ -68162,7 +68143,7 @@ payload:
     - +.medebound.com
     - +.medejob.com
     - +.medeming.com
-    - +.zzdkdz.com
+    - +.zzdl.com
     - +.mediastory.cc
     - +.mediatek.com
     - +.mediavorous.com
@@ -68540,7 +68521,7 @@ payload:
     - +.meizhuangbk.com
     - +.meizitu.net
     - +.meizu.com
-    - +.zzdjw.com
+    - +.zzdkdz.com
     - +.meizu.net
     - +.meizuapi.com
     - +.mejorrelojes.com
@@ -68812,7 +68793,7 @@ payload:
     - +.mgmusic.vip
     - +.mgnav.com
     - +.mgongkong.com
-    - +.zzdh.net
+    - +.zzdjw.com
     - +.mgpyh.com
     - +.mgryekby.com
     - +.mgsdk.com
@@ -69050,7 +69031,7 @@ payload:
     - +.midea-group.com
     - +.midea-hotwater.com
     - +.midea.com
-    - +.zzdengji.com
+    - +.zzdh.net
     - +.mideabiomedical.com
     - +.mideadc.com
     - +.mideaepay.com
@@ -69161,7 +69142,6 @@ payload:
     - +.mikesent.net
     - +.mikeyouxi.com
     - +.mikge.com
-    - +.mikger.com
     - +.mikika.com
     - +.miko007.com
     - +.mikoshu.me
@@ -69228,7 +69208,6 @@ payload:
     - +.mimouse.net
     - +.mimvp.com
     - +.minapp.com
-    - +.mincache.com
     - +.mincdn.com
     - +.mincoder.com
     - +.mind-home.net
@@ -69334,7 +69313,6 @@ payload:
     - +.mingtou.com
     - +.mingxf.com
     - +.mingxigu.com
-    - +.mingxingbobbin.com
     - +.mingxingku.com
     - +.mingxinglai.com
     - +.mingxuan.store
@@ -70246,7 +70224,7 @@ payload:
     - +.motimo.com
     - +.motisky.com
     - +.motnt.com
-    - +.zzd.pub
+    - +.zzdengji.com
     - +.moto8.com
     - +.moto8.net
     - +.motomatu.com
@@ -70343,9 +70321,9 @@ payload:
     - +.mplus.tech
     - +.mpmc-china.com
     - +.mpmw.com
+    - +.zzd.pub
     - +.zzcrcgas.com
     - +.zzcomm.com
-    - +.zzcm5.com
     - +.mpoa.vip
     - +.mpopkart.com
     - +.mpronnn.com
@@ -70436,13 +70414,13 @@ payload:
     - +.mscodecloud.com
     - +.msd-facing.com
     - +.msddp.com
-    - +.zzcm2.com
+    - +.zzcm5.com
     - +.msdn.hk
     - +.msdn.im
     - +.msdnxitong.com
     - +.msdpmarathon.com
     - +.msdprc.com
-    - +.zzcm1.com
+    - +.zzcm2.com
     - +.msfpay.com
     - +.msftonlinelab.com
     - +.msgamego.com
@@ -70476,7 +70454,7 @@ payload:
     - +.mspace.cc
     - +.mspacecd.com
     - +.mspharm.com
-    - +.zzcjxy.com
+    - +.zzcm1.com
     - +.msstatic.com
     - +.mst-jc.com
     - +.mst2018.com
@@ -70545,7 +70523,7 @@ payload:
     - +.mtitest.com
     - +.mtizt.com
     - +.mtjiangsu.com
-    - +.zzcjby.com
+    - +.zzcjxy.com
     - +.mtk114.com
     - +.mtkdy.com
     - +.mtketang.com
@@ -70852,7 +70830,7 @@ payload:
     - +.my-ndns.com
     - +.my-qcloud.com
     - +.my-summit.com
-    - +.zzcdsl.com
+    - +.zzcjby.com
     - +.my0511.com
     - +.my0511.net
     - +.my0513.com
@@ -71199,7 +71177,7 @@ payload:
     - +.myunying.com
     - +.myusmile.online
     - +.myvipsalon.com
-    - +.zzcdnx.com
+    - +.zzcdsl.com
     - +.myvsoncloud.com
     - +.mywakao.com
     - +.mywayboo.net
@@ -71931,7 +71909,7 @@ payload:
     - +.neeq.cc
     - +.neets.cc
     - +.neeu.com
-    - +.zzccp.com
+    - +.zzcdnx.com
     - +.neffkb.com
     - +.nei-mao.com
     - +.nei.tm
@@ -71976,7 +71954,7 @@ payload:
     - +.neoease.com
     - +.neoease.org
     - +.neofaith.net
-    - +.zzccom.com
+    - +.zzccp.com
     - +.neohytung.com
     - +.neojos.com
     - +.neolee.com
@@ -72052,7 +72030,6 @@ payload:
     - +.netinfi.net
     - +.netingcn.com
     - +.netitest.com
-    - +.netjue.com
     - +.netkao.com
     - +.netman123.com
     - +.netnoease.com
@@ -72263,12 +72240,11 @@ payload:
     - +.nextrt.com
     - +.nextstudios.com
     - +.nexttao.com
-    - +.nexttix.net
     - +.nextvid.net
     - +.nextworkshop.net
     - +.nextyu.com
     - +.nexus-holding.com
-    - +.zzc9.com
+    - +.zzccom.com
     - +.nexusedgeio.com
     - +.nexushd.org
     - +.neyetwatcher.com
@@ -72486,7 +72462,7 @@ payload:
     - +.niimbot.com
     - +.niiwoo.com
     - +.nikanpian.com
-    - +.zzbzwlkj.com
+    - +.zzc9.com
     - +.nike.host
     - +.nikebiji.com
     - +.nikefans.com
@@ -73858,7 +73834,7 @@ payload:
     - +.nowtop.net
     - +.nowwon.xyz
     - +.nowxz.com
-    - +.zzbtv.com
+    - +.zzbzwlkj.com
     - +.noxgroup.com
     - +.noxnny.com
     - +.noxxxx.com
@@ -74038,7 +74014,7 @@ payload:
     - +.ntmlxm.com
     - +.ntmyexp.com
     - +.ntneuro.org
-    - +.zzbtool.com
+    - +.zzbtv.com
     - +.ntp123.com
     - +.ntp8.com
     - +.ntpcb.com
@@ -74161,7 +74137,7 @@ payload:
     - +.nvcam.net
     - +.nvcong.com
     - +.nvepu.com
-    - +.zzbs.org
+    - +.zzbtool.com
     - +.nvhaiz.com
     - +.nvhuangmm.com
     - +.nvidia-china.com
@@ -74483,9 +74459,9 @@ payload:
     - +.oemnew.com
     - +.oempromo.com
     - +.oemresource.com
+    - +.zzbs.org
     - +.zzboyou.com
     - +.zzboiler.com
-    - +.zzbds.net
     - +.oeob.net
     - +.oepamvxq.com
     - +.oepkgs.net
@@ -74509,10 +74485,10 @@ payload:
     - +.officeaid02.com
     - +.officebai.com
     - +.officebay.net
-    - +.zzbd.org
+    - +.zzbds.net
     - +.officectrl.com
+    - +.zzbd.org
     - +.zzbbs.com
-    - +.zzbaike.com
     - +.officese.com
     - +.officeweb365.com
     - +.officewj.com
@@ -74771,7 +74747,7 @@ payload:
     - +.one-all.com
     - +.one-netbook.com
     - +.one-punch.win
-    - +.zzay.net
+    - +.zzbaike.com
     - +.one918.com
     - +.onealert.com
     - +.oneasp.com
@@ -75141,8 +75117,8 @@ payload:
     - +.orientzj.com
     - +.orientzr.com
     - +.orifound.com
+    - +.zzay.net
     - +.zzairport.com
-    - +.zz9ivb.com
     - +.originalimg.com
     - +.originalkindergarten.com
     - +.originalstatic.com
@@ -75231,7 +75207,7 @@ payload:
     - +.ospp.com
     - +.ospserver.net
     - +.osredm.com
-    - +.zz96269.com
+    - +.zz9ivb.com
     - +.oss-cn-beijing-aliyuncs.com
     - +.oss.link
     - +.oss.so
@@ -75523,14 +75499,14 @@ payload:
     - +.ozsp.com
     - +.ozzyad.com
     - +.p-an.com
-    - +.zz91.com
+    - +.zz96269.com
     - +.p-dragon.com
     - +.p-e-china.com
     - +.p-er.com
     - +.p-pass.com
     - +.p.biz
+    - +.zz91.com
     - +.zz8j.com
-    - +.zz8888bb2222.com
     - +.p023.com
     - +.p0371.com
     - +.p0431.com
@@ -75549,7 +75525,6 @@ payload:
     - +.p2pcq.com
     - +.p2peye.com
     - +.p2peye.net
-    - +.p2pjd.com
     - +.p2psearchers.com
     - +.p2ptouhang.com
     - +.p2pxing.com
@@ -76047,7 +76022,6 @@ payload:
     - +.pcgogo.com
     - +.pcgta.cc
     - +.pch.pub
-    - +.pchealthcheck.net
     - +.pchome.com
     - +.pchome.net
     - +.pchpic.net
@@ -76058,7 +76032,6 @@ payload:
     - +.pcjsq.com
     - +.pcljl.com
     - +.pcmgr-global.com
-    - +.pcmjggc.com
     - +.pcmoe.net
     - +.pcoic.com
     - +.pcoof.com
@@ -76674,7 +76647,7 @@ payload:
     - +.ping-qu.com
     - +.ping99.com
     - +.pingan.com
-    - +.zz6789.com
+    - +.zz8888bb2222.com
     - +.pingancdn.com
     - +.pinganfang.com
     - +.pinganfu.net
@@ -76955,7 +76928,7 @@ payload:
     - +.play-cdn14.com
     - +.play-cdn16.com
     - +.play-cdn20.com
-    - +.zz618.com
+    - +.zz6789.com
     - +.play68.com
     - +.play700.com
     - +.play910.com
@@ -77742,6 +77715,7 @@ payload:
     - +.puercha.cc
     - +.puercn.com
     - +.puerlife.org
+    - +.puersai.com
     - +.puertea.com
     - +.puffergames.com
     - +.pugba.com
@@ -77865,6 +77839,7 @@ payload:
     - +.pw65.cc
     - +.pw88.com
     - +.pwand.com
+    - +.pwjptdg.xyz
     - +.pwjt.com
     - +.pwkss.com
     - +.pwmat.com
@@ -78090,8 +78065,7 @@ payload:
     - +.qcbaas.com
     - +.qcbone.com
     - +.qcc.com
-    - +.zz597.com
-    - +.qcc0.com
+    - +.zz618.com
     - +.qccip.com
     - +.qcckyc.com
     - +.qccost.com
@@ -79222,7 +79196,6 @@ payload:
     - +.qinxue100.com
     - +.qinxue365.com
     - +.qinxuye.me
-    - +.qinyening.com
     - +.qinyi.net
     - +.qinyuanyang.com
     - +.qinyukehuan.com
@@ -79669,7 +79642,7 @@ payload:
     - +.qpzq.net
     - +.qq-xmail.com
     - +.qq.cc
-    - +.zz361.com
+    - +.zz597.com
     - +.qq.com
     - +.qq.design
     - +.qq.do
@@ -79870,7 +79843,7 @@ payload:
     - +.qs71lc6.xyz
     - +.qs921.com
     - +.qsap-group.com
-    - +.zz34.com
+    - +.zz361.com
     - +.qsbank.cc
     - +.qsbbs.net
     - +.qsbdc.com
@@ -79985,7 +79958,7 @@ payload:
     - +.qu67.com
     - +.qua.com
     - +.qualcomm-challenge.com
-    - +.zz314.com
+    - +.zz34.com
     - +.qualtekgz.com
     - +.quan.mx
     - +.quan007.com
@@ -80082,7 +80055,6 @@ payload:
     - +.qubaobei.com
     - +.qubiankeji.com
     - +.qucai.com
-    - +.qucaiti.com
     - +.qucanzhan.com
     - +.quce001.com
     - +.quceaiqing.com
@@ -80533,6 +80505,7 @@ payload:
     - +.qvyue.com
     - +.qw5599.com
     - +.qwbk.cc
+    - +.qwconnect.top
     - +.qwe1e.com
     - +.qweather.com
     - +.qweather.net
@@ -80861,7 +80834,7 @@ payload:
     - +.qzzzg.net
     - +.r-china.net
     - +.r-tms.net
-    - +.zz2z.com
+    - +.zz314.com
     - +.r12345.com
     - +.r147emh.com
     - +.r17.com
@@ -82178,7 +82151,7 @@ payload:
     - +.rsl.cc
     - +.rslg-china.com
     - +.rslicai.com
-    - +.zz2024.com
+    - +.zz2z.com
     - +.rsnmxd.com
     - +.rsnschina.com
     - +.rsplcdcs.com
@@ -82668,7 +82641,7 @@ payload:
     - +.s-xsenyuan.com
     - +.s-yue.com
     - +.s-zone.com
-    - +.zz123456789.xyz
+    - +.zz2024.com
     - +.s0599.com
     - +.s10000.com
     - +.s135.com
@@ -83459,7 +83432,7 @@ payload:
     - +.sciengine.com
     - +.scienjus.com
     - +.scientop.com
-    - +.junpinghui.com
+    - +.scientrans.com
     - +.scienward.net
     - +.scies.org
     - +.scievent.com
@@ -84143,7 +84116,7 @@ payload:
     - +.sdwtqqysj.com
     - +.sdwtqx.com
     - +.sdwtyy.com
-    - +.zz.ci
+    - +.zz123456789.xyz
     - +.sdxawy.com
     - +.sdxgty.com
     - +.sdxhce.com
@@ -84296,7 +84269,7 @@ payload:
     - +.secshow.net
     - +.secsilo.com
     - +.sectigochina.com
-    - +.zz-zigzag.com
+    - +.zz.ci
     - +.secu100.net
     - +.secureqin.net
     - +.securitycn.net
@@ -84723,7 +84696,7 @@ payload:
     - +.sgshero.com
     - +.sgsic.com
     - +.sgsotools.com
-    - +.zz-invest.com
+    - +.zz-zigzag.com
     - +.sgsugou.com
     - +.sgsxw.com
     - +.sgsyxx.net
@@ -84832,7 +84805,6 @@ payload:
     - +.sh-sfc.com
     - +.sh-sgl.com
     - +.sh-shenming.com
-    - +.sh-shenou.com
     - +.sh-shuguang.com
     - +.sh-sict.com
     - +.sh-sinodiet.com
@@ -86086,7 +86058,7 @@ payload:
     - +.shitou.com
     - +.shitouboy.com
     - +.shitourom.com
-    - +.zz-hh.com
+    - +.zz-invest.com
     - +.shituyikao.com
     - +.shiwanbaijiu.com
     - +.shiwang1688.com
@@ -86282,7 +86254,6 @@ payload:
     - +.shodbj.com
     - +.shoegaze.com
     - +.shoeshr.com
-    - +.shoeswheels.net
     - +.shofine.com
     - +.shojo.cc
     - +.shokan.org
@@ -87129,7 +87100,7 @@ payload:
     - +.siad-c.com
     - +.siaedu.net
     - +.siaiyun.com
-    - +.zyzw.com
+    - +.zz-hh.com
     - +.siam.org
     - +.sian.cc
     - +.siaoao.com
@@ -87584,7 +87555,7 @@ payload:
     - +.sinowbs.com
     - +.sinowbs.org
     - +.sinowealth.com
-    - +.zyzl120.com
+    - +.zyzw.com
     - +.sinowel.com
     - +.sinowheelbarrow.com
     - +.sinowinfiber.com
@@ -88349,7 +88320,7 @@ payload:
     - +.snapp.taxi
     - +.snappcloud.io
     - +.snappea.com
-    - +.snapplay.com
+    - +.junqing360.com
     - +.snappmaps.ir
     - +.snaptube.app
     - +.snbcnyjt.com
@@ -88540,7 +88511,7 @@ payload:
     - +.softscdn.com
     - +.softsz.com
     - +.softtest.com
-    - +.zyzkb.net
+    - +.zyzl120.com
     - +.softwarechn.com
     - +.softwarecn.com
     - +.softwarekeyclub.com
@@ -88884,7 +88855,7 @@ payload:
     - +.souqiantu.com
     - +.souqiu8.com
     - +.sour-lemon.com
-    - +.zyzhan.com
+    - +.zyzkb.net
     - +.source3g.com
     - +.sourcecodebeat.com
     - +.sourcecodecap.com
@@ -89417,6 +89388,7 @@ payload:
     - +.stanlyview.com
     - +.staofchina.com
     - +.stapharma.com
+    - +.star-charge.com
     - +.star-elink.com
     - +.star-engine.com
     - +.star-kid.com
@@ -89498,7 +89470,7 @@ payload:
     - +.stat-nba.com
     - +.stat08.com
     - +.stat18.com
-    - +.zyz119.com
+    - +.zyzhan.com
     - +.static163.net
     - +.staticaa.com
     - +.staticdn.net
@@ -89510,7 +89482,7 @@ payload:
     - +.staticsoem.com
     - +.staticswin.com
     - +.stationpc.com
-    - +.zyylee.com
+    - +.zyz119.com
     - +.statsinstall.xyz
     - +.statuslarkoffice.com
     - +.stay-bullish.com
@@ -89612,12 +89584,12 @@ payload:
     - +.stonewiki.com
     - +.stonexp.com
     - +.stor-age.com
-    - +.zyykj168.com
+    - +.zyylee.com
     - +.storcezon.com
     - +.store12.com
     - +.storeapi.net
+    - +.zyykj168.com
     - +.zyyimin.com
-    - +.zyyfy.com
     - +.storkapp.me
     - +.stormorai.com
     - +.story520.com
@@ -90228,7 +90200,7 @@ payload:
     - +.suporpharm.com
     - +.supplierlist.com
     - +.supplywater.com
-    - +.zyydjk.net
+    - +.zyyfy.com
     - +.supreme-oe.com
     - +.supuvalve.com
     - +.supwisdom.com
@@ -90241,7 +90213,7 @@ payload:
     - +.suqun-group.com
     - +.surely.cool
     - +.surerp.com
-    - +.zyydb.com
+    - +.zyydjk.net
     - +.surfacetreatmentgroup.com
     - +.surfacetreatmenttechnology.com
     - +.surfcg.com
@@ -90456,7 +90428,7 @@ payload:
     - +.swt0.com
     - +.swtpu.com
     - +.swufe-online.com
-    - +.zyxzyyy.com
+    - +.zyydb.com
     - +.swwy.com
     - +.swxk.cc
     - +.swxxvr.com
@@ -90575,7 +90547,6 @@ payload:
     - +.sxjntech.com
     - +.sxjtyhjt.com
     - +.sxjwlkj.com
-    - +.sxjwxs.com
     - +.sxjxdyqfw.com
     - +.sxjybk.com
     - +.sxjzxww.com
@@ -92061,7 +92032,6 @@ payload:
     - +.taisantech.com
     - +.taisenfurniture.com
     - +.taishangroup.com
-    - +.taishangshiwu.com
     - +.taishansports.com
     - +.taishanxq.com
     - +.taishanyy.com
@@ -92179,6 +92149,7 @@ payload:
     - +.tangkabj.com
     - +.tanglei.name
     - +.tangmi.net
+    - +.tangmingint.com
     - +.tangongye.com
     - +.tangpai.cc
     - +.tangping.com
@@ -92236,7 +92207,7 @@ payload:
     - +.tanwuapp.com
     - +.tanxingfuli.com
     - +.tanxinyu.work
-    - +.zyxyfy.com
+    - +.zyxzyyy.com
     - +.tanxuling.com
     - +.tanyu.mobi
     - +.tanyuantech.com
@@ -92407,7 +92378,7 @@ payload:
     - +.taoxiangyoushu.com
     - +.taoxiaolu.com
     - +.taoxie.com
-    - +.zyxye.com
+    - +.zyxyfy.com
     - +.taoxuemei.com
     - +.taoxv.com
     - +.taoyi-support.com
@@ -92910,7 +92881,6 @@ payload:
     - +.telsda.com
     - +.telu.net
     - +.telunsu.net
-    - +.telunxiaosu.fun
     - +.tem.pw
     - +.temaiapi.com
     - +.temaiku.com
@@ -92931,9 +92901,9 @@ payload:
     - +.tencent-gcloud.com
     - +.tencent-gf.com
     - +.tencent-stock.com
-    - +.zyxxlyg.com
+    - +.zyxye.com
     - +.tencent.com
-    - +.zyxuan.org
+    - +.zyxxlyg.com
     - +.tencent.design
     - +.tencent.net
     - +.tencentads.com
@@ -93218,7 +93188,7 @@ payload:
     - +.th-sjy.com
     - +.th-water.net
     - +.th.app
-    - +.zyxr.com
+    - +.zyxuan.org
     - +.th38.com
     - +.th99.com
     - +.thailycare.com
@@ -93305,7 +93275,7 @@ payload:
     - +.thenextravelmarket.com
     - +.theoborn.com
     - +.theorychina.org
-    - +.zyxmmovie.com
+    - +.zyxr.com
     - +.thepoemforyou.com
     - +.thepresidentialhotel.com
     - +.thepsychscrivener.com
@@ -93613,7 +93583,6 @@ payload:
     - +.tianshiyiyuan.com
     - +.tianshizhisheng.net
     - +.tianshugame.com
-    - +.tianshuizhaopin.com
     - +.tianshungroup.com
     - +.tiansu-china.com
     - +.tiantaichina.com
@@ -94168,7 +94137,7 @@ payload:
     - +.tk-rays.com
     - +.tk-xiong.com
     - +.tk-zx.com
-    - +.zyxintuo.com
+    - +.zyxmmovie.com
     - +.tk163.com
     - +.tk233.xyz
     - +.tk315.com
@@ -94348,7 +94317,7 @@ payload:
     - +.tnettms.com
     - +.tnfn.net
     - +.tngcjx.com
-    - +.zyxhmm.com
+    - +.zyxintuo.com
     - +.tnodenow.com
     - +.tnong.com
     - +.tnsou.com
@@ -94492,7 +94461,7 @@ payload:
     - +.tonghuan.com
     - +.tonghuiqiye.com
     - +.tongji.com
-    - +.zywxpress.com
+    - +.zyxhmm.com
     - +.tongjia.com
     - +.tongjiai.com
     - +.tongjijs.com
@@ -94691,6 +94660,7 @@ payload:
     - +.toppdu.com
     - +.topperuse.com
     - +.topping.pro
+    - +.toppingaudio.com
     - +.toppollen.com
     - +.toppps.com
     - +.toppridehk.com
@@ -94784,7 +94754,7 @@ payload:
     - +.touchjoin.com
     - +.touchjoint.com
     - +.touchmark.art
-    - +.zywxgames.com
+    - +.zywxpress.com
     - +.touchpal.com
     - +.touchsh.com
     - +.touchsprite.com
@@ -94902,6 +94872,7 @@ payload:
     - +.tpadx.com
     - +.tpbook.com
     - +.tpccoo.com
+    - +.tpdz.net
     - +.tpfangchan.com
     - +.tphdled.com
     - +.tpjhr.com
@@ -95035,7 +95006,7 @@ payload:
     - +.tratamientoalcohol.com
     - +.tratao.com
     - +.travel-x.cc
-    - +.zywvvd.com
+    - +.zywxgames.com
     - +.travelgo.com
     - +.traveling-exhibitions.com
     - +.travellaureate.com
@@ -95713,7 +95684,7 @@ payload:
     - +.turingdi.com
     - +.turinggear.com
     - +.turingtopia.com
-    - +.zywtc.com
+    - +.zywvvd.com
     - +.turnitinuk.net
     - +.turtle-sir.com
     - +.turui-robots.com
@@ -95961,7 +95932,7 @@ payload:
     - +.txwestart.com
     - +.txwm.com
     - +.txwy.com
-    - +.zywsw.com
+    - +.zywtc.com
     - +.txxbxx.com
     - +.txxy.com
     - +.txxzc.com
@@ -96243,7 +96214,7 @@ payload:
     - +.uao-online.com
     - +.uao.so
     - +.uaomprvw.com
-    - +.zywjw.com
+    - +.zywsw.com
     - +.uauc.net
     - +.uavtjxh.com
     - +.uavvv.com
@@ -96463,6 +96434,7 @@ payload:
     - +.ugsnx.com
     - +.ugtemfeu.com
     - +.ugubl.net
+    - +.ugurl.cc
     - +.ugxsd.com
     - +.uhaom.com
     - +.uhaozu.com
@@ -96646,7 +96618,6 @@ payload:
     - +.unachina.org
     - +.unaming.info
     - +.unaming.net
-    - +.unasdwarfs.com
     - +.unbank.info
     - +.unbcomm.com
     - +.uncbd.com
@@ -96798,7 +96769,7 @@ payload:
     - +.unpmcc.com
     - +.unqu.com
     - +.unsedu.com
-    - +.zyvqb.com
+    - +.zywjw.com
     - +.unshan.com
     - +.unspay.com
     - +.unsuv.com
@@ -96861,8 +96832,8 @@ payload:
     - +.upchina.com
     - +.upchinapro.com
     - +.upchinaproduct.com
+    - +.zyvqb.com
     - +.zyun.vip
-    - +.zyue.com
     - +.update8.com
     - +.updeals.com
     - +.updf.com
@@ -96888,9 +96859,9 @@ payload:
     - +.uplooking.com
     - +.upluck.cc
     - +.upnono.com
+    - +.zyue.com
     - +.zyucan.com
     - +.zytuozhan.com
-    - +.zytm913.com
     - +.upowerchain.com
     - +.uppershop.hk
     - +.upppt.com
@@ -97367,7 +97338,7 @@ payload:
     - +.vankang.com
     - +.vanke-hotels.com
     - +.vanke.com
-    - +.zytang.net
+    - +.zytm913.com
     - +.vankeservice.com
     - +.vankeservice.mobi
     - +.vankeweekly.com
@@ -97389,6 +97360,7 @@ payload:
     - +.vapps.me
     - +.vaptcha.com
     - +.vaptcha.net
+    - +.varchserverqa.com
     - +.varena.com
     - +.variflight.com
     - +.varlt.com
@@ -97858,6 +97830,8 @@ payload:
     - +.viqq.com
     - +.virbox.com
     - +.vircloud.net
+    - +.vireala.com
+    - +.vireala.net
     - +.virosin.org
     - +.virscan.org
     - +.virtaicloud.com
@@ -97872,6 +97846,7 @@ payload:
     - +.visaai.com
     - +.visabao.com
     - +.visacits.com
+    - +.visactor.com
     - +.visadeguo.com
     - +.visaforchina.org
     - +.visaforkorea-bj.com
@@ -97992,7 +97967,7 @@ payload:
     - +.vlion.mobi
     - +.vlong.tv
     - +.vlongbiz.com
-    - +.zyt8.com
+    - +.zytang.net
     - +.vlrzgf.sbs
     - +.vlspirit.com
     - +.vlss.com
@@ -98156,7 +98131,7 @@ payload:
     - +.volcwaf001.com
     - +.voldp.com
     - +.voleai.com
-    - +.zyszyx.com
+    - +.zyt8.com
     - +.volit.com
     - +.volkswagen-anhui.com
     - +.volleyballchina.com
@@ -98257,7 +98232,7 @@ payload:
     - +.vr42.com
     - +.vrar123.com
     - +.vrbeing.com
-    - +.zysyjqrmyy.com
+    - +.zyszyx.com
     - +.vrbig.com
     - +.vrbrothers.com
     - +.vrbt.mobi
@@ -98294,7 +98269,7 @@ payload:
     - +.vsbclub.com
     - +.vsbuys.com
     - +.vscenevideo.com
-    - +.zysxqgs.com
+    - +.zysyjqrmyy.com
     - +.vscops.com
     - +.vsean.net
     - +.vsearch.club
@@ -98357,7 +98332,7 @@ payload:
     - +.vuepush.com
     - +.vuevideo.net
     - +.vulbox.com
-    - +.zyswsb.com
+    - +.zysxqgs.com
     - +.vultr1.com
     - +.vultrcn.com
     - +.vultrvps.com
@@ -98431,7 +98406,7 @@ payload:
     - +.vynior.com
     - +.vysj.com
     - +.vyuan8.com
-    - +.zystarlink.com
+    - +.zyswsb.com
     - +.vz41.com
     - +.vzan.cc
     - +.vzan.com
@@ -99449,8 +99424,8 @@ payload:
     - +.wechatos.net
     - +.wechatpay-global.com
     - +.wechatpay.com
+    - +.zystarlink.com
     - +.zysljhslt.com
-    - +.zyskys.com
     - +.weclassroom.com
     - +.wecloud.io
     - +.wecloudx.com
@@ -99491,7 +99466,7 @@ payload:
     - +.wegameapi.com
     - +.wegamedeveloper.com
     - +.wegameplus.com
-    - +.zys6d.com
+    - +.zyskys.com
     - +.wegdj.com
     - +.wegene.com
     - +.wego-healthcare.com
@@ -100597,7 +100572,7 @@ payload:
     - +.whnfc.com
     - +.who.cx
     - +.who2o.com
-    - +.zyrykbiandao.com
+    - +.zys6d.com
     - +.whocool.com
     - +.whoisreminder.net
     - +.whoisspy.ai
@@ -100920,7 +100895,7 @@ payload:
     - +.wind.ink
     - +.wind.moe
     - +.windaka.com
-    - +.zyrm.com
+    - +.zyrykbiandao.com
     - +.windcoder.com
     - +.windesign.cc
     - +.windeyenergy.com
@@ -100933,7 +100908,7 @@ payload:
     - +.windows10zj.com
     - +.windows11.pro
     - +.windows7en.com
-    - +.zyrj.org
+    - +.zyrm.com
     - +.windowszj.com
     - +.windpayer.com
     - +.winds.red
@@ -101279,7 +101254,6 @@ payload:
     - +.wls96121.com
     - +.wlsgjslgy.com
     - +.wlski.com
-    - +.wlsrenzaocaoping.com
     - +.wlstock.com
     - +.wlsx.net
     - +.wltieyaoban.com
@@ -101575,7 +101549,7 @@ payload:
     - +.wondersgroup.com
     - +.wondershare.cc
     - +.wondershare.com
-    - +.zyrc168.com
+    - +.zyrj.org
     - +.wondershare.jp
     - +.wondershare.net
     - +.wondersmemory.com
@@ -101889,8 +101863,8 @@ payload:
     - +.wsclsb.net
     - +.wscn.net
     - +.wscoder.com
+    - +.zyrc168.com
     - +.zyrb.com
-    - +.zyrack-china.com
     - +.wscp.shop
     - +.wscrm.net
     - +.wscso.com
@@ -102453,8 +102427,9 @@ payload:
     - +.www-4466666.com
     - +.www-666789.com
     - +.www-76244.com
-    - +.zyqzyyy.com
+    - +.zyrack-china.com
     - +.www.cg
+    - +.zyqzyyy.com
     - +.zyqxt.com
     - +.zyqjs.com
     - +.zyqjg.com
@@ -102468,7 +102443,6 @@ payload:
     - +.zyoulun.com
     - +.zyouexpress.com
     - +.zyou100.com
-    - +.zyops.com
     - +.www2489.com
     - +.www48-365365.com
     - +.www5929.com
@@ -102477,8 +102451,8 @@ payload:
     - +.wwwer.net
     - +.wwwfkw.com
     - +.wwwic.net
+    - +.zyops.com
     - +.zyoogame.com
-    - +.zyoo.net
     - +.wwwruhecom.com
     - +.wwxrmyy.com
     - +.wwxxg.com
@@ -102720,7 +102694,6 @@ payload:
     - +.wy34.com
     - +.wy6000.com
     - +.wya1.com
-    - +.wyaoqing.com
     - +.wybgs.com
     - +.wybosch.com
     - +.wybzdwss.com
@@ -104502,7 +104475,6 @@ payload:
     - +.xiaxs.info
     - +.xiaxs.la
     - +.xiayige.org
-    - +.xiayijian.com
     - +.xiayixing.com
     - +.xiayx.com
     - +.xiazai.live
@@ -105185,7 +105157,6 @@ payload:
     - +.xintiao100.com
     - +.xintiaogroup.com
     - +.xintiaoyouxi.com
-    - +.xintiku.com
     - +.xintongconference.com
     - +.xintongwang.com
     - +.xintrum.com
@@ -106485,7 +106456,6 @@ payload:
     - +.xsmart.com
     - +.xsmart.link
     - +.xsmoe.com
-    - +.xsmore.com
     - +.xsmya.com
     - +.xsn168.com
     - +.xsnsyh.com
@@ -106585,6 +106555,7 @@ payload:
     - +.xtomp.com
     - +.xtong-solar.com
     - +.xtongs.com
+    - +.xtoobmo.xyz
     - +.xtowork.com
     - +.xtqarzip.com
     - +.xtransfer.com
@@ -113013,6 +112984,7 @@ payload:
     - +.z316.com
     - +.z318.com
     - +.z3quant.com
+    - +.z4bgpo.com
     - +.z4gwsoqmcvxt.com
     - +.z574.com
     - +.z5encrypt.com
@@ -113789,7 +113761,7 @@ payload:
     - +.zgjsyw.com
     - +.zgjt518.com
     - +.zgjtb.com
-    - +.junpinclub.com
+    - +.zgjxcad.com
     - +.zgjxjjw.com
     - +.zgjymg.com
     - +.zgjzlw.com
@@ -114518,7 +114490,6 @@ payload:
     - +.zhenxiliangshi.com
     - +.zhenxin2014.com
     - +.zhenxinfu.com
-    - +.zhenxinshengwu.com
     - +.zhenxipin.net
     - +.zhenyangshoes.com
     - +.zhenye.com
@@ -116715,6 +116686,7 @@ payload:
     - +.zlibs.com
     - +.zlingad.com
     - +.zlink-e.com
+    - +.zlinkurl.com
     - +.zlitoa.cc
     - +.zlitoa.com
     - +.zljskb.com
@@ -117867,7 +117839,6 @@ payload:
     - +.zybaoan.com
     - +.zybest.com
     - +.zybird.com
-    - +.zybk6.com
     - +.zybtp.com
     - +.zybuluo.com
     - +.zybwhsb.com
@@ -117950,8 +117921,9 @@ payload:
     - +.zymreal.com
     - +.zyms8.me
     - +.zyoffice.com
-    - +.icbcbr.com.br
-    - +.kssip.msi.com
+    - +.zyoo.net
+    - +.ctrip.com.hk
+    - +.kingdee.com.tw
     - +.www.viveport.com
     - +.www.uz0.xyz
     - +.www.tutorabc.com
@@ -117967,21 +117939,21 @@ payload:
     - +.www.dell-brand.com
     - +.www.com.my
     - +.www.adobe.com
-    - +.123chufa.com.hk
     - +.1888.com.mo
+    - +.71.am.com
     - +.wondershare.com.br
     - +.windowsupdate.microsoft.com
-    - +.71.am.com
+    - +.abcpost.com.au
     - +.whoami.akamai.net
     - +.wegamex.com.hk
     - +.wechatpay.com.my
     - +.wechatpay.com.hk
-    - +.abcpost.com.au
     - +.account.htcvive.com
     - +.afp.adchina.com
-    - +.vrbi.viveport.com
     - +.airoha.com.tw
+    - +.vrbi.viveport.com
     - +.alibabacloud.co.in
+    - +.alibabacloud.com.au
     - +.vankeclub.com.hk
     - +.upos-hz-mirrorakam.akamaized.net
     - +.upos-bstar1-mirrorakam.akamaized.net
@@ -117989,7 +117961,7 @@ payload:
     - +.update.microsoft.com
     - +.upd.kaspersky.com
     - +.unsemi.com.tw
-    - +.alibabacloud.com.au
+    - +.alibabacloud.com.hk
     - +.txwy.com.tw
     - +.turnitin.org.in
     - +.travel6.co.uk
@@ -117999,109 +117971,109 @@ payload:
     - +.tk.anythinktech.com
     - +.thepeak.com.my
     - +.th.bing.com
-    - +.tencent.com.hk
+    - +.img.samsungapps.com
     - +.tencent.co.id
     - +.taoxie.com.tw
     - +.tanxlog.istreamsche.com
     - +.swupdl.adobe.com
-    - +.alibabacloud.com.hk
-    - +.support-cn.samsung.com
     - +.alibabacloud.com.my
+    - +.support-cn.samsung.com
     - +.alibabacloud.com.sg
+    - +.alibabacloud.com.tw
     - +.storage-asset.msi.com
     - +.stats.ipinyou.com
     - +.static.eprintsw.com
     - +.source.tutorabc.com
-    - +.alibabacloud.com.tw
+    - +.androidgo.duapp.com
     - +.sinowealth.com.hk
     - +.sialiagames.com.tw
     - +.shitsu.co.jp
-    - +.androidgo.duapp.com
     - +.api.anythinktech.com
+    - +.api.crisp.chat
     - +.sdx.microsoft.com
     - +.s.zampdsp.com
-    - +.api.crisp.chat
-    - +.r.bing.com
     - +.asset-account.msi.com
+    - +.r.bing.com
     - +.asset-us-store.msi.com
+    - +.asset-vendor-event.msi.com
     - +.qq.cn.com
     - +.qcc.qualcomm.com
     - +.play.craft.moe
     - +.pingan.com.hk
-    - +.asset-vendor-event.msi.com
+    - +.asset.msi.com
     - +.p.bstarstatic.com
     - +.p-bstarstatic.akamaized.net
-    - +.asset.msi.com
+    - +.assets-global.viveport.com
     - +.orig-liveupdate.msi.com
     - +.orig-download.msi.com
     - +.one.edu.kg
-    - +.assets-global.viveport.com
     - +.baidu.com.hk
-    - +.officecdn.microsoft.com
     - +.bankcomm.com.au
+    - +.officecdn.microsoft.com
     - +.bankcomm.com.mo
     - +.bankcomm.com.tw
+    - +.banner668.com.hk
     - +.nvgate16.nvidia.com
     - +.ntp.felixc.at
     - +.noxagile.duapp.com
     - +.nike-inc.com.tw
     - +.nexus.dell.com
-    - +.banner668.com.hk
-    - +.nefficient.co.kr
     - +.blog.htc.com
+    - +.nefficient.co.kr
+    - +.blog.htcvive.com
     - +.my.st.com
     - +.mtk.com.tw
-    - +.blog.htcvive.com
     - +.bosera.com.hk
     - +.brother.co.jp
     - +.ccbintl.com.hk
     - +.ccmdl.adobe.com
     - +.ccmdls.adobe.com
+    - +.cdn-static.farfetch-contents.com
     - +.moto-one.com.hk
     - +.midea.com.tr
     - +.mgplay.com.tw
-    - +.meizu.com.hk
-    - +.iqiyi.demo.uwp
+    - +.cdn.jetbrains.com
+    - +.media.paperclipclub.net
     - +.md-store.com.tw
     - +.mce.msi.com
-    - +.cdn-static.farfetch-contents.com
-    - +.cdn.jetbrains.com
+    - +.cdn.samsung.com
+    - +.cdn.zampdsp.com
     - +.material.istreamsche.com
     - +.macaotourism.gov.mo
     - +.m.travelzoo.com
-    - +.cdn.samsung.com
-    - +.cdn.zampdsp.com
+    - +.china.mintel.com
+    - +.chinatelecom.com.hk
     - +.lvyahoo.com.tw
-    - +.international-gfe.nvidia.com
+    - +.lvmall.com.tw
     - +.liveupdate.msi.com
     - +.liveupdate-cn.msi.com
     - +.liaode.com.tw
-    - +.china.mintel.com
-    - +.chinatelecom.com.hk
     - +.chinatelecom.com.mo
+    - +.chinaunicom.com.hk
+    - +.citics.com.hk
     - +.legion.com.hk
     - +.learn.microsoft.com
     - +.lazada.com.ph
     - +.lazada.com.my
     - +.lazada.co.th
-    - +.images.samsung.com
-    - +.chinaunicom.com.hk
-    - +.citics.com.hk
-    - +.laoevisa.gov.la
-    - +.lvmall.com.tw
+    - +.lazada.co.id
+    - +.classix-unlimited.co.uk
+    - +.international-gfe.nvidia.com
+    - +.iqiyi.demo.uwp
+    - +.kssip.msi.com
     - +.ksair.com.tw
-    - +.kingdee.com.tw
+    - +.clubweixin.samsung.com
     - +.kaola.com.hk
     - +.jxlog.istreamsche.com
+    - +.laoevisa.gov.la
+    - +.cm.fancyapi.com
+    - +.meizu.com.hk
     - +.jd.co.th
-    - +.wwwimages2.adobe.com
-    - +.clubweixin.samsung.com
-    - +.media.paperclipclub.net
     - +.wwwimages.adobe.com
-    - +.classix-unlimited.co.uk
-    - +.lazada.co.id
+    - +.tencent.com.hk
+    - +.images.samsung.com
     - +.icbci.com.hk
-    - +.img.samsungapps.com
+    - +.icbcbr.com.br
     - +.icbc.com.vn
     - +.icbc.com.sg
     - +.icbc.com.qa
@@ -118130,8 +118102,8 @@ payload:
     - +.hao123.com.sg
     - +.h3c.com.hk
     - +.gw.craft.moe
-    - +.cm.fancyapi.com
     - +.cm.ipinyou.com
+    - +.cmbi.com.hk
     - +.growth.ai.srv
     - +.global-download.acer.com
     - +.geo.kaspersky.com
@@ -118146,30 +118118,30 @@ payload:
     - +.europe.com.hk
     - +.dvd2017.com.tw
     - +.dst.gov.mo
-    - +.cmbi.com.hk
     - +.cn-cdn1.skymansion.net
-    - +.dragon-download.msi.com
     - +.cn.bing.com
+    - +.dragon-download.msi.com
+    - +.cn.bing.net
     - +.download.msi.com
     - +.download.microsoft.com
     - +.download-cn.msi.com
     - +.docs.microsoft.com
-    - +.cn.bing.net
+    - +.cn.windowssearch.com
     - +.ditu.live.com
     - +.didimobility.co.jp
     - +.developer.vive.com
     - +.developer.microsoft.com
     - +.developer.htcvive.com
     - +.devblogs.microsoft.com
-    - +.cn.windowssearch.com
     - +.cncc.bingj.com
+    - +.cnimg.elex.com
     - +.dcg.microsoft.com
     - +.datk.anythinktech.com
     - +.datasecurity.htcsense.com
     - +.dam-storage.msi.com
     - +.da.anythinktech.com
     - +.d4z1onkegyrs5.cloudfront.net
-    - +.ctrip.com.hk
+    - +.wwwimages2.adobe.com
     - +.ctrip.co.th
     - +.ctrip.co.kr
     - +.ctrip.co.id
@@ -118181,51 +118153,50 @@ payload:
     - +.copl.com.hk
     - +.contentstore.htcvive.com
     - +.conpak.com.hk
-    - +.cnimg.elex.com
-    - +.mcc460.pub.3gppnetwork.org
     - +.lx.cok.elexapp.com
     - +.wscont2.apps.microsoft.com
     - +.wscont1.apps.microsoft.com
+    - +.vulcan.dl.playstation.net
+    - +.uat1.bfsspadserver.8le8le.com
     - +.cn.pool.ntp.org
     - +.cn.mm.bing.net
-    - +.uat1.bfsspadserver.8le8le.com
     - +.download.visualstudio.microsoft.com
     - +.qsb.browser.miui.srv
-    - +.neofussvr.sslcs.cdngc.net
-    - +.vulcan.dl.playstation.net
     - +.bj1.api.bing.com
-    - +.lx3.cok.elexapp.com
-    - +.cloud-neofussvr.sslcs.cdngc.net
+    - +.neofussvr.sslcs.cdngc.net
+    - +.mcc460.pub.3gppnetwork.org
     - +.cdn.shanghai.nyu.edu
+    - +.cloud-neofussvr.sslcs.cdngc.net
     - +.larksuite.com.ttdns1.com
     - +.larksuite.com.ttdns2.com
-    - +.windbg.download.prss.microsoft.com
-    - +.azurestackhub.download.prss.microsoft.com
-    - +.lexuat.download.prss.microsoft.com
-    - +.lenovo.com.cdn.cloudflare.net
+    - +.lx3.cok.elexapp.com
     - +.itacademyuat.download.prss.microsoft.com
-    - +.myvs.download.prss.microsoft.com
+    - +.azurestackhubuat.download.prss.microsoft.com
+    - +.lex.download.prss.microsoft.com
+    - +.lenovo.com.cdn.cloudflare.net
     - +.mbs.download.prss.microsoft.com
+    - +.myvs.download.prss.microsoft.com
     - +.gst.prod.dl.playstation.net
+    - +.collaborate.download.prss.microsoft.com
     - +.mpnbenefits.download.prss.microsoft.com
     - +.mpnbenefitsrtl.download.prss.microsoft.com
     - +.mpnbenefitsrtluat.download.prss.microsoft.com
-    - +.cbdstest.download.prss.microsoft.com
     - +.msdn.download.prss.microsoft.com
+    - +.cbdstest.download.prss.microsoft.com
+    - +.msdprod-ad.download.prss.microsoft.com
+    - +.dl.delivery.mp.microsoft.com
     - +.collaborateppe.download.prss.microsoft.com
     - +.itacademy.download.prss.microsoft.com
-    - +.dcn01.ps4.update.playstation.net
-    - +.collaborate.download.prss.microsoft.com
     - +.dreamsparkuat.download.prss.microsoft.com
     - +.oemsoc.download.prss.microsoft.com
     - +.oemsocuat.download.prss.microsoft.com
     - +.oemssl.cn.cdn.cloudflare.net
     - +.officemkt.download.prss.microsoft.com
-    - +.azurestackhubuat.download.prss.microsoft.com
-    - +.lex.download.prss.microsoft.com
+    - +.officemktuat.download.prss.microsoft.com
+    - +.lexuat.download.prss.microsoft.com
+    - +.azurestackhub.download.prss.microsoft.com
     - +.azuremigratetest.download.prss.microsoft.com
     - +.azuremigrate.download.prss.microsoft.com
-    - +.officemktuat.download.prss.microsoft.com
     - +.osrelease.download.prss.microsoft.com
     - +.p.cdn.persaas.dell.com
     - +.dreamspark.download.prss.microsoft.com
@@ -118237,12 +118208,12 @@ payload:
     - +.storecorefulfillment.download.prss.microsoft.com
     - +.storeedgefd.dsx.mp.microsoft.com
     - +.surface.download.prss.microsoft.com
-    - +.dl.delivery.mp.microsoft.com
+    - +.msproduct.download.prss.microsoft.com
     - +.vlportal.download.prss.microsoft.com
     - +.volic.download.prss.microsoft.com
     - +.vscode.download.prss.microsoft.com
-    - +.msproduct.download.prss.microsoft.com
-    - +.vz.download.prss.microsoft.com
-    - +.msdprod-ad.download.prss.microsoft.com
     - +.dcn01.ps5.update.playstation.net
+    - +.vz.download.prss.microsoft.com
+    - +.windbg.download.prss.microsoft.com
+    - +.dcn01.ps4.update.playstation.net
     - +.gs2.ww.prod.dl.playstation.net
