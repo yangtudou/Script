@@ -3,7 +3,7 @@
 # 原始文件: cn.yaml
 # 描述: 中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-08-11 11:05 (UTC+8)
+# 更新时间: 2025-08-12 10:49 (UTC+8)
 # =============================================================
 
 payload:
@@ -59169,7 +59169,7 @@ payload:
     - +.junsaozg.com
     - +.kuaishouapp.net
     - +.028ip.com
-    - +.paper120.net
+    - +.paperask.com
     - +.junshi101.com
     - +.junshi881.com
     - +.junshidao.com
@@ -71393,7 +71393,6 @@ payload:
     - +.naiveadmin.com
     - +.naiveblue.com
     - +.naiwch.com
-    - +.naixi.net
     - +.naixuecha.com
     - +.naiyouxuexi.com
     - +.najingtech.com
@@ -75872,8 +75871,8 @@ payload:
     - +.paper-translation.com
     - +.paper.tv
     - +.paper027.com
+    - +.paper120.net
     - +.junshi.com
-    - +.paperask.com
     - +.paperbert.com
     - +.paperbus.com
     - +.paperbye.com
@@ -95621,6 +95620,7 @@ payload:
     - +.tuishujun.com
     - +.tuisnake.com
     - +.tuistone.com
+    - +.tuitui.info
     - +.tuitui99.com
     - +.tuituifang.com
     - +.tuituisoft.com
