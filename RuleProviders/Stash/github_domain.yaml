@@ -3,15 +3,16 @@
 # 原始文件: github.yaml
 # 描述: GitHub 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-08-20 10:41 (UTC+8)
+# 更新时间: 2025-08-21 10:41 (UTC+8)
 # =============================================================
 
 payload:
     - github-cloud.s3.amazonaws.com
-    - +.githubhackathon.com
+    - +.githubcopilot.com
+    - +.npmjs.org
+    - +.atom.io
     - +.ghcr.io
-    - +.githubnext.com
-    - +.githubpreview.dev
+    - +.git.io
     - +.github.blog
     - +.github.com
     - +.github.community
@@ -19,18 +20,18 @@ payload:
     - +.github.io
     - +.githubapp.com
     - +.githubassets.com
-    - +.githubcopilot.com
-    - +.npmjs.org
+    - +.gh.io
     - +.dependabot.com
-    - +.git.io
+    - +.repo.new
+    - +.githubpreview.dev
     - +.githubstatus.com
     - +.githubuniverse.com
     - +.githubusercontent.com
     - +.myoctocat.com
     - +.opensource.guide
-    - +.repo.new
+    - +.githubnext.com
     - +.thegithubshop.com
-    - +.atom.io
+    - +.githubhackathon.com
     - +.npm.community
     - +.npmjs.com
     - +.blob.core.windows.net
