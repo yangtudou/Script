@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-08-26 10:43 (UTC+8)
+# 更新时间: 2025-08-27 10:36 (UTC+8)
 # =============================================================
 
 payload:
@@ -49,8 +49,8 @@ payload:
     - +.xbox
     - +.onedriveupdater
     - +.onedrive
-    - +.yammer.com
-    - +.msftnet.org
+    - +.adaptivecards.io
+    - +.git.io
     - +.microsoft.com
     - +.microsoft.cz
     - +.microsoft.de
@@ -110,7 +110,6 @@ payload:
     - +.crossborderexpansion.com
     - +.docs.com
     - +.dynamics.com
-    - +.edgesuite.net
     - +.efproject.net
     - +.fasttrackreadysupport.com
     - +.fluidpreview.com
@@ -188,7 +187,7 @@ payload:
     - +.momentumms.com
     - +.morphcharts.com
     - +.mpnevolution.com
-    - +.appcenter.ms
+    - +.ms-studiosmedia.com
     - +.ms365surfaceoffer.com
     - +.msads.net
     - +.msauth.net
@@ -202,11 +201,11 @@ payload:
     - +.msftconnecttest.com
     - +.msfteducation.ca
     - +.msftncsi.com
-    - +.apisof.net
+    - +.msftnet.org
     - +.msgamesresearch.com
     - +.msgamestudios.com
     - +.mshome.net
-    - +.msidentity.com
+    - +.appcenter.ms
     - +.msocdn.com
     - +.msturing.org
     - +.msudalosti.com
@@ -283,14 +282,14 @@ payload:
     - +.windowsupdate.com
     - +.winhec.com
     - +.winhec.net
+    - +.yammer.com
     - +.microsoft.ch
-    - +.adaptivecards.io
     - +.api-extractor.com
     - +.npmjs.com
-    - +.azure-dns.info
+    - +.githubcopilot.com
+    - +.githubassets.com
+    - +.msidentity.com
     - +.microsoft.cl
-    - +.ms-studiosmedia.com
-    - +.blazor.net
     - +.botframework.com
     - +.codethemicrobit.com
     - +.devopsassessment.net
@@ -337,9 +336,9 @@ payload:
     - +.vscode-cdn.net
     - +.vscode-unpkg.net
     - +.xamarin.com
-    - +.githubcopilot.com
-    - +.githubassets.com
     - +.thegithubshop.com
+    - +.repo.new
+    - +.opensource.guide
     - +.msocsp.com
     - +.microsoftnews.cc
     - +.microsoftnews.com
@@ -364,13 +363,13 @@ payload:
     - +.1drv.com
     - +.livefilestore.com
     - +.sharepoint.cn
-    - +.repo.new
-    - +.opensource.guide
     - +.myoctocat.com
     - +.githubusercontent.com
     - +.atom.io
     - +.githubstatus.com
     - +.githubpreview.dev
+    - +.githubnext.com
+    - +.githubuniverse.com
     - +.microsoft.by
     - +.gamepass.com
     - +.orithegame.com
@@ -466,7 +465,7 @@ payload:
     - +.tryfunctions.com
     - +.windowsazure.com
     - +.azure-dns.com
-    - +.githubnext.com
+    - +.azure-dns.info
     - +.azure-dns.net
     - +.azure-dns.org
     - +.microsoft.az
@@ -496,12 +495,12 @@ payload:
     - +.office365love.com
     - +.office365tw.com
     - +.renovacionoffice.com
-    - +.githubuniverse.com
+    - +.apisof.net
     - +.githubhackathon.com
     - +.npm.community
     - +.gh.io
     - +.ghcr.io
-    - +.git.io
+    - +.blazor.net
     - +.github.ai
     - +.github.blog
     - +.github.com
@@ -511,12 +510,12 @@ payload:
     - +.githubapp.com
     - +.npmjs.org
     - +.dependabot.com
+    - +.visualstudio.co.uk
     - +.spoprod-a.akamaihd.net
     - +.live.com.au
-    - +.microsoftstore.com.hk
-    - +.skypedata.akadns.net
-    - +.visualstudio.co.uk
     - +.skype-edf.akadns.net
+    - +.skypedata.akadns.net
+    - +.microsoftstore.com.hk
     - +.clarity.ms
     - +.dcg.microsoft.com
     - +.dynamics.cn
