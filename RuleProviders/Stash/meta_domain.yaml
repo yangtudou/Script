@@ -3,7 +3,7 @@
 # 原始文件: meta.yaml
 # 描述: Meta 服务域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-08-29 10:36 (UTC+8)
+# 更新时间: 2025-08-30 10:22 (UTC+8)
 # =============================================================
 
 payload:
@@ -11,6 +11,10 @@ payload:
     - developers.facebook.com
     - +.meta.ai
     - +.meta.com
+    - +.fbmessenger.com
+    - +.m.me
+    - +.messenger.com
+    - +.nbabot.net
     - +.binoculus.com
     - +.buyoculus.com
     - +.ocul.us
@@ -549,10 +553,6 @@ payload:
     - +.onlineinstagram.com
     - +.web-instagram.net
     - +.wwwinstagram.com
-    - +.fbmessenger.com
-    - +.m.me
-    - +.messenger.com
-    - +.nbabot.net
     - +.graph.whatsapp.com
     - +.graph.whatsapp.net
     - +.graph.instagram.com
