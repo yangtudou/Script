@@ -3,7 +3,7 @@
 # 原始文件: meta.yaml
 # 描述: Meta 服务域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-09-04 10:21 (UTC+8)
+# 更新时间: 2025-09-05 10:25 (UTC+8)
 # =============================================================
 
 payload:
@@ -11,8 +11,6 @@ payload:
     - developers.facebook.com
     - +.meta.ai
     - +.meta.com
-    - +.threads.com
-    - +.threads.net
     - +.wa.me
     - +.whatsapp-plus.info
     - +.whatsapp-plus.me
@@ -553,6 +551,8 @@ payload:
     - +.oculusrift.com
     - +.oculusvr.com
     - +.powersunitedvr.com
+    - +.threads.com
+    - +.threads.net
     - +.graph.whatsapp.com
     - +.graph.whatsapp.net
     - +.graph.instagram.com
