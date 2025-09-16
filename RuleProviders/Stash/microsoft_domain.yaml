@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-09-15 10:41 (UTC+8)
+# 更新时间: 2025-09-16 10:22 (UTC+8)
 # =============================================================
 
 payload:
@@ -37,8 +37,8 @@ payload:
     - mscrl.microsoft.com
     - ocsp.microsoft.com
     - oneocsp.microsoft.com
-    - prodforza.blob.core.windows.net
     - flightsimulator.azureedge.net
+    - prodforza.blob.core.windows.net
     - +.microsoft
     - +.hotmail
     - +.office
@@ -285,8 +285,8 @@ payload:
     - +.winhec.net
     - +.microsoft.cat
     - +.aadrm.com
-    - +.elderscrolls.com
-    - +.doom.com
+    - +.mojang.com
+    - +.minecraftshop.com
     - +.xboxab.com
     - +.microsoft.ch
     - +.xboxone.com
@@ -369,9 +369,9 @@ payload:
     - +.office365love.com
     - +.office365tw.com
     - +.renovacionoffice.com
-    - +.bethsoft.com
-    - +.bethesdagamestudios.com
-    - +.bethesda.net
+    - +.minecraftservices.com
+    - +.minecraft.net
+    - +.minecraft-services.net
     - +.githubhackathon.com
     - +.npm.community
     - +.gh.io
@@ -399,7 +399,7 @@ payload:
     - +.githubassets.com
     - +.githubcopilot.com
     - +.npmjs.com
-    - +.beth.games
+    - +.callersbane.com
     - +.adaptivecards.io
     - +.api-extractor.com
     - +.apisof.net
@@ -450,7 +450,7 @@ payload:
     - +.vscode-cdn.net
     - +.vscode-unpkg.net
     - +.xamarin.com
-    - +.flightsimulator.com
+    - +.forzarc.com
     - +.msocsp.com
     - +.microsoftnews.cc
     - +.microsoftnews.com
@@ -475,13 +475,13 @@ payload:
     - +.1drv.com
     - +.livefilestore.com
     - +.sharepoint.cn
-    - +.asobostudio.com
-    - +.mojang.com
-    - +.minecraftshop.com
-    - +.minecraftservices.com
-    - +.minecraft.net
-    - +.minecraft-services.net
-    - +.callersbane.com
+    - +.forzaracingchampionship.com
+    - +.forzamotorsport.net
+    - +.forza.net
+    - +.elderscrolls.com
+    - +.doom.com
+    - +.bethsoft.com
+    - +.bethesdagamestudios.com
     - +.microsoft.az
     - +.gamepass.com
     - +.orithegame.com
@@ -506,10 +506,10 @@ payload:
     - +.xboxservices.com
     - +.xboxstudios.com
     - +.xbx.lv
-    - +.forza.net
-    - +.forzamotorsport.net
-    - +.forzaracingchampionship.com
-    - +.forzarc.com
+    - +.asobostudio.com
+    - +.flightsimulator.com
+    - +.beth.games
+    - +.bethesda.net
     - +.visualstudio.co.uk
     - +.spoprod-a.akamaihd.net
     - +.live.com.au
