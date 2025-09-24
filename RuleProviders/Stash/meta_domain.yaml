@@ -3,7 +3,7 @@
 # 原始文件: meta.yaml
 # 描述: Meta 服务域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-09-23 10:23 (UTC+8)
+# 更新时间: 2025-09-24 10:24 (UTC+8)
 # =============================================================
 
 payload:
@@ -11,40 +11,6 @@ payload:
     - developers.facebook.com
     - +.meta.ai
     - +.meta.com
-    - +.fbmessenger.com
-    - +.m.me
-    - +.messenger.com
-    - +.nbabot.net
-    - +.binoculus.com
-    - +.buyoculus.com
-    - +.ocul.us
-    - +.oculus-china.com
-    - +.oculus.com
-    - +.oculus2014.com
-    - +.oculus3d.com
-    - +.oculusblog.com
-    - +.oculusbrand.com
-    - +.oculuscasino.net
-    - +.oculuscdn.com
-    - +.oculusconnect.com
-    - +.oculusdiving.com
-    - +.oculusforbusiness.com
-    - +.oculusrift.com
-    - +.oculusvr.com
-    - +.powersunitedvr.com
-    - +.threads.com
-    - +.threads.net
-    - +.wa.me
-    - +.whatsapp-plus.info
-    - +.whatsapp-plus.me
-    - +.whatsapp-plus.net
-    - +.whatsapp.cc
-    - +.whatsapp.com
-    - +.whatsapp.info
-    - +.whatsapp.net
-    - +.whatsapp.org
-    - +.whatsapp.tv
-    - +.whatsappbrand.com
     - +.aboutfacebook.com
     - +.accessfacebookfromschool.com
     - +.acebooik.com
@@ -553,7 +519,41 @@ payload:
     - +.onlineinstagram.com
     - +.web-instagram.net
     - +.wwwinstagram.com
-    - +.graph.whatsapp.com
-    - +.graph.whatsapp.net
+    - +.fbmessenger.com
+    - +.m.me
+    - +.messenger.com
+    - +.nbabot.net
+    - +.binoculus.com
+    - +.buyoculus.com
+    - +.ocul.us
+    - +.oculus-china.com
+    - +.oculus.com
+    - +.oculus2014.com
+    - +.oculus3d.com
+    - +.oculusblog.com
+    - +.oculusbrand.com
+    - +.oculuscasino.net
+    - +.oculuscdn.com
+    - +.oculusconnect.com
+    - +.oculusdiving.com
+    - +.oculusforbusiness.com
+    - +.oculusrift.com
+    - +.oculusvr.com
+    - +.powersunitedvr.com
+    - +.threads.com
+    - +.threads.net
+    - +.wa.me
+    - +.whatsapp-plus.info
+    - +.whatsapp-plus.me
+    - +.whatsapp-plus.net
+    - +.whatsapp.cc
+    - +.whatsapp.com
+    - +.whatsapp.info
+    - +.whatsapp.net
+    - +.whatsapp.org
+    - +.whatsapp.tv
+    - +.whatsappbrand.com
     - +.graph.instagram.com
     - +.graph-fallback.instagram.com
+    - +.graph.whatsapp.com
+    - +.graph.whatsapp.net
