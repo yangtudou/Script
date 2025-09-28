@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-09-27 10:19 (UTC+8)
+# 更新时间: 2025-09-28 10:42 (UTC+8)
 # =============================================================
 
 payload:
@@ -309,12 +309,6 @@ payload:
     - +.xboxservices.com
     - +.xboxstudios.com
     - +.xbx.lv
-    - +.callersbane.com
-    - +.minecraft-services.net
-    - +.minecraft.net
-    - +.minecraftservices.com
-    - +.minecraftshop.com
-    - +.mojang.com
     - +.asobostudio.com
     - +.flightsimulator.com
     - +.beth.games
@@ -327,6 +321,12 @@ payload:
     - +.forzamotorsport.net
     - +.forzaracingchampionship.com
     - +.forzarc.com
+    - +.callersbane.com
+    - +.minecraft-services.net
+    - +.minecraft.net
+    - +.minecraftservices.com
+    - +.minecraftshop.com
+    - +.mojang.com
     - +.microsoft.ca
     - +.aadrm.com
     - +.azure-devices-int.net
