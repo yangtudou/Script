@@ -3,7 +3,7 @@
 # 原始文件: clash.yaml
 # 描述: 解决 Adobe 跳激活弹窗
 # 类型: domain
-# 更新时间: 2025-10-16 10:37 (UTC+8)
+# 更新时间: 2025-10-17 10:26 (UTC+8)
 # =============================================================
 
 # These IPs will only block the telemetry check of Adobe apps,
@@ -13,7 +13,7 @@
 # Pop up window? Report at:
 # https://github.com/ignaciocastro/a-dove-is-dumb/issues
 # Or follow updates at https://a.dove.isdumb.one/telegram
-# Last update: 2025-10-16 01:42 UTC
+# Last update: 2025-10-16 22:33 UTC
 payload:
   - ic.adobe.io
   - cc-api-data.adobe.io
@@ -2988,3 +2988,5 @@ payload:
   - exmnl8rrtteq.xwk4b.adobestats.io
   - 421f9dusp01f.lqn0m.adobestats.io
   - cs1n3mo1m.xwk4b.adobestats.io
+  - oxa0bso5f.lqn0m.adobestats.io
+  - 58c0fi9u2.sf7e3.adobestats.io
