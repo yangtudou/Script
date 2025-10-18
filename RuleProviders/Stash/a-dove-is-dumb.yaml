@@ -3,7 +3,7 @@
 # 原始文件: clash.yaml
 # 描述: 解决 Adobe 跳激活弹窗
 # 类型: domain
-# 更新时间: 2025-10-17 10:26 (UTC+8)
+# 更新时间: 2025-10-18 10:21 (UTC+8)
 # =============================================================
 
 # These IPs will only block the telemetry check of Adobe apps,
@@ -13,7 +13,7 @@
 # Pop up window? Report at:
 # https://github.com/ignaciocastro/a-dove-is-dumb/issues
 # Or follow updates at https://a.dove.isdumb.one/telegram
-# Last update: 2025-10-16 22:33 UTC
+# Last update: 2025-10-17 17:42 UTC
 payload:
   - ic.adobe.io
   - cc-api-data.adobe.io
@@ -2990,3 +2990,24 @@ payload:
   - cs1n3mo1m.xwk4b.adobestats.io
   - oxa0bso5f.lqn0m.adobestats.io
   - 58c0fi9u2.sf7e3.adobestats.io
+  - 3mi91v6oh.xwk4b.adobestats.io
+  - mbw8dzoc3.lqn0m.adobestats.io
+  - c3tfkn63hh.adobestats.io
+  - m1yhtp1mjt.adobestats.io
+  - 0xr61783d4.adobestats.io
+  - 1v4tweqtrc.adobestats.io
+  - 309eamer4w.adobestats.io
+  - 4cky5ovfjt.adobestats.io
+  - 5qz2qq5xsv.adobestats.io
+  - 66v9d0tfqd.adobestats.io
+  - bnexl4k9p7.adobestats.io
+  - g4izav8ox2.adobestats.io
+  - ko2pj33dnl.adobestats.io
+  - kx5veamf0v.adobestats.io
+  - m0qnlj0mzy.adobestats.io
+  - q9zw07ofg4.adobestats.io
+  - ry3y5r0d72.adobestats.io
+  - toah3rnrer.adobestats.io
+  - v20gz1x4sb.adobestats.io
+  - zaxkitiyyh.adobestats.io
+  - zt4lgvrs9a.adobestats.io

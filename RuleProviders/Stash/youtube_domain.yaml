@@ -3,10 +3,11 @@
 # 原始文件: youtube.yaml
 # 描述: YouTube 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-10-17 10:26 (UTC+8)
+# 更新时间: 2025-10-18 10:21 (UTC+8)
 # =============================================================
 
 payload:
+    - yt3.googleusercontent.com
     - +.youtube
     - +.youtube.ru
     - +.youtube.az
