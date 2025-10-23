@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-10-22 10:43 (UTC+8)
+# 更新时间: 2025-10-23 10:37 (UTC+8)
 # =============================================================
 
 payload:
@@ -286,8 +286,8 @@ payload:
     - +.winhec.net
     - +.microsoft.cat
     - +.aadrm.com
-    - +.forzarc.com
-    - +.forzaracingchampionship.com
+    - +.mojang.com
+    - +.minecraftshop.com
     - +.microsoftstart.com
     - +.microsoft.ch
     - +.ms-studiosmedia.com
@@ -370,9 +370,9 @@ payload:
     - +.office365love.com
     - +.office365tw.com
     - +.renovacionoffice.com
-    - +.forzamotorsport.net
-    - +.forza.net
-    - +.elderscrolls.com
+    - +.minecraftservices.com
+    - +.minecraft.net
+    - +.minecraft-services.net
     - +.githubhackathon.com
     - +.git.io
     - +.atom.io
@@ -401,7 +401,7 @@ payload:
     - +.npmjs.org
     - +.npm.community
     - +.npmjs.com
-    - +.doom.com
+    - +.callersbane.com
     - +.adaptivecards.io
     - +.api-extractor.com
     - +.apisof.net
@@ -452,7 +452,7 @@ payload:
     - +.vscode-cdn.net
     - +.vscode-unpkg.net
     - +.xamarin.com
-    - +.bethsoft.com
+    - +.forzarc.com
     - +.msocsp.com
     - +.microsoftnews.cc
     - +.microsoftnews.com
@@ -477,13 +477,13 @@ payload:
     - +.1drv.com
     - +.livefilestore.com
     - +.sharepoint.cn
+    - +.forzaracingchampionship.com
+    - +.forzamotorsport.net
+    - +.forza.net
+    - +.elderscrolls.com
+    - +.doom.com
+    - +.bethsoft.com
     - +.bethesdagamestudios.com
-    - +.bethesda.net
-    - +.beth.games
-    - +.flightsimulator.com
-    - +.asobostudio.com
-    - +.mojang.com
-    - +.minecraftshop.com
     - +.microsoft.az
     - +.gamepass.com
     - +.orithegame.com
@@ -508,10 +508,10 @@ payload:
     - +.xboxservices.com
     - +.xboxstudios.com
     - +.xbx.lv
-    - +.callersbane.com
-    - +.minecraft-services.net
-    - +.minecraft.net
-    - +.minecraftservices.com
+    - +.asobostudio.com
+    - +.flightsimulator.com
+    - +.beth.games
+    - +.bethesda.net
     - +.visualstudio.co.uk
     - +.spoprod-a.akamaihd.net
     - +.live.com.au
