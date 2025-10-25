@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-10-24 10:25 (UTC+8)
+# 更新时间: 2025-10-25 10:26 (UTC+8)
 # =============================================================
 
 payload:
@@ -35,8 +35,8 @@ payload:
     - mscrl.microsoft.com
     - ocsp.microsoft.com
     - oneocsp.microsoft.com
-    - prodforza.blob.core.windows.net
     - flightsimulator.azureedge.net
+    - prodforza.blob.core.windows.net
     - azure.microsoft.com
     - azuremarketplace.microsoft.com
     - location.microsoft.com
@@ -424,6 +424,8 @@ payload:
     - +.xboxservices.com
     - +.xboxstudios.com
     - +.xbx.lv
+    - +.asobostudio.com
+    - +.flightsimulator.com
     - +.beth.games
     - +.bethesda.net
     - +.bethesdagamestudios.com
@@ -440,8 +442,6 @@ payload:
     - +.minecraftservices.com
     - +.minecraftshop.com
     - +.mojang.com
-    - +.asobostudio.com
-    - +.flightsimulator.com
     - +.microsoft.be
     - +.aadrm.com
     - +.azure-devices-int.net
