@@ -3,15 +3,15 @@
 # 原始文件: AWAvenue-Ads-Rule-Clash.yaml
 # 描述: 去广告规则
 # 类型: domain
-# 更新时间: 2025-11-03 10:49 (UTC+8)
+# 更新时间: 2025-11-04 10:44 (UTC+8)
 # =============================================================
 
 #Title: AWAvenue Ads Rule
 #--------------------------------------
-#Total lines: 854
+#Total lines: 855
 #Version: 1.6.8-release
-#Update time: 2025-10-31 13:44:46 UTC+8
-#Update content: fix Mosdns_v5.py error
+#Update time: 2025-11-03 17:56:56 UTC+8
+#Update content: add “adashx.m.taobao.com”
 
 #Homepage: https://github.com/TG-Twilight/AWAvenue-Ads-Rule
 #License: https://github.com/TG-Twilight/AWAvenue-Ads-Rule/blob/main/LICENSE
@@ -54,6 +54,7 @@ payload:
   - 'adapi.izuiyou.com'
   - 'adapi.yynetwk.com'
   - 'adashbc.ut.taobao.com'
+  - 'adashx.m.taobao.com'
   - 'adc.hpplay.cn'
   - 'adcdn.hpplay.cn'
   - 'adcdn.tencentmusic.com'
