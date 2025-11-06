@@ -3,7 +3,7 @@
 # 原始文件: geolocation-!cn.yaml
 # 描述: 非中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-11-05 10:44 (UTC+8)
+# 更新时间: 2025-11-06 10:46 (UTC+8)
 # =============================================================
 
 payload:
@@ -680,8 +680,8 @@ payload:
     - +.apple
     - +.and
     - +.amazon
-    - +.jokerlu.asia
-    - +.hentai-books.com
+    - +.jokerlu-go.buzz
+    - +.iyf.tv
     - +.1337x.gd
     - +.1337x.is
     - +.1337x.st
@@ -10940,6 +10940,7 @@ payload:
     - +.fi11tv1.com
     - +.fibank.bg
     - +.umich.edu
+    - +.ficbook.net
     - +.ficeboock.com
     - +.umbrella.com
     - +.fictionmania.tv
@@ -12148,6 +12149,8 @@ payload:
     - +.ggoogle.com
     - +.ggpds.com
     - +.ggpht.com
+    - +.ggsel.com
+    - +.ggsel.net
     - +.ggsrv.com
     - +.ggssl.com
     - +.gh.io
@@ -13317,7 +13320,7 @@ payload:
     - +.tmei-taoyuan.com
     - +.hentai-ani.me
     - +.hentai-archive.com
-    - +.jpvhub.com
+    - +.hentai-books.com
     - +.hentai-chan.com
     - +.hentai-chan.live
     - +.hentai-cosplays.com
@@ -15667,7 +15670,7 @@ payload:
     - +.ixsystems.com
     - +.ixxx.com
     - +.iyalc.com
-    - +.iyf.tv
+    - +.jpopforum.net
     - +.taup.net
     - +.iyouport.com
     - +.iyouport.org
@@ -16060,8 +16063,8 @@ payload:
     - +.joinside.org
     - +.joinsquad.com
     - +.tailscale.io
-    - +.jokerlu-go.buzz
     - +.000webhost.com
+    - +.jokerlu.asia
     - +.jokerlu.world
     - +.jokerlu1.cc
     - +.jokerlu1.info
@@ -16095,10 +16098,10 @@ payload:
     - +.jpboy1069.net
     - +.jpg4.biz
     - +.jpg4.pw
-    - +.jpg4us.net
+    - +.maddenchampionship.com
     - +.tabooporn.tv
-    - +.myatos.net
     - +.12vpn.net
+    - +.jpvhub.com
     - +.jquery.com
     - +.jquerymobile.com
     - +.jqueryui.com
@@ -17527,7 +17530,7 @@ payload:
     - +.madamlive.tv
     - +.madchensex.com
     - +.maddawgjav.net
-    - +.maddenchampionship.com
+    - +.jpg4us.net
     - +.maddenrewards.com
     - +.maddenseason.info
     - +.maddenseason.net
@@ -19278,7 +19281,7 @@ payload:
     - +.myamateurgirls.net
     - +.myamateurtv.com
     - +.myappleid.com
-    - +.jpopforum.net
+    - +.myatos.net
     - +.myaudiocast.com
     - +.myautocad.com
     - +.myautodeskbenefits.com
@@ -23540,7 +23543,7 @@ payload:
     - +.psci-com.ac.uk
     - +.psc.ac.uk
     - +.psa.ac.uk
-    - +.prucomm.ac.uk
+    - +.jpl.nasa.gov
     - +.prs-ltsn.ac.uk
     - +.proxynetwork.org.uk
     - +.researchscotland.ac.uk
@@ -25629,7 +25632,7 @@ payload:
     - +.lwms.ac.uk
     - +.lvv.ac.uk
     - +.lutonsfc.ac.uk
-    - +.jpl.nasa.gov
+    - +.src.ac.uk
     - +.srcf.ucam.org
     - +.lutonacl.ac.uk
     - +.srf.ac.uk
@@ -26388,7 +26391,7 @@ payload:
     - +.jsmc.ac.uk
     - +.tablet-academy.ac.uk
     - +.jrs.ac.uk
-    - +.src.ac.uk
+    - +.prucomm.ac.uk
     - +.jp.hao123.com
     - +.jp-bank.japanpost.jp
     - +.joyobank.co.jp
