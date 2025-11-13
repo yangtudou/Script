@@ -3,7 +3,7 @@
 # 原始文件: microsoft.yaml
 # 描述: Microsoft 域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-11-12 10:44 (UTC+8)
+# 更新时间: 2025-11-13 10:47 (UTC+8)
 # =============================================================
 
 payload:
@@ -14,8 +14,8 @@ payload:
     - statics-marketingsites-eas-ms-com.akamaized.net
     - statics-marketingsites-eus-ms-com.akamaized.net
     - statics-marketingsites-wcus-ms-com.akamaized.net
-    - prodforza.blob.core.windows.net
     - flightsimulator.azureedge.net
+    - prodforza.blob.core.windows.net
     - azure.microsoft.com
     - azuremarketplace.microsoft.com
     - location.microsoft.com
@@ -45,14 +45,13 @@ payload:
     - +.office
     - +.skype
     - +.windows
+    - +.bing
+    - +.azure
     - +.xbox
     - +.onedriveupdater
     - +.onedrive
-    - +.bing
-    - +.azure
-    - +.yammer.com
-    - +.msftnet.org
-    - +.microsoft.cl
+    - +.microsoftnews.cc
+    - +.msgamesresearch.com
     - +.microsoft.com
     - +.microsoft.cz
     - +.microsoft.de
@@ -189,8 +188,8 @@ payload:
     - +.momentumms.com
     - +.morphcharts.com
     - +.mpnevolution.com
-    - +.tellmewhygame.com
-    - +.ms365surfaceoffer.com
+    - +.ms-studiosmedia.com
+    - +.microsoftnewsforkids.com
     - +.msads.net
     - +.msauth.net
     - +.mschallenge2018.com
@@ -203,8 +202,8 @@ payload:
     - +.msftconnecttest.com
     - +.msfteducation.ca
     - +.msftncsi.com
-    - +.renovacionxboxlive.com
-    - +.msgamesresearch.com
+    - +.msftnet.org
+    - +.microsoftnews.org
     - +.msgamestudios.com
     - +.mshome.net
     - +.msidentity.com
@@ -284,13 +283,46 @@ payload:
     - +.windowsupdate.com
     - +.winhec.com
     - +.winhec.net
-    - +.microsoft.cat
-    - +.gamepass.com
-    - +.sharepoint.cn
-    - +.livefilestore.com
-    - +.msdn.com
+    - +.yammer.com
     - +.microsoft.ch
-    - +.ms-studiosmedia.com
+    - +.microsoftnews.com
+    - +.msocsp.com
+    - +.xamarin.com
+    - +.repo.new
+    - +.microsoft.cl
+    - +.ms365surfaceoffer.com
+    - +.microsoftnewsforkids.net
+    - +.microsoftnewsforkids.org
+    - +.microsoftnewskids.com
+    - +.microsoftnewskids.net
+    - +.microsoftnewskids.org
+    - +.msn.com
+    - +.msnewskids.com
+    - +.msnewskids.net
+    - +.msnewskids.org
+    - +.msnkids.com
+    - +.microsoftstart.com
+    - +.start.com
+    - +.microsoft.cat
+    - +.microsoft.ca
+    - +.onedrive.com
+    - +.1drv.com
+    - +.livefilestore.com
+    - +.sharepoint.cn
+    - +.vscode-unpkg.net
+    - +.vscode-cdn.net
+    - +.vscode.dev
+    - +.vsassets.io
+    - +.vfsforgit.org
+    - +.vfsforgit.com
+    - +.visualstudio.net
+    - +.visualstudio.eu
+    - +.visualstudio.co
+    - +.microsoft.by
+    - +.gamepass.com
+    - +.orithegame.com
+    - +.renovacionxboxlive.com
+    - +.tellmewhygame.com
     - +.xbox.co
     - +.xbox.com
     - +.xbox.eu
@@ -310,6 +342,14 @@ payload:
     - +.xboxservices.com
     - +.xboxstudios.com
     - +.xbx.lv
+    - +.asobostudio.com
+    - +.flightsimulator.com
+    - +.beth.games
+    - +.bethesda.net
+    - +.bethesdagamestudios.com
+    - +.bethsoft.com
+    - +.doom.com
+    - +.elderscrolls.com
     - +.forza.net
     - +.forzamotorsport.net
     - +.forzaracingchampionship.com
@@ -320,15 +360,7 @@ payload:
     - +.minecraftservices.com
     - +.minecraftshop.com
     - +.mojang.com
-    - +.asobostudio.com
-    - +.flightsimulator.com
-    - +.beth.games
-    - +.bethesda.net
-    - +.bethesdagamestudios.com
-    - +.bethsoft.com
-    - +.doom.com
-    - +.elderscrolls.com
-    - +.microsoft.ca
+    - +.microsoft.be
     - +.aadrm.com
     - +.azure-devices-int.net
     - +.azure-devices.net
@@ -385,7 +417,7 @@ payload:
     - +.azure-dns.info
     - +.azure-dns.net
     - +.azure-dns.org
-    - +.microsoft.by
+    - +.microsoft.az
     - +.dictate.ms
     - +.sprinklesapp.com
     - +.bing.com
@@ -412,8 +444,7 @@ payload:
     - +.office365love.com
     - +.office365tw.com
     - +.renovacionoffice.com
-    - +.1drv.com
-    - +.onedrive.com
+    - +.visualstudio.com
     - +.githubhackathon.com
     - +.git.io
     - +.atom.io
@@ -437,11 +468,12 @@ payload:
     - +.myoctocat.com
     - +.octocaptcha.com
     - +.opensource.guide
-    - +.repo.new
+    - +.microsoftnews.net
     - +.thegithubshop.com
     - +.npmjs.org
     - +.npm.community
     - +.npmjs.com
+    - +.visualstudio-staging.com
     - +.adaptivecards.io
     - +.api-extractor.com
     - +.apisof.net
@@ -467,7 +499,7 @@ payload:
     - +.microsoftsqlserver.com
     - +.mmdnn.com
     - +.mono-project.com
-    - +.orithegame.com
+    - +.msdn.com
     - +.msinnovationchallenge.com
     - +.mspairlift.com
     - +.msropendata.com
@@ -480,44 +512,12 @@ payload:
     - +.sqlserveronlinux.com
     - +.timelinestoryteller.com
     - +.uwpcommunitytoolkit.com
-    - +.visualstudio-staging.com
-    - +.visualstudio.com
-    - +.visualstudio.co
-    - +.visualstudio.eu
-    - +.visualstudio.net
-    - +.vfsforgit.com
-    - +.vfsforgit.org
-    - +.vsassets.io
-    - +.vscode.dev
-    - +.vscode-cdn.net
-    - +.vscode-unpkg.net
-    - +.xamarin.com
-    - +.microsoft.az
-    - +.msocsp.com
-    - +.microsoftnews.cc
-    - +.microsoftnews.com
-    - +.microsoftnews.net
-    - +.microsoftnews.org
-    - +.microsoftnewsforkids.com
-    - +.microsoftnewsforkids.net
-    - +.microsoftnewsforkids.org
-    - +.microsoftnewskids.com
-    - +.microsoftnewskids.net
-    - +.microsoftnewskids.org
-    - +.msn.com
-    - +.msnewskids.com
-    - +.msnewskids.net
-    - +.msnewskids.org
-    - +.msnkids.com
-    - +.microsoftstart.com
-    - +.start.com
-    - +.microsoft.be
-    - +.live.com.au
-    - +.skypedata.akadns.net
-    - +.skype-edf.akadns.net
-    - +.visualstudio.co.uk
-    - +.microsoftstore.com.hk
     - +.spoprod-a.akamaihd.net
+    - +.live.com.au
+    - +.visualstudio.co.uk
+    - +.skype-edf.akadns.net
+    - +.skypedata.akadns.net
+    - +.microsoftstore.com.hk
     - +.clarity.ms
     - +.dcg.microsoft.com
     - +.dynamics.cn
@@ -587,6 +587,8 @@ payload:
     - vz.download.prss.microsoft.com
     - wscont1.apps.microsoft.com
     - wscont2.apps.microsoft.com
+    - +.microsoftnews.cn
+    - +.msn.cn
     - +.xboxlive.cn
     - +.21vbc.com
     - +.21vbluecloud.com
@@ -686,5 +688,3 @@ payload:
     - +.microsoftreactor.com.cn
     - +.reactorms.com.cn
     - www.microsoft.com
-    - +.microsoftnews.cn
-    - +.msn.cn
