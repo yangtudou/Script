@@ -3,7 +3,7 @@
 # 原始文件: geolocation-!cn.yaml
 # 描述: 非中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-11-21 10:43 (UTC+8)
+# 更新时间: 2025-11-22 10:37 (UTC+8)
 # =============================================================
 
 payload:
@@ -691,8 +691,8 @@ payload:
     - +.apple
     - +.and
     - +.amazon
-    - +.javcl.com
-    - +.tidelift.com
+    - +.javcc.com
+    - +.porno365.website
     - +.1337x.is
     - +.1337x.st
     - +.1337x.to
@@ -6307,7 +6307,7 @@ payload:
     - +.cooliphonecasesstore.com
     - +.yahoo.ps
     - +.coolmonster.net
-    - +.coolncute.com
+    - +.javhdporn.com
     - +.coolsexnew.com
     - +.coolstuffinc.com
     - +.coomer.party
@@ -11106,7 +11106,7 @@ payload:
     - +.hbomaxcdn.com
     - +.hbonow.com
     - +.hbox.jp
-    - +.hbrowse.com
+    - +.javhdhello.com
     - +.hcaptcha.com
     - +.hcaptchastatus.com
     - +.hcbdsm.com
@@ -13370,9 +13370,9 @@ payload:
     - +.javbus22.com
     - +.javbuz.com
     - +.javcc.cc
-    - +.javcc.com
-    - +.javcdn.cc
     - +.000webhost.com
+    - +.javcdn.cc
+    - +.javcl.com
     - +.javct.net
     - +.javcup.com
     - +.javdatabase.com
@@ -13407,11 +13407,11 @@ payload:
     - +.javhd.today
     - +.javhd3x.com
     - +.javhdfree.net
-    - +.javhdhello.com
-    - +.javhdonline.com
-    - +.pypi.org
+    - +.hbrowse.com
     - +.1337x.gd
-    - +.spankingtube.com
+    - +.coolncute.com
+    - +.javhdporn.net
+    - +.javher.com
     - +.javheroine.com
     - +.javhihi.com
     - +.javhip.com
@@ -14630,7 +14630,6 @@ payload:
     - +.lzjscript.com
     - +.lzmtnews.org
     - +.m-power.com
-    - +.m-team.cc
     - +.m.me
     - +.wikipedia.com
     - +.m12.vc
@@ -18742,7 +18741,7 @@ payload:
     - +.porno-erotica.com
     - +.voxcreative.com
     - +.porno365.net
-    - +.porno365.website
+    - +.javhdonline.com
     - +.porno49.com
     - +.pornoaid.com
     - +.pornoamateurlatino.net
@@ -19197,7 +19196,7 @@ payload:
     - +.pycon.org
     - +.pypa.io
     - +.pypi.io
-    - +.javhdporn.com
+    - +.pypi.org
     - +.pypl.com
     - +.pypl.info
     - +.pypl.net
@@ -21096,7 +21095,7 @@ payload:
     - +.spankbang1.com
     - +.spanking.wiki
     - +.spankingstudio.com
-    - +.javher.com
+    - +.spankingtube.com
     - +.spankmonster.com
     - +.spankred3d.com
     - +.spankwire.com
@@ -22330,7 +22329,7 @@ payload:
     - +.tictoc.video
     - +.tidal.com
     - +.tidalhifi.com
-    - +.javhdporn.net
+    - +.tidelift.com
     - +.tiendabestbuy.com
     - +.tiffany-towers.com
     - +.tig-ol-bitties.live
