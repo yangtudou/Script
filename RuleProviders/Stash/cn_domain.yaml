@@ -3,7 +3,7 @@
 # 原始文件: cn.yaml
 # 描述: 中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-11-27 10:44 (UTC+8)
+# 更新时间: 2025-11-28 10:43 (UTC+8)
 # =============================================================
 
 payload:
@@ -52,8 +52,8 @@ payload:
     - +.citic
     - +.baidu
     - +.alipay
-    - +.juzhiliang.com
-    - +.benlong.vip
+    - +.juzhiyuan.com
+    - +.96590.net
     - +.0311hd.com
     - +.0311led.com
     - +.0311wifi.com
@@ -8373,7 +8373,7 @@ payload:
     - +.965373.com
     - +.96558.com
     - +.96567.com
-    - +.96590.net
+    - +.jxln.com
     - +.9663.com
     - +.9665.com
     - +.966599.com
@@ -14521,7 +14521,7 @@ payload:
     - +.benliuxinwen.com
     - +.benlizu.com
     - +.benlkjc.com
-    - +.jxlgjd.com
+    - +.benlong.vip
     - +.benma.com
     - +.benmi.com
     - +.benmu-health.com
@@ -19735,7 +19735,7 @@ payload:
     - +.cgzy.net
     - +.cgzyw.com
     - +.ch-auto.com
-    - +.jxln.com
+    - +.ch-gk.com
     - +.ch-guerrant.com
     - +.ch-tools.com
     - +.ch-water.com
@@ -25280,6 +25280,7 @@ payload:
     - +.cqshyzx.com
     - +.cqsifang.com
     - +.cqsj365.com
+    - +.cqsjb.com
     - +.cqsjbc.com
     - +.cqsjky.com
     - +.cqsjnzx.com
@@ -58516,8 +58517,8 @@ payload:
     - +.juzhentech.com
     - +.juzhenyun.org
     - +.juzhi720.com
+    - +.juzhiliang.com
     - +.0.zone
-    - +.juzhiyuan.com
     - +.juzhongjoy.com
     - +.juzicon.com
     - +.juzicy.com
@@ -58684,10 +58685,10 @@ payload:
     - +.jxkeda.com
     - +.jxkjzb.com
     - +.jxkp.com
-    - +.ly-jz.com
+    - +.jxksw.net
+    - +.wanyuwang.com
     - +.03118888.com
-    - +.ch-gk.com
-    - +.zzfly.net
+    - +.kxxsc.com
     - +.jxlong.com
     - +.jxlpjt.com
     - +.jxlsxy.com
@@ -59466,7 +59467,7 @@ payload:
     - +.kaojionline.com
     - +.kaojuan.com
     - +.kaola.com
-    - +.zzfeilu.com
+    - +.zzfly.net
     - +.kaola100.com
     - +.kaolacam.net
     - +.kaolacdn.com
@@ -60095,7 +60096,7 @@ payload:
     - +.kingdaychina.com
     - +.kingdee-soft.com
     - +.kingdee.com
-    - +.zzfcw.com
+    - +.zzfeilu.com
     - +.kingdee.org
     - +.kingdeemall.com
     - +.kingdeestar.com
@@ -60780,7 +60781,7 @@ payload:
     - +.ks365.org
     - +.ks51.com
     - +.ks5u.com
-    - +.zzepa.org
+    - +.zzfcw.com
     - +.ksapisrv.com
     - +.ksbao.cc
     - +.ksbao.com
@@ -60846,7 +60847,7 @@ payload:
     - +.ksrmyy.org
     - +.ksruanjian.com
     - +.kss4.com
-    - +.zzect.com
+    - +.zzepa.org
     - +.kssjkj.com
     - +.ksslxh.com
     - +.kst-cn.com
@@ -61482,7 +61483,7 @@ payload:
     - +.kxwell.com
     - +.kxwxw.com
     - +.kxx2.com
-    - +.kxxsc.com
+    - +.zzect.com
     - +.kxxxl.com
     - +.kxyyf.com
     - +.ky-express.com
@@ -65734,7 +65735,7 @@ payload:
     - +.lxzrmyy.com
     - +.lxzwedu.com
     - +.ly-eps.com
-    - +.jxksw.net
+    - +.ly-jz.com
     - +.ly-meet.com
     - +.ly-qiche.com
     - +.ly-sky.com
@@ -98377,7 +98378,7 @@ payload:
     - +.wanyumi.com
     - +.wanyunshuju.com
     - +.wanyuproperty.com
-    - +.wanyuwang.com
+    - +.jxlgjd.com
     - +.wanyx.com
     - +.wanzaiwater.com
     - +.wanzcm.com
@@ -102997,6 +102998,7 @@ payload:
     - +.xhkt.tv
     - +.xhlaowu.com
     - +.xhlcsl.com
+    - +.xhlsgs.com
     - +.xhma.com
     - +.xhmedia.com
     - +.xhmwxy.com
@@ -104520,6 +104522,7 @@ payload:
     - +.xinwenku.com
     - +.xinwenlianbo.tv
     - +.xinwo.com
+    - +.xinwuji.com
     - +.xinwulan.com
     - +.xinxe.com
     - +.xinxi28.com
@@ -109592,6 +109595,7 @@ payload:
     - +.yokacdn.com
     - +.yokagames.com
     - +.yokaimg.com
+    - +.yokaverse.com
     - +.yokechina.com
     - +.yokmob.com
     - +.yokong.com
@@ -117138,11 +117142,11 @@ payload:
     - +.laoevisa.gov.la
     - +.la-south-2.myhuaweicloud.com
     - +.icbc.com.pe
+    - +.jxlog.istreamsche.com
     - +.kssip.msi.com
     - +.ksair.com.tw
     - +.kingdee.com.tw
     - +.kaola.com.hk
-    - +.jxlog.istreamsche.com
     - +.jd.co.th
     - +.chinatelecom.com.mo
     - +.chinaunicom.com.hk
