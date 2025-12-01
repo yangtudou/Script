@@ -26,7 +26,7 @@ dns:  #!replace
     - geosite:private
 
 # [本地代理]
-proxies:  #!replace
+proxies:
   - name: ❇️ 全球直连
     type: direct
 
