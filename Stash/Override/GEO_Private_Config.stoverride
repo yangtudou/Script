@@ -1,0 +1,166 @@
+name: geosite + geoip 规则版本
+desc: |-
+  stash 自带的 geoip 数据库不支持特殊名称
+  需要改用 MetaCubeX 的数据库
+  才能实现完全不用 Rule-Set
+version: v20251201.1
+
+# [全局配置]
+mode: rule #!replace
+log-level: info #!replace
+
+# [DNS]
+dns:  #!replace
+  enable: true
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  default-nameserver:
+    - 223.5.5.5
+    - 114.114.114.114
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fake-ip-filter:
+    - geosite:connectivity
+    - geosite:private
+
+# [本地代理]
+proxies:  #!replace
+  - name: ❇️ 全球直连
+    type: direct
+
+# [远程代理集]
+# proxy-providers:
+
+# [策略]
+proxy-groups:  #!replace
+  - name: 选择代理
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+    type: select
+    lazy: true
+    proxies: [香港自动, 台湾自动, 日本自动, 新加坡自动, 美国自动, 手动选择]
+
+  - name: Telegram
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 手动选择
+
+  - name: YouTube
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 日本自动
+      - 美国自动
+
+  - name: Google
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+    type: select
+    lazy: true
+    proxies:
+      - 香港自动
+      - 日本自动
+      - 美国自动
+
+  # 基于地区分组
+  - name: 香港自动
+    filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png
+    interval: 300
+    lazy: true
+    tolerance: 100
+    type: url-test
+    include-all: true
+
+  - name: 台湾自动
+    filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png
+    interval: 300
+    lazy: true
+    tolerance: 100
+    type: url-test
+    include-all: true
+
+  - name: 日本自动
+    filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png
+    interval: 300
+    lazy: true
+    tolerance: 100
+    type: url-test
+    include-all: true
+
+  - name: 新加坡自动
+    filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png
+    interval: 300
+    lazy: true
+    tolerance: 100
+    type: url-test
+    include-all: true
+
+  - name: 美国自动
+    filter: "(?i)(美|🇺🇲|us|states|america|硅)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png
+    interval: 300
+    lazy: true
+    tolerance: 100
+    type: url-test
+    include-all: true
+
+  - name: 其他区域
+    filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
+    include-all: true
+    lazy: true
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AmyTelecom.png
+
+  - name: 手动选择
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png
+    interval: 600
+    lazy: true
+    type: select
+    include-all: null
+    proxies:
+      - ❇️ 全球直连
+      - 其他区域
+
+  - name: 默认
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
+    type: select
+    lazy: true
+    proxies:
+      - ❇️ 全球直连
+      - 选择代理
+
+rules:  #!replace
+  - GEOSITE,private,❇️ 全球直连
+  - GEOSITE,bilibili,❇️ 全球直连
+  - GEOSITE,spotify,香港自动
+  - GEOSITE,github,香港自动
+  - GEOSITE,microsoft,❇️ 全球直连
+  - GEOSITE,speedtest,❇️ 全球直连
+  - GEOSITE,meta,香港自动
+  - GEOSITE,cloudflare,香港自动
+  - GEOSITE,telegram,Telegram
+  - GEOSITE,youtube,YouTube
+  - GEOSITE,google,Google
+  - GEOSITE,apple,❇️ 全球直连
+  - GEOSITE,geolocation-!cn@cn,❇️ 全球直连 # 非中国区域中的直连
+  - GEOSITE,geolocation-!cn,选择代理
+  - GEOSITE,geolocation-cn@!cn,选择代理
+  - GEOSITE,geolocation-cn,❇️ 全球直连
+  - GEOSITE,tld-cn,❇️ 全球直连
+  - GEOIP,private,❇️ 全球直连
+  - GEOIP,apple,❇️ 全球直连
+  - GEOIP,telegram,Telegram
+  - GEOIP,cloudflare,香港自动
+  - GEOIP,google,Google
+  - GEOIP,bilibili,❇️ 全球直连
+  - GEOIP,cn,❇️ 全球直连
+  - MATCH,默认
