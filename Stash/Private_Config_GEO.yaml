@@ -1,0 +1,132 @@
+mode: rule
+log-level: info
+
+dns:
+  enable: true
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  default-nameserver:
+    - 223.5.5.5
+    - 114.114.114.114
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fake-ip-filter:
+    - geosite:connectivity-check
+    - geosite:private
+  nameserver-policy:
+    geosite:cn,private: https://dns.alidns.com/dns-query
+
+proxies:
+  - name: 💚 全球直连
+    type: direct
+
+proxy-providers:
+  机场订阅名称: # 不可以重复
+    interval: 86400
+    url: 机场订阅地址
+    filter: "^(?!.*海外).*"
+
+proxy-groups:
+  - &proxy-groups_config
+    name: 选择代理
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Cat.png
+    type: select
+    proxies: &proxy-groups_config_proxies
+      - 香港自动
+      - 台湾自动
+      - 日本自动
+      - 美国自动
+      - 狮城自动
+    interval: 600
+    lazy: true
+
+  - <<: *proxy-groups_config
+    name: Telegram
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+
+  - <<: *proxy-groups_config
+    name: YouTube
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png
+
+  - <<: *proxy-groups_config
+    name: Google
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+
+  # 基于地区策略
+  - <<: *proxy-group_config
+    name: 香港自动
+    filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png
+    type: url-test
+    include-all: true
+
+  - <<: *proxy-group_config
+    name: 台湾自动
+    filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png
+    type: url-test
+
+  - <<: *proxy-group_config
+    name: 日本自动
+    filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png
+
+  - <<: *proxy-group_config
+    name: 狮城自动
+    filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png
+
+  - <<: *proxy-group_config
+    name: 美国自动
+    filter: "(?i)(美|🇺🇲|us|states|america|硅)"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png
+
+  - <<: *proxy-group_config
+    filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
+    include-all: true
+    name: 其他区域
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AmyTelecom.png
+
+  - <<: *proxy-group_config
+    name: 手动选择
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png
+    proxies:
+      - 💚 全球直连
+      - 其他区域
+
+  - <<: *proxy-group_config
+    name: 默认
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
+    proxies:
+      - 💚 全球直连
+      - 选择代理
+
+rules:
+  - GEOSITE,private,💚 全球直连
+  - GEOSITE,bilibili,💚 全球直连
+  - GEOSITE,spotify,香港自动
+  - GEOSITE,github,香港自动
+  - GEOSITE,microsoft,💚 全球直连
+  - GEOSITE,speedtest,💚 全球直连
+  - GEOSITE,meta,香港自动
+  - GEOSITE,cloudflare,香港自动
+  - GEOSITE,telegram,Telegram
+  - GEOSITE,youtube,YouTube
+  - GEOSITE,google,Google
+  - GEOSITE,apple,💚 全球直连
+  - GEOSITE,geolocation-!cn@cn,💚 全球直连 # 非中国区域中的直连
+  - GEOSITE,geolocation-!cn,选择代理
+  - GEOSITE,geolocation-cn@!cn,选择代理
+  - GEOSITE,geolocation-cn,💚 全球直连
+  - GEOSITE,tld-cn,💚 全球直连
+
+  - GEOIP,private,💚 全球直连
+  - GEOIP,apple,💚 全球直连
+  - GEOIP,telegram,Telegram
+  - GEOIP,cloudflare,香港自动
+  - GEOIP,google,Google
+  - GEOIP,bilibili,💚 全球直连
+  - GEOIP,cn,💚 全球直连
+  - MATCH,默认
