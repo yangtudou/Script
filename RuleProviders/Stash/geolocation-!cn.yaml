@@ -3,7 +3,7 @@
 # 原始文件: geolocation-!cn.yaml
 # 描述: 非中国域名规则
 # 类型: MetaCubeX
-# 更新时间: 2025-12-01 11:10 (UTC+8)
+# 更新时间: 2025-12-02 10:50 (UTC+8)
 # =============================================================
 
 payload:
@@ -692,8 +692,8 @@ payload:
     - +.apple
     - +.android
     - +.amazon
-    - +.javdb.com
-    - +.singtaoopo.com
+    - +.javdisk.com
+    - +.mktdns.com
     - +.12diasderegalosdeitunes.pe
     - +.12joursdecadeauxdeitunes.com
     - +.12vpn.com
@@ -1116,6 +1116,8 @@ payload:
     - +.7mmtv.sx
     - +.7mmtv.tv
     - +.7tb.cc
+    - +.7tv.app
+    - +.7tv.io
     - +.8-d.com
     - +.8008206616.com
     - +.8111y.top
@@ -4809,7 +4811,7 @@ payload:
     - +.boodigogo.com
     - +.yorkbbs.ca
     - +.yopornshop.com
-    - +.book18.org
+    - +.javhub.net
     - +.book4you.org
     - +.bookbrainz.org
     - +.bookclubcorner.com
@@ -4856,7 +4858,7 @@ payload:
     - +.bosharso.net
     - +.boslife.biz
     - +.boslife.net
-    - +.javhihi.com
+    - +.bossae.com
     - +.yolasite.com
     - +.boswp.com
     - +.bot.nu
@@ -5404,6 +5406,7 @@ payload:
     - +.canonical.com
     - +.canonproprinters.com
     - +.canva.com
+    - +.canvastatus.com
     - +.canyu.org
     - +.caobian.info
     - +.caochangqing.com
@@ -11000,6 +11003,8 @@ payload:
     - +.h528.com
     - +.h5dm.com
     - +.h5galgame.me
+    - +.habr.com
+    - +.habrastorage.org
     - +.xiangrikui-app.com
     - +.hacken.cc
     - +.hacker.org
@@ -12161,7 +12166,7 @@ payload:
     - +.x3guide.com
     - +.ibook.com
     - +.ibook.eu
-    - +.javher.com
+    - +.ibook.net
     - +.ibookpartner.com
     - +.ibooksauthor.com
     - +.ibradome.com
@@ -13390,8 +13395,8 @@ payload:
     - +.javcup.com
     - +.javdatabase.com
     - +.javday.tv
+    - +.javdb.com
     - +.000webhost.com
-    - +.javdisk.com
     - +.javdock.com
     - +.javdoe.to
     - +.javdove.com
@@ -13424,12 +13429,12 @@ payload:
     - +.javhdonline.com
     - +.javhdporn.com
     - +.javhdporn.net
-    - +.ibook.net
+    - +.javher.com
+    - +.javheroine.com
+    - +.javhihi.com
+    - +.theintelstore.com
     - +.12diasderegalosdeitunes.hn
-    - +.bossae.com
-    - +.javhip.com
-    - +.javhub.me
-    - +.javhub.net
+    - +.book18.org
     - +.javhuge.com
     - +.javidol.org
     - +.javjack.com
@@ -15247,6 +15252,7 @@ payload:
     - +.metabrainz.org
     - +.metacloud.com
     - +.metacpan.org
+    - +.metacritic.com
     - +.metacubex.one
     - +.metafilter.com
     - +.metalpha.finance
@@ -15796,7 +15802,7 @@ payload:
     - +.weijingsheng.org
     - +.weihuo.org
     - +.mkt.com
-    - +.mktdns.com
+    - +.javhub.me
     - +.mkto-c0100.com
     - +.mktorest.com
     - +.mktroute.com
@@ -19821,6 +19827,7 @@ payload:
     - +.rstatic.net
     - +.rt.com
     - +.rtalabel.org
+    - +.rtbcdn.ru
     - +.rthk.hk
     - +.volvotrucks.ch
     - +.volvotrucks.by
@@ -19871,6 +19878,7 @@ payload:
     - +.rutrecker.net
     - +.rutrk.org
     - +.rutube.ru
+    - +.rutubelist.ru
     - +.ruvideos.net
     - +.rxhj.net
     - +.volvotrucks.at
@@ -20700,7 +20708,7 @@ payload:
     - +.singtaobooks.com
     - +.singtaola.com
     - +.singtaonewscorp.com
-    - +.javheroine.com
+    - +.singtaoopo.com
     - +.singtaousa.com
     - +.sino-monthly.com
     - +.sinoants.com
@@ -21942,6 +21950,7 @@ payload:
     - +.tellme.pw
     - +.tellmewhygame.com
     - +.temetube.xyz
+    - +.temp-mail.org
     - +.temu.com
     - +.tenacy.com
     - +.tenbyfotolia.com
@@ -22108,7 +22117,7 @@ payload:
     - +.theindianleaks.com
     - +.theinitium.com
     - +.theinstagramhack.com
-    - +.theintelstore.com
+    - +.javhip.com
     - +.theinventionworks.com
     - +.theinventionworks.net
     - +.thekarups.com
@@ -23315,6 +23324,8 @@ payload:
     - +.vaultify.info
     - +.vaultify.net
     - +.vaultproject.io
+    - +.vbcdn.com
+    - +.vbcdn.net
     - +.vbejeyv.shop
     - +.vcanedge.com
     - +.vce.com
@@ -23503,7 +23514,7 @@ payload:
     - +.vfsco.us
     - +.vfsforgit.com
     - +.vfsforgit.org
-    - +.viber.com
+    - +.viber.me
     - +.vgcareers.net
     - +.vgg8.com
     - +.vhx.tv
@@ -23517,6 +23528,8 @@ payload:
     - +.viacom.com
     - +.viacomcbs.com
     - +.viacomcbspressexpress.com
+    - +.viber.co
+    - +.viber.com
     - +.miniso.com.es
     - +.sony.com.hk
     - +.vfsco.com.br
