@@ -7,6 +7,8 @@
 #> ✍️ 洋 san 芋
 #> 🕙 last update：2025-12-03
 
+# 全球直连自定义名称
+direct_policy: &direct_policy "💚 全球直连"
 
 # 图标使用
 # 图标库 @Koolson: https://github.com/Koolson/Qure/tree/master/IconSet
@@ -52,7 +54,7 @@ dns:
     geosite:cn: https://dns.alidns.com/dns-query
 
 proxies:
-  - name: 💚 全球直连
+  - name: *direct_policy
     type: DIRECT
 
 proxy-providers:
@@ -72,6 +74,7 @@ proxy-groups:
       - 日本自动
       - 美国自动
       - 狮城自动
+      - *direct_policy
     interval: 600
     lazy: true
 
@@ -91,14 +94,14 @@ proxy-groups:
     name: 手动选择
     icon: *icon_static
     proxies:
-      - 💚 全球直连
+      - *direct_policy
       - 其他区域
 
   - <<: *proxy-groups_config
     name: 默认
     icon: *icon_final
     proxies:
-      - 💚 全球直连
+      - *direct_policy
       - 选择代理
 
     # 基于区域的策略
@@ -138,28 +141,28 @@ proxy-groups:
     icon: *icon_amytelecom
 
 rules:
-  - GEOSITE,private,💚 全球直连
-  - GEOSITE,bilibili,💚 全球直连
+  - GEOSITE,private,*direct_policy
+  - GEOSITE,bilibili,*direct_policy
   - GEOSITE,spotify,香港自动
   - GEOSITE,github,香港自动
-  - GEOSITE,microsoft,💚 全球直连
-  - GEOSITE,speedtest,💚 全球直连
+  - GEOSITE,microsoft,*direct_policy
+  - GEOSITE,speedtest,*direct_policy
   - GEOSITE,meta,香港自动
   - GEOSITE,cloudflare,香港自动
   - GEOSITE,telegram,Telegram
   - GEOSITE,youtube,YouTube
   - GEOSITE,google,Google
-  - GEOSITE,apple,💚 全球直连
-  - GEOSITE,geolocation-!cn@cn,💚 全球直连
+  - GEOSITE,apple,*direct_policy
+  - GEOSITE,geolocation-!cn@cn,*direct_policy
   - GEOSITE,geolocation-!cn,选择代理
   - GEOSITE,geolocation-cn@!cn,选择代理
-  - GEOSITE,geolocation-cn,💚 全球直连
-  - GEOSITE,tld-cn,💚 全球直连
-  - GEOIP,private,💚 全球直连
-  - GEOIP,apple,💚 全球直连
+  - GEOSITE,geolocation-cn,*direct_policy
+  - GEOSITE,tld-cn,*direct_policy
+  - GEOIP,private,*direct_policy
+  - GEOIP,apple,*direct_policy
   - GEOIP,telegram,Telegram
   - GEOIP,cloudflare,香港自动
   - GEOIP,google,Google
-  - GEOIP,bilibili,💚 全球直连
-  - GEOIP,cn,💚 全球直连
+  - GEOIP,bilibili,*direct_policy
+  - GEOIP,cn,*direct_policy
   - MATCH,默认
