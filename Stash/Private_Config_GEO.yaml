@@ -5,22 +5,31 @@
 #  geosite 受限于 Stash 不支持更改，使用了原版
 #>
 #> ✍️ 洋 san 芋
-#> 🕙 last update：2025-12-02
+#> 🕙 last update：2025-12-03
+
 
 # 图标使用
+# 图标库 @Koolson: https://github.com/Koolson/Qure/tree/master/IconSet
+# 一键安装地址: stash://install-icon-set?url=https://fastly.jsdelivr.net/gh/Koolson/Qure/Other/QureColor-All.json
+# 其他图标库
+# Color+ @Orz-3 https://github.com/Orz-3/mini
 icon_url:
-  cat: &icon_cat "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Cat.png"
-  telegram: &icon_telegram "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png"
-  youtube: &icon_youtube "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png"
-  google: &icon_google "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png"
+  # 旗标
   hk: &icon_hk "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png"
-  tw: &icon_tw "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png"
+  tw: &icon_tw "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/China.png"
   jp: &icon_jp "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png"
   sg: &icon_sg "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png"
   us: &icon_us "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png"
-  amytelecom: &icon_amytelecom "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AmyTelecom.png"
-  static: &icon_static "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png"
+  # 常用网站
+  google: &icon_google "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Google_Search.png"
+  youtube: &icon_youtube "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png"
+  telegram: &icon_telegram "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png"
+  # 其他
+  cat: &icon_cat "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Cat.png"
+  proxy: &icon_proxy "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png"
   final: &icon_final "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png"
+  static: &icon_static "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png"
+  amytelecom: &icon_amytelecom "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AmyTelecom.png"
 
 mode: rule
 log-level: info
@@ -40,17 +49,17 @@ dns:
     - geosite:connectivity-check
     - geosite:private
   nameserver-policy:
-    geosite:cn,private: https://dns.alidns.com/dns-query
+    geosite:cn: https://dns.alidns.com/dns-query
 
 proxies:
   - name: 💚 全球直连
     type: DIRECT
 
 proxy-providers:
-  proxy-providers_name: # 远程代理集,名称不可重复
-    interval: 86400
-    url: url
+  proxy-providers_1:
+    url: proxy-providers_1-url
     filter: "^(?!.*海外).*"
+    interval: 86400
 
 proxy-groups:
   - &proxy-groups_config
@@ -66,21 +75,35 @@ proxy-groups:
     interval: 600
     lazy: true
 
-  - !!merge <<: *proxy-groups_config
+  - <<: *proxy-groups_config
     name: Telegram
     icon: *icon_telegram
 
-  - !!merge <<: *proxy-groups_config
+  - <<: *proxy-groups_config
     name: YouTube
     icon: *icon_youtube
 
-  - !!merge <<: *proxy-groups_config
+  - <<: *proxy-groups_config
     name: Google
     icon: *icon_google
 
+  - <<: *proxy-groups_config
+    name: 手动选择
+    icon: *icon_static
+    proxies:
+      - 💚 全球直连
+      - 其他区域
+
+  - <<: *proxy-groups_config
+    name: 默认
+    icon: *icon_final
+    proxies:
+      - 💚 全球直连
+      - 选择代理
+
     # 基于区域的策略
   - &proxy-groups_url-test_config
-    !!merge <<: *proxy-groups_config
+    <<: *proxy-groups_config
     name: 香港自动
     filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
     icon: *icon_hk
@@ -88,45 +111,32 @@ proxy-groups:
     proxies: null
     include-all: true
 
-  - !!merge <<: *proxy-groups_url-test_config
+  - <<: *proxy-groups_url-test_config
     name: 台湾自动
     filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
     icon: *icon_tw
 
-  - !!merge <<: *proxy-groups_url-test_config
+  - <<: *proxy-groups_url-test_config
     name: 日本自动
     filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
     icon: *icon_jp
 
-  - !!merge <<: *proxy-groups_url-test_config
+  - <<: *proxy-groups_url-test_config
     name: 狮城自动
     filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
     icon: *icon_sg
 
-  - !!merge <<: *proxy-groups_url-test_config
+  - <<: *proxy-groups_url-test_config
     name: 美国自动
     filter: "(?i)(美|🇺🇲|us|states|america|硅)"
     icon: *icon_us
 
-  - !!merge <<: *proxy-groups_url-test_config
+  - <<: *proxy-groups_url-test_config
     filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
     include-all: true
     name: 其他区域
     icon: *icon_amytelecom
 
-  - !!merge <<: *proxy-groups_config
-    name: 手动选择
-    icon: *icon_static
-    proxies:
-      - 💚 全球直连
-      - 其他区域
-
-  - !!merge <<: *proxy-groups_config
-    name: 默认
-    icon: *icon_final
-    proxies:
-      - 💚 全球直连
-      - 选择代理
 rules:
   - GEOSITE,private,💚 全球直连
   - GEOSITE,bilibili,💚 全球直连
