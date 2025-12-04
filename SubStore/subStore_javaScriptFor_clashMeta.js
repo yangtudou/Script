@@ -1,9 +1,22 @@
+/**
+* Clash Meta 内核覆写脚本
+* 作者: yangtudou
+* 版本: v1-beta.1
+* 目前仅供私人使用
+*/
+
+/**
+> 更新于 2025-12-04
+### 配置文件参考如下：
+* [mihomo 官方 wiki 的快捷配置](https://github.com/LennoC/Template4Clash/blob/main/mihomoWiki_rule-set_config.yaml)
+* [666OS_MihomoPro_Config.yaml](https://github.com/LennoC/Template4Clash/blob/main/666OS_MihomoPro_Config.yaml)
+*/
+
 function main(config) {
-  /* base config */
   // 全覆盖的方法如下
-  // Object.keys(config).forEach(key => delete config[key]);
   // 不会全覆盖原先的配置
   Object.assign(config, {
+    /* base config */
     // --------------------
     "mixed-port": 7890,
     "ipv6":true,
