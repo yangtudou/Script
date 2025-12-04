@@ -1,4 +1,5 @@
 name: Rule Sync
+
 on:
   schedule:
     - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
@@ -32,7 +33,7 @@ jobs:
           ref: main
           path: a-dove-is-dumb
 
-      - name: 检出 秋风广告规则
+      - name: 检出 AWAvenue 秋风广告规则
         uses: actions/checkout@v4
         with:
           repository: TG-Twilight/AWAvenue-Ads-Rule
@@ -40,7 +41,9 @@ jobs:
           path: AWAvenue-Ads-Rule
           
       - name: 准备目标目录
-        run: mkdir -p rule_sync_temp/RuleProviders/Stash
+        run: |
+          mkdir -p rule_sync_temp/RuleProviders/domain
+          mkdir -p rule_sync_temp/RuleProviders/ip
           
       - name: 处理规则文件
         run: |
@@ -52,37 +55,37 @@ jobs:
           geoip_url="meta-rules-dat/geo/geoip"
           # 文件处理配置数组
           declare -a FILE_MAPPING=(
-            # 格式: 源文件位置（需包含文件名称） | 目标文件名称（包含后缀） | 规则来源 | 规则类型 | 头部描述
-            # 格式: src=$1 | dest=$2 | type=$3 | source=$4 | description=$5
+            # 格式: 源文件位置（需包含文件名称） | 目标文件名称（包含后缀） | 规则来源 | 规则类型   | 头部描述
+            # 格式:   src=$1                | dest=$2              | type=$3 | source=$4 | description=$5
             # -------------------------------
             # ------------------------------- MetaCubeX 部分 Start -------------------------------
-            # DOMAIN 规则 (geosite)
-            "$geosite_url/geolocation-!cn.yaml geolocation-!cn.yaml MetaCubeX domain '非中国域名规则'" # 不用增加 [_domain] 后缀
-            "$geosite_url/cn.yaml cn_domain.yaml MetaCubeX domain '中国域名规则'"
-            "$geosite_url/google.yaml google_domain.yaml MetaCubeX domain 'Google 服务域名规则'"
-            "$geosite_url/spotify.yaml spotify_domain.yaml MetaCubeX domain 'Spotify 域名规则'"
-            "$geosite_url/telegram.yaml telegram_domain.yaml MetaCubeX domain 'Telegram 域名规则'"
-            "$geosite_url/youtube.yaml youtube_domain.yaml MetaCubeX domain 'YouTube 域名规则'"
-            "$geosite_url/github.yaml github_domain.yaml MetaCubeX domain 'GitHub 域名规则'"
-            "$geosite_url/apple.yaml apple_domain.yaml MetaCubeX domain 'Apple 服务域名规则'"
-            "$geosite_url/meta.yaml meta_domain.yaml MetaCubeX domain 'Meta 服务域名规则'"
-            "$geosite_url/cloudflare.yaml cloudflare_domain.yaml MetaCubeX domain 'Cloudflare 域名规则'"
-            "$geosite_url/microsoft.yaml microsoft_domain.yaml MetaCubeX domain 'Microsoft 域名规则'"
-            "$geosite_url/private.yaml private_domain.yaml MetaCubeX domain '私有网络域名规则'"
-            "$geosite_url/speedtest.yaml speedtest_domain.yaml MetaCubeX domain '测速服务域名规则'"
+            # DOMAIN 规则
+            "$geosite_url/geolocation-!cn.yaml domain/geolocation-!cn_domain.yaml MetaCubeX domain '非中国域名规则'"
+            "$geosite_url/cn.yaml cn_domain.yaml domain/MetaCubeX domain '中国域名规则'"
+            "$geosite_url/google.yaml domain/google_domain.yaml MetaCubeX domain 'Google 服务域名规则'"
+            "$geosite_url/spotify.yaml domain/spotify_domain.yaml MetaCubeX domain 'Spotify 域名规则'"
+            "$geosite_url/telegram.yaml domain/telegram_domain.yaml MetaCubeX domain 'Telegram 域名规则'"
+            "$geosite_url/youtube.yaml domain/youtube_domain.yaml MetaCubeX domain 'YouTube 域名规则'"
+            "$geosite_url/github.yaml domain/github_domain.yaml MetaCubeX domain 'GitHub 域名规则'"
+            "$geosite_url/apple.yaml domain/apple_domain.yaml MetaCubeX domain 'Apple 服务域名规则'"
+            "$geosite_url/meta.yaml domain/meta_domain.yaml MetaCubeX domain 'Meta 服务域名规则'"
+            "$geosite_url/cloudflare.yaml domain/cloudflare_domain.yaml MetaCubeX domain 'Cloudflare 域名规则'"
+            "$geosite_url/microsoft.yaml domain/microsoft_domain.yaml MetaCubeX domain 'Microsoft 域名规则'"
+            "$geosite_url/private.yaml domain/private_domain.yaml MetaCubeX domain '私有网络域名规则'"
+            "$geosite_url/speedtest.yaml domain/speedtest_domain.yaml MetaCubeX domain '测速服务域名规则'"
             # -------------------------------
-            # IP 规则 (geoip)
-            "$geoip_url/cloudflare.yaml cloudflare_ip.yaml MetaCubeX ip 'Cloudflare IP 规则'"
-            "$geoip_url/cn.yaml cn_ip.yaml MetaCubeX ip '中国 IP 规则'"
-            "$geoip_url/google.yaml google_ip.yaml MetaCubeX ip 'Google 服务 IP 规则'"
-            "$geoip_url/private.yaml private_ip.yaml MetaCubeX ip '私有网络 IP 规则'"
-            "$geoip_url/telegram.yaml telegram_ip.yaml MetaCubeX ip 'Telegram IP 规则'"
+            # IP 规则
+            "$geoip_url/cloudflare.yaml ip/cloudflare_ip.yaml MetaCubeX ip 'Cloudflare IP 规则'"
+            "$geoip_url/cn.yaml ip/cn_ip.yaml MetaCubeX ip '中国 IP 规则'"
+            "$geoip_url/google.yaml ip/google_ip.yaml MetaCubeX ip 'Google 服务 IP 规则'"
+            "$geoip_url/private.yaml ip/private_ip.yaml MetaCubeX ip '私有网络 IP 规则'"
+            "$geoip_url/telegram.yaml ip/telegram_ip.yaml MetaCubeX ip 'Telegram IP 规则'"
             # ------------------------------- MetaCubeX 部分 End -------------------------------
 
             # a-dove-is-dumb
-            "a-dove-is-dumb/clash.yaml a-dove-is-dumb.yaml domain a-dove-is-dumb '解决 Adobe 跳激活弹窗'"
-            # 秋风广告规则
-            "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml AWAvenue-Ads-Rule-Clash.yaml domain AWAvenue-Ads-Rule-Clash '去广告规则'"
+            "a-dove-is-dumb/clash.yaml domain/a-dove-is-dumb.yaml domain a-dove-is-dumb '解决 Adobe 跳激活弹窗'"
+            # ------------------------------- AWAvenue 秋风广告规则 -------------------------------
+            "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml domain/AWAvenue-Ads-Rule-Clash.yaml domain AWAvenue-Ads-Rule-Clash '去广告规则'"
           )
           
           # 文件处理函数
@@ -118,7 +121,7 @@ jobs:
               else
                 cat "$src"
               fi
-            } > "rule_sync_temp/RuleProviders/Stash/$dest"
+            } > "rule_sync_temp/RuleProviders/$dest"
             
             echo "✅ 处理完成: $dest"
           }
@@ -133,7 +136,8 @@ jobs:
           done
           
           echo "::group::文件处理结果"
-          ls -l rule_sync_temp/RuleProviders/Stash
+          ls -l rule_sync_temp/RuleProviders/domain
+          ls -l rule_sync_temp/RuleProviders/ip
           echo "::endgroup::"
           
       - name: 提交变更
