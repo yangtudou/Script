@@ -61,7 +61,7 @@ jobs:
             # ------------------------------- MetaCubeX 部分 Start -------------------------------
             # DOMAIN 规则
             "$geosite_url/geolocation-!cn.yaml domain/geolocation-!cn_domain.yaml MetaCubeX domain '非中国域名规则'"
-            "$geosite_url/cn.yaml cn_domain.yaml domain/MetaCubeX domain '中国域名规则'"
+            "$geosite_url/cn.yaml domain/cn_domain.yaml MetaCubeX domain '中国域名规则'"
             "$geosite_url/google.yaml domain/google_domain.yaml MetaCubeX domain 'Google 服务域名规则'"
             "$geosite_url/spotify.yaml domain/spotify_domain.yaml MetaCubeX domain 'Spotify 域名规则'"
             "$geosite_url/telegram.yaml domain/telegram_domain.yaml MetaCubeX domain 'Telegram 域名规则'"
