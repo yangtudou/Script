@@ -1,11 +1,10 @@
-> iphone Stash Private Config 
-  iPhone Stash 自用配置，仅供参考
-  规则主要使用了 rule-set
-  规则来源：本仓库拉取其自他仓库
- 
->
-> ✍️ 洋 san 芋
-> 🕙 last update：2025-12-06(UTC+8)
+# > iphone Stash Private Config 
+#   iPhone Stash 自用配置，仅供参考
+#   规则主要使用了 rule-set
+#   规则来源：本仓库拉取其自他仓库 
+# >
+# > ✍️ 洋 san 芋
+# > 🕙 last update：2025-12-06(UTC+8)
 
 # icon 部分设置
 # 统一管理所有 icon url
@@ -46,7 +45,7 @@ rule-providers_url:
   private_domain: &private_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/private_domain.yaml"
   speedtest_domain: &speedtest_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/speedtest_domain.yaml"
   # ipcidr
-  private_ip: &private_ip
+  private_ip: &private_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/private.yaml"
   cn_ip: &cn_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/cn_ip.yaml"
   google_ip: &google_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/google_ip.yaml"
   telegram_ip: &telegram_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/telegram_ip.yaml"
@@ -61,7 +60,6 @@ script:
     instagram-quic: network == 'udp' and dst_port == 443 and match_geosite('instagram')
 
 dns:
-
   skip-cert-verify: null
   nameserver-policy: null
   default-nameserver:
@@ -79,55 +77,37 @@ dns:
     - '*.msftncsi.com'
     - '*.msftconnecttest.com'
 
+# 
+proxies: []
+
+#
+proxy-providers:
+  proxy-providers-1:
+    url: null
+    filter: "^(?!.*海外).*"
+    interval: 86400
+
 # 策略组
 proxy-groups:
-
   - &proxy-groups_select
     name: 选择代理
     icon: *Proxy
     type: select
     interval: 600
-    tolerance: 50
     lazy: true
-    hidden:
-    use:
-    include-all:
     proxies:
       - 香港自动
       - 台湾自动
       - 日本自动
       - 狮城自动
       - 美国自动
-      - 手动选择
-
-  - <<: *proxy-groups_select
-    name: 手动选择
-    icon: *Static
-    proxies:
       - DIRECT
-      - 香港自动
-      - 其他区域
-
-  - <<: *proxy-groups_select
-    name: Telegram
-    icon: *Telegram
-    proxies:
-      - 香港自动
-      - 手动选择
 
   - <<: *proxy-groups_select
     name: Spotify
     icon: *Spotify
     proxies:
       - DIRECT
-      - 香港自动
-      - 日本自动
-      - 美国自动
-
-  - <<: *proxy-groups_select
-    name: YouTube
-    icon: *YouTube
-    proxies:
       - 香港自动
       - 日本自动
       - 美国自动
@@ -154,6 +134,7 @@ proxy-groups:
     icon: *Hong_Kong
     filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
     type: url-test
+    proxies: null
     include-all: true
 
   - <<: *proxy-groups_url-test
@@ -185,7 +166,7 @@ proxy-groups:
 # 分流规则
 rules:
 
-  - RULE-SET,秋风广告规则,REJECT-DROP,no-track # no-track 的意思是不出现在后台
+  - RULE-SET,AARC,REJECT-DROP,no-track # no-track 的意思是不出现在后台
   - SCRIPT,instagram-quic,REJECT,no-track
   - SCRIPT,youtube-quic,REJECT,no-track
   - RULE-SET,private_ip,DIRECT,no-resolve
@@ -196,24 +177,24 @@ rules:
   - RULE-SET,meta_domain,香港自动
   - RULE-SET,cloudflare_domain,香港自动
   - RULE-SET,spotify_domain,Spotify
-  - RULE-SET,telegram_domain,Telegram
-  - RULE-SET,youtube_domain,YouTube
-  - RULE-SET,google_domain,Google
+  - RULE-SET,telegram_domain,香港自动
+  - RULE-SET,youtube_domain,香港自动
+  - RULE-SET,google_domain,香港自动
   - RULE-SET,apple_domain,DIRECT
   - DOMAIN-SUFFIX,iphone-ld.apple.com,DIRECT
   - DOMAIN-SUFFIX,lcdn-locator.apple.com,DIRECT
   - DOMAIN-SUFFIX,lcdn-registration.apple.com,DIRECT
   - DOMAIN-SUFFIX,push.apple.com,DIRECT
   - RULE-SET,geolocation-!cn,选择代理
-  - RULE-SET,google_ip,Google
-  - RULE-SET,telegram_ip,Telegram
+  - RULE-SET,google_ip,香港自动
+  - RULE-SET,telegram_ip,香港自动
   - RULE-SET,cn_domain,DIRECT
   - RULE-SET,cn_ip,DIRECT
   - MATCH,漏网之鱼
 
 rule-providers:
 
-  秋风广告规则: &rule-providers_domain
+  AARC: &rule-providers_domain
     behavior: domain
     url: *AWAvenue-Ads-Rule-Clash
     format: yaml
@@ -236,7 +217,7 @@ rule-providers:
     url: *google_domain
     
   telegram_domain:
-   <<: *rule-providers_domain
+    <<: *rule-providers_domain
     url: *telegram_domain
     
   spotify_domain:
