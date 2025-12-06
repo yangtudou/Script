@@ -136,7 +136,6 @@ proxy-groups:
 
   - <<: *proxy-groups_url-test_config
     filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
-    include-all: true
     name: 其他区域
     icon: *icon_amytelecom
 
