@@ -25,31 +25,6 @@ icon_url:
   Singapore: &Singapore "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png"
   United_States: &United_States "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png"
 
-# 远程规则集
-# 自用仓库 yaml 格式为主
-# 增减需要变动 rule-providers & rule 两个地方
-rule-providers_url:
-  # domain
-  AWAvenue-Ads-Rule-Clash: &AWAvenue-Ads-Rule-Clash "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/AWAvenue-Ads-Rule-Clash.yaml"
-  cn_domain: &cn_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/cn_domain.yaml"
-  github_domain: &github_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/github_domain.yaml"
-  youtube_domain: &youtube_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/youtube_domain.yaml"
-  google_domain: &google_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/telegram_domain.yaml"
-  telegram_domain: &telegram_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/github_domain.yaml"
-  spotify_domain: &spotify_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/spotify_domain.yaml"
-  geolocation-!cn_domain: &geolocation-!cn_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/geolocation-!cn_domain.yaml"
-  apple_domain: &apple_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/apple_domain.yaml"
-  cloudflare_domain: &cloudflare_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/cloudflare_domain.yaml"
-  meta_domain: &meta_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/meta_domain.yaml"
-  microsoft_domain: &microsoft_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/microsoft_domain.yaml"
-  private_domain: &private_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/private_domain.yaml"
-  speedtest_domain: &speedtest_domain "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/speedtest_domain.yaml"
-  # ipcidr
-  private_ip: &private_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/private.yaml"
-  cn_ip: &cn_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/cn_ip.yaml"
-  google_ip: &google_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/google_ip.yaml"
-  telegram_ip: &telegram_ip "https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/telegram_ip.yaml"
-
 mode: rule
 log-level: info
 
@@ -102,23 +77,6 @@ proxy-groups:
       - 狮城自动
       - 美国自动
       - DIRECT
-
-  - <<: *proxy-groups_select
-    name: Spotify
-    icon: *Spotify
-    proxies:
-      - DIRECT
-      - 香港自动
-      - 日本自动
-      - 美国自动
-
-  - <<: *proxy-groups_select
-    name: Google
-    icon: *Google_Search
-    proxies:
-      - 香港自动
-      - 日本自动
-      - 美国自动
   
   - <<: *proxy-groups_select
     name: 漏网之鱼
@@ -166,7 +124,7 @@ proxy-groups:
 # 分流规则
 rules:
 
-  - RULE-SET,AARC,REJECT-DROP,no-track # no-track 的意思是不出现在后台
+  - RULE-SET,秋风去广告,REJECT-DROP,no-track # no-track 的意思是不出现在后台
   - SCRIPT,instagram-quic,REJECT,no-track
   - SCRIPT,youtube-quic,REJECT,no-track
   - RULE-SET,private_ip,DIRECT,no-resolve
@@ -176,15 +134,15 @@ rules:
   - RULE-SET,speedtest_domain,DIRECT
   - RULE-SET,meta_domain,香港自动
   - RULE-SET,cloudflare_domain,香港自动
-  - RULE-SET,spotify_domain,Spotify
+  - RULE-SET,spotify_domain,香港自动
   - RULE-SET,telegram_domain,香港自动
   - RULE-SET,youtube_domain,香港自动
   - RULE-SET,google_domain,香港自动
   - RULE-SET,apple_domain,DIRECT
-  - DOMAIN-SUFFIX,iphone-ld.apple.com,DIRECT
-  - DOMAIN-SUFFIX,lcdn-locator.apple.com,DIRECT
-  - DOMAIN-SUFFIX,lcdn-registration.apple.com,DIRECT
-  - DOMAIN-SUFFIX,push.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,iphone-ld.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,lcdn-locator.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,lcdn-registration.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,push.apple.com,DIRECT
   - RULE-SET,geolocation-!cn,选择代理
   - RULE-SET,google_ip,香港自动
   - RULE-SET,telegram_ip,香港自动
@@ -194,78 +152,78 @@ rules:
 
 rule-providers:
 
-  AARC: &rule-providers_domain
+  秋风去广告: &rule-providers_domain
     behavior: domain
-    url: *AWAvenue-Ads-Rule-Clash
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/AWAvenue-Ads-Rule-Clash.yaml
     format: yaml
     interval: 86400
     
   cn_domain:
     <<: *rule-providers_domain
-    url: *cn_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/cn_domain.yaml
     
   github_domain:
     <<: *rule-providers_domain
-    url: *github_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/github_domain.yaml
     
   youtube_domain:
     <<: *rule-providers_domain
-    url: *youtube_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/youtube_domain.yaml
     
   google_domain:
     <<: *rule-providers_domain
-    url: *google_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/google_domain.yaml
     
   telegram_domain:
     <<: *rule-providers_domain
-    url: *telegram_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/telegram_domain.yaml
     
   spotify_domain:
     <<: *rule-providers_domain
-    url: *spotify_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/spotify_domain.yaml
     
   geolocation-!cn:
     <<: *rule-providers_domain
-    url: *geolocation-!cn_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/geolocation-!cn_domain.yaml
     
   apple_domain:
     <<: *rule-providers_domain
-    url: *apple_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/apple_domain.yaml
     
   cloudflare_domain:
     <<: *rule-providers_domain
-    url: *cloudflare_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/cloudflare_domain.yaml
     
   meta_domain:
     <<: *rule-providers_domain
-    url: *meta_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/meta_domain.yaml
     
   microsoft_domain:
     <<: *rule-providers_domain
-    url: *microsoft_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/microsoft_domain.yaml
     
   private_domain:
     <<: *rule-providers_domain
-    url: *private_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/private_domain.yaml
 
   speedtest_domain:
     <<: *rule-providers_domain
-    url: *speedtest_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/speedtest_domain.yaml
 
   # behavior: ipcidr
   private_ip: &rule-providers_ipcidr
     <<: *rule-providers_domain
     behavior: ipcidr
-    url: *private_ip
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/private_ip.yaml
     
   cn_ip:
     <<: *rule-providers_ipcidr
-    url: *cn_ip
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/cn_ip.yaml
     
   google_ip:
     <<: *rule-providers_ipcidr
-    url: *google_ip
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/google_ip.yaml
     
   telegram_ip:
     <<: *rule-providers_ipcidr
-    url: *telegram_ip
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/telegram_ip.yaml
