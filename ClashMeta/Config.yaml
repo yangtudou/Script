@@ -1,17 +1,22 @@
+# 基于 GEOSITE & GEOIP
+# 自用，仅供参考，不可照抄
+
 # 远程代理集
 proxy-providers:
 
   provider-1:
     url:
     type: http
-    interval: 86400 # 12 小时自动更新
-    health-check: {enable: true,url: "https://www.gstatic.com/generate_204", interval: 300}
-    filter: (?i)^(?!.*海外)
-
+    interval: 86400 # 24 小时自动更新
+    health-check:
+      enable: true
+      url: "https://www.gstatic.com/generate_204"
+      interval: 300
+    filter: (?i)^(?!.*海外) # remove other message
 
 # 全局配置
-mixed-port: 8890
-ipv6: false
+mixed-port: 7890
+ipv6: true
 allow-lan: true
 log-level: info
 mode: rule
@@ -22,7 +27,7 @@ external-controller: "0.0.0.0:9090"
 secret: "123456"
 external-ui: "ui"
 external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
-external-ui-name: "Msense"
+external-ui-name: "y3-ClashMeta"
 
 geodata-loader: standard
 geo-auto-update: true
@@ -129,90 +134,64 @@ dns:
 # 策略组
 proxy-groups:
 
-  - name: 节点选择
-    type: select
+  - &proxy-groups_select
+    name: 节点选择
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png
-    proxies: ["🎈 区域自动","🙀 手动选择","DIRECT"]
-
-  - name: 区域自动
     type: select
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Auto.png
-    proxies: ["🇭🇰 香港自动","🇯🇵 日本自动","🇺🇸 美国自动"]
-
-  - name: 手动选择
-    type: select
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Stack.png
-    include-all: true
+    proxies:
+      - DIRECT
+      - 香港自动
+      - 日本自动
+      - 美国自动
 
   - name: 漏网之鱼
-    type: select
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
-    proxies: ["DIRECT","✨️ 节点选择"]
 
   # --------------------- #
   # 以下地区筛选
-  - name: "🇭🇰 香港自动"
-    type: "url-test"
+  - &proxy-groups_url-test
+    <<: *proxy-groups_select
+    name: 香港自动
+    type: url-test
     url: "https://www.gstatic.com/generate_204"
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png"
     include-all: true
     filter: "(?i)港|hk|hongkong|hong kong"
     hidden: false
-    interval: "300"
+    interval: 300
     lazy: true
 
-  - name: "🇯🇵 日本自动"
-    type: "url-test"
-    url: "https://www.gstatic.com/generate_204"
+  - <<: *proxy-groups_url-test
+    name: 日本自动
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png
-    include-all: true
     filter: "(?i)日|jp|japan"
-    hidden: true
-    interval: 300
-    lazy: true
 
-  - name: 🇺🇸 美国自动
-    type: url-test
-    url: 'https://www.gstatic.com/generate_204'
+  - <<: *proxy-groups_url-test
+    name: 美国自动
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png
-    include-all: true
     filter: "(?i)美|us|unitedstates|united states"
-    hidden: true
-    interval: 300
-    lazy: true
+
   # --------------------- #
 
 # >>>分流规则
 ## 基于 GeoSite 写的分流规则，需要配合原版的 GeoSite使用，其中 geoip 部分沿用了 MetaCubeX 提供的数据。
 rules:
-  - DOMAIN,substore.y3-3am.top,DIRECT # 本订阅地址，需要直连
   # == geosite 部分 == #
-  # 定制部分
-  - GEOSITE,pinterest,🇭🇰 香港自动
-  - GEOSITE,github,🇭🇰 香港自动
-  - GEOSITE,google,🇭🇰 香港自动
-  - GEOSITE,meta,🇭🇰 香港自动
+  # Custom
+  - GEOSITE,github,香港自动
   - GEOSITE,apple,DIRECT
   - GEOSITE,microsoft,DIRECT
   # 笼统部分
   - GEOSITE,private,DIRECT # 私域
   - GEOSITE,geolocation-!cn@cn,DIRECT # 筛选国外的中国域名
-  - GEOSITE,geolocation-!cn,✨️ 节点选择 # 筛选国外域名
-  - GEOSITE,geolocation-cn@!cn,✨️ 节点选择 # 筛选国内中的国外域名
+  - GEOSITE,geolocation-!cn,节点选择 # 筛选国外域名
+  - GEOSITE,geolocation-cn@!cn,节点选择 # 筛选国内中的国外域名
   - GEOSITE,geolocation-cn,DIRECT # 筛选国内域名
   - GEOSITE,tld-cn,DIRECT
   # == geoip 部分 == #
-  - GEOIP,google,🇭🇰 香港自动,no-resolve
+  - GEOIP,google,香港自动,no-resolve
   - GEOIP,private,DIRECT,no-resolve
+  - GEOIP,jp,日本自动
   - GEOIP,cn,DIRECT,no-resolve
   # == 兜底为直连 == #
-  - MATCH,🐟 漏网之鱼
-
-# 远程规则集合
-# rule-providers:
-#   规则名称:
-#     type: http
-#     interval: 86400
-#     behavior: domain
-#     format: yaml
-#     url:
+  - MATCH,漏网之鱼
