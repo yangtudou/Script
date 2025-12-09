@@ -1,0 +1,32 @@
+# =============================================================
+# 来源: meta-rules-dat/geo/geosite/spotify.yaml
+# 原始文件: spotify.yaml
+# 描述: Spotify 域名规则
+# 类型: MetaCubeX
+# 更新时间: 2025-12-09 10:50 (UTC+8)
+# =============================================================
+
+payload:
+    - audio-ak-spotify-com.akamaized.net
+    - audio4-ak-spotify-com.akamaized.net
+    - cdn-spotify-experiments.conductrics.com
+    - heads-ak-spotify-com.akamaized.net
+    - heads4-ak-spotify-com.akamaized.net
+    - spotify.com.edgesuite.net
+    - spotify.map.fastly.net
+    - spotify.map.fastlylb.net
+    - +.byspotify.com
+    - +.pscdn.co
+    - +.scdn.co
+    - +.spoti.fi
+    - +.spotify-everywhere.com
+    - +.spotify.com
+    - +.spotify.design
+    - +.spotifycdn.com
+    - +.spotifycdn.net
+    - +.spotifycharts.com
+    - +.spotifycodes.com
+    - +.spotifyforbrands.com
+    - +.spotifyjobs.com
+    - +.spotify.link
+    - +.tospotify.com

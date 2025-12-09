@@ -1,0 +1,229 @@
+# > iphone Stash Private Config 
+#   iPhone Stash 自用配置，仅供参考
+#   规则主要使用了 rule-set
+#   规则来源：本仓库拉取其自他仓库 
+# >
+# > ✍️ 洋 san 芋
+# > 🕙 last update：2025-12-06(UTC+8)
+
+# icon 部分设置
+# 统一管理所有 icon url
+# 为了保持配置简介 适当增减
+icon_url:
+  Proxy: &Proxy "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png"
+  Static: &Static "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png"
+  Telegram: &Telegram "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png"
+  Spotify: &Spotify "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Spotify.png"
+  YouTube: &YouTube "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png"
+  Google_Search: &Google_Search "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Google_Search.png"
+  Final: &Final "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png"
+  AmyTelecom: &AmyTelecom "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AmyTelecom.png"
+  # 旗帜
+  Hong_Kong: &Hong_Kong "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png"
+  Taiwan: &Taiwan "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/China.png"
+  Japan: &Japan "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png"
+  Singapore: &Singapore "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png"
+  United_States: &United_States "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png"
+
+mode: rule
+log-level: info
+
+script:
+
+  shortcuts:
+    youtube-quic: network == 'udp' and dst_port == 443 and match_geosite('youtube') # geosite 也可改为 rule-set 前提是规则部分有
+    instagram-quic: network == 'udp' and dst_port == 443 and match_geosite('instagram')
+
+dns:
+  skip-cert-verify: null
+  nameserver-policy: null
+  default-nameserver:
+    - 223.5.5.5
+    - 114.114.114.114
+    - system
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fake-ip-filter:
+    - +.lan
+    - +.local
+    - +.msftconnecttest.com
+    - localhost.work.weixin.qq.com
+    - '*.msftncsi.com'
+    - '*.msftconnecttest.com'
+
+# 
+proxies: []
+
+#
+proxy-providers:
+  proxy-providers-1:
+    url:
+    filter: "^(?!.*海外).*"
+    interval: 86400
+
+# 策略组
+proxy-groups:
+  - &proxy-groups_select
+    name: 选择代理
+    icon: *Proxy
+    type: select
+    interval: 600
+    lazy: true
+    proxies:
+      - 香港自动
+      - 台湾自动
+      - 日本自动
+      - 狮城自动
+      - 美国自动
+      - DIRECT
+  
+  - <<: *proxy-groups_select
+    name: 漏网之鱼
+    icon: *Final
+    proxies:
+      - DIRECT
+      - 选择代理
+
+  # 策略组按区域分类
+  - &proxy-groups_url-test
+    <<: *proxy-groups_select
+    name: 香港自动
+    icon: *Hong_Kong
+    filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
+    type: url-test
+    proxies: null
+    include-all: true
+
+  - <<: *proxy-groups_url-test
+    name: 台湾自动
+    icon: *Taiwan
+    filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
+
+  - <<: *proxy-groups_url-test
+    name: 日本自动
+    icon: *Japan
+    filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
+
+  - <<: *proxy-groups_url-test
+    name: 狮城自动
+    icon: *Singapore
+    filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
+
+  - <<: *proxy-groups_url-test
+    name: 美国自动
+    icon: *United_States
+    filter: "(?i)(美|🇺🇲|us|states|america|硅)"
+
+  # 其他区域
+  - <<: *proxy-groups_select
+    name: 其他区域
+    icon: *AmyTelecom
+    filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
+
+# 分流规则
+rules:
+
+  - RULE-SET,秋风去广告,REJECT-DROP,no-track # no-track 的意思是不出现在后台
+  - SCRIPT,instagram-quic,REJECT,no-track
+  - SCRIPT,youtube-quic,REJECT,no-track
+  - RULE-SET,private_ip,DIRECT,no-resolve
+  - RULE-SET,private_domain,DIRECT
+  - RULE-SET,github_domain,香港自动
+  - RULE-SET,microsoft_domain,DIRECT
+  - RULE-SET,speedtest_domain,DIRECT
+  - RULE-SET,meta_domain,香港自动
+  - RULE-SET,cloudflare_domain,香港自动
+  - RULE-SET,spotify_domain,香港自动
+  - RULE-SET,telegram_domain,香港自动
+  - RULE-SET,youtube_domain,香港自动
+  - RULE-SET,google_domain,香港自动
+  - RULE-SET,apple_domain,DIRECT
+  # - DOMAIN-SUFFIX,iphone-ld.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,lcdn-locator.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,lcdn-registration.apple.com,DIRECT
+  # - DOMAIN-SUFFIX,push.apple.com,DIRECT
+  - RULE-SET,geolocation-!cn,选择代理
+  - RULE-SET,google_ip,香港自动
+  - RULE-SET,telegram_ip,香港自动
+  - RULE-SET,cn_domain,DIRECT
+  - RULE-SET,cn_ip,DIRECT
+  - MATCH,漏网之鱼
+
+rule-providers:
+
+  秋风去广告: &rule-providers_domain
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/AWAvenue-Ads-Rule-Clash.yaml
+    format: yaml
+    interval: 86400
+    
+  cn_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/cn_domain.yaml
+    
+  github_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/github_domain.yaml
+    
+  youtube_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/youtube_domain.yaml
+    
+  google_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/google_domain.yaml
+    
+  telegram_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/telegram_domain.yaml
+    
+  spotify_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/spotify_domain.yaml
+    
+  geolocation-!cn:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/geolocation-!cn_domain.yaml
+    
+  apple_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/apple_domain.yaml
+    
+  cloudflare_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/cloudflare_domain.yaml
+    
+  meta_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/meta_domain.yaml
+    
+  microsoft_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/microsoft_domain.yaml
+    
+  private_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/private_domain.yaml
+
+  speedtest_domain:
+    <<: *rule-providers_domain
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/domain/speedtest_domain.yaml
+
+  # behavior: ipcidr
+  private_ip: &rule-providers_ipcidr
+    <<: *rule-providers_domain
+    behavior: ipcidr
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/private_ip.yaml
+    
+  cn_ip:
+    <<: *rule-providers_ipcidr
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/cn_ip.yaml
+    
+  google_ip:
+    <<: *rule-providers_ipcidr
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/google_ip.yaml
+    
+  telegram_ip:
+    <<: *rule-providers_ipcidr
+    url: https://fastly.jsdelivr.net/gh/yangtudou/Script@main/RuleProviders/ip/telegram_ip.yaml

@@ -1,0 +1,183 @@
+name: Rule Sync
+
+on:
+  schedule:
+    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
+  workflow_dispatch:        # 允许手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  rule_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出当前仓库
+        uses: actions/checkout@v4
+        with:
+          path: rule_sync_temp
+          ref: main  # 明确指定分支
+          fetch-depth: 0
+
+      - name: 检出 MetaCubeX 规则
+        uses: actions/checkout@v4
+        with:
+          repository: MetaCubeX/meta-rules-dat
+          ref: meta
+          path: meta-rules-dat
+
+      - name: 检出 a-dove-is-dumb 规则
+        uses: actions/checkout@v4
+        with:
+          repository: ignaciocastro/a-dove-is-dumb
+          ref: main
+          path: a-dove-is-dumb
+
+      - name: 检出 AWAvenue 秋风广告规则
+        uses: actions/checkout@v4
+        with:
+          repository: TG-Twilight/AWAvenue-Ads-Rule
+          ref: main
+          path: AWAvenue-Ads-Rule
+          
+      - name: 准备目标目录
+        run: |
+          mkdir -p rule_sync_temp/RuleProviders/domain
+          mkdir -p rule_sync_temp/RuleProviders/ip
+          
+      - name: 处理规则文件
+        run: |
+          # ==============================
+          # GitHub Actions 专用文件处理脚本
+          # ==============================
+          # 定义 MetaCubeX 共用部分路径
+          geosite_url="meta-rules-dat/geo/geosite"
+          geoip_url="meta-rules-dat/geo/geoip"
+          # 文件处理配置数组
+          declare -a FILE_MAPPING=(
+            # 格式: 源文件位置（需包含文件名称） | 目标文件名称（包含后缀） | 规则来源 | 规则类型   | 头部描述
+            # 格式:   src=$1                | dest=$2              | type=$3 | source=$4 | description=$5
+            # -------------------------------
+            # ------------------------------- MetaCubeX 部分 Start -------------------------------
+            # DOMAIN 规则
+            "$geosite_url/geolocation-!cn.yaml domain/geolocation-!cn_domain.yaml MetaCubeX domain '非中国域名规则'"
+            "$geosite_url/cn.yaml domain/cn_domain.yaml MetaCubeX domain '中国域名规则'"
+            "$geosite_url/google.yaml domain/google_domain.yaml MetaCubeX domain 'Google 服务域名规则'"
+            "$geosite_url/spotify.yaml domain/spotify_domain.yaml MetaCubeX domain 'Spotify 域名规则'"
+            "$geosite_url/telegram.yaml domain/telegram_domain.yaml MetaCubeX domain 'Telegram 域名规则'"
+            "$geosite_url/youtube.yaml domain/youtube_domain.yaml MetaCubeX domain 'YouTube 域名规则'"
+            "$geosite_url/github.yaml domain/github_domain.yaml MetaCubeX domain 'GitHub 域名规则'"
+            "$geosite_url/apple.yaml domain/apple_domain.yaml MetaCubeX domain 'Apple 服务域名规则'"
+            "$geosite_url/meta.yaml domain/meta_domain.yaml MetaCubeX domain 'Meta 服务域名规则'"
+            "$geosite_url/cloudflare.yaml domain/cloudflare_domain.yaml MetaCubeX domain 'Cloudflare 域名规则'"
+            "$geosite_url/microsoft.yaml domain/microsoft_domain.yaml MetaCubeX domain 'Microsoft 域名规则'"
+            "$geosite_url/private.yaml domain/private_domain.yaml MetaCubeX domain '私有网络域名规则'"
+            "$geosite_url/speedtest.yaml domain/speedtest_domain.yaml MetaCubeX domain '测速服务域名规则'"
+            # -------------------------------
+            # IP 规则
+            "$geoip_url/cloudflare.yaml ip/cloudflare_ip.yaml MetaCubeX ip 'Cloudflare IP 规则'"
+            "$geoip_url/cn.yaml ip/cn_ip.yaml MetaCubeX ip '中国 IP 规则'"
+            "$geoip_url/google.yaml ip/google_ip.yaml MetaCubeX ip 'Google 服务 IP 规则'"
+            "$geoip_url/private.yaml ip/private_ip.yaml MetaCubeX ip '私有网络 IP 规则'"
+            "$geoip_url/telegram.yaml ip/telegram_ip.yaml MetaCubeX ip 'Telegram IP 规则'"
+            # ------------------------------- MetaCubeX 部分 End -------------------------------
+
+            # a-dove-is-dumb
+            "a-dove-is-dumb/clash.yaml domain/a-dove-is-dumb.yaml domain a-dove-is-dumb '解决 Adobe 跳激活弹窗'"
+            # ------------------------------- AWAvenue 秋风广告规则 -------------------------------
+            "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml domain/AWAvenue-Ads-Rule-Clash.yaml domain AWAvenue-Ads-Rule-Clash '去广告规则'"
+          )
+          
+          # 文件处理函数
+          process_rule_file() {
+            local src=$1
+            local dest=$2
+            local type=$3
+            local source=$4
+            local description=$5
+            
+            # 检查源文件是否存在
+            if [[ ! -f "$src" ]]; then
+              echo "::warning::文件不存在 - $src"
+              return 1
+            fi
+            
+            # 获取当前时间 (北京时间)
+            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+            
+            # 创建目标文件并添加头部信息
+            {
+              echo "# ============================================================="
+              echo "# 来源: $src"
+              echo "# 原始文件: $(basename "$src")"
+              echo "# 描述: $description"
+              echo "# 类型: $type"
+              echo "# 更新时间: $BEIJING_TIME (UTC+8)"
+              echo "# ============================================================="
+              echo ""
+              if [[ "$source" == "a-dove-is-dumb" ]]; then
+                sed -i 's/DOMAIN,//g' "$src"
+                cat "$src"
+              else
+                cat "$src"
+              fi
+            } > "rule_sync_temp/RuleProviders/$dest"
+            
+            echo "✅ 处理完成: $dest"
+          }
+          
+          # 主处理循环
+          for mapping in "${FILE_MAPPING[@]}"; do
+            # 安全解析映射项 (处理带空格的描述)
+            eval "args=($mapping)"
+            
+            # 调用处理函数
+            process_rule_file "${args[0]}" "${args[1]}" "${args[2]}" "${args[3]}" "${args[4]}"
+          done
+          
+          echo "::group::文件处理结果"
+          ls -l rule_sync_temp/RuleProviders/domain
+          ls -l rule_sync_temp/RuleProviders/ip
+          echo "::endgroup::"
+          
+      - name: 提交变更
+        id: commit-changes
+        run: |
+          cd rule_sync_temp
+          
+          # 设置Git身份
+          git config user.name "github-actions[Bot]"
+          git config user.email "github-actions@users.noreply.github.com"
+          
+          # 添加所有变更
+          git add -A
+          
+          # 检查是否有变更
+          if git diff --cached --quiet; then
+            echo "::notice::无变更可提交"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            # 获取北京时间
+            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+            
+            # 提交变更
+            git commit -m "🔄 规则更新 [$BEIJING_TIME UTC+8]"
+            
+            # 重试机制 (最多3次)
+            for i in {1..3}; do
+              if git pull --rebase origin main && git push origin main; then
+                echo "::notice::变更已成功提交 (尝试次数: $i)"
+                echo "has_changes=true" >> $GITHUB_OUTPUT
+                break
+              else
+                echo "::warning::推送失败，重试中 ($i/3)..."
+                sleep 2
+              fi
+            done
+            
+            # 检查最终状态
+            if [ $i -eq 3 ]; then
+              echo "::error::提交失败，重试次数用尽"
+              exit 1
+            fi
+          fi

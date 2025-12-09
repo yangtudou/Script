@@ -1,0 +1,167 @@
+#> iphone Stash Private Config 
+#  iPhone Stash 自用配置，仅供参考
+#  规则主要使用了 geosite & geoip
+#  geoip 使用了第三方数据库
+#  geosite 受限于 Stash 不支持更改，使用了原版
+#>
+#> ✍️ 洋 san 芋
+#> 🕙 last update：2025-12-03
+
+# 全球直连自定义名称
+direct_policy: &direct_policy "💚 全球直连"
+
+# 图标使用
+# 图标库 @Koolson: https://github.com/Koolson/Qure/tree/master/IconSet
+# 一键安装地址: stash://install-icon-set?url=https://fastly.jsdelivr.net/gh/Koolson/Qure/Other/QureColor-All.json
+# 其他图标库
+# Color+ @Orz-3 https://github.com/Orz-3/mini
+icon_url:
+  # 旗标
+  hk: &icon_hk "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png"
+  tw: &icon_tw "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/China.png"
+  jp: &icon_jp "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png"
+  sg: &icon_sg "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png"
+  us: &icon_us "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png"
+  # 常用网站
+  google: &icon_google "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Google_Search.png"
+  youtube: &icon_youtube "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png"
+  telegram: &icon_telegram "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png"
+  # 其他
+  cat: &icon_cat "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Cat.png"
+  proxy: &icon_proxy "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png"
+  final: &icon_final "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png"
+  static: &icon_static "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png"
+  amytelecom: &icon_amytelecom "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AmyTelecom.png"
+
+mode: rule
+log-level: info
+
+dns:
+  enable: true
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  default-nameserver:
+    - 223.5.5.5
+    - 114.114.114.114
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fake-ip-filter:
+    - geosite:connectivity-check
+    - geosite:private
+  nameserver-policy:
+    geosite:cn: https://dns.alidns.com/dns-query
+
+proxies:
+  - name: *direct_policy
+    type: DIRECT
+
+proxy-providers:
+  proxy-providers_1:
+    url: proxy-providers_1-url
+    filter: "^(?!.*海外).*"
+    interval: 86400
+
+proxy-groups:
+  - &proxy-groups_config
+    name: 选择代理
+    icon: *icon_cat
+    type: select
+    proxies:
+      - 香港自动
+      - 台湾自动
+      - 日本自动
+      - 美国自动
+      - 狮城自动
+      - *direct_policy
+    interval: 600
+    lazy: true
+
+  - <<: *proxy-groups_config
+    name: Telegram
+    icon: *icon_telegram
+
+  - <<: *proxy-groups_config
+    name: YouTube
+    icon: *icon_youtube
+
+  - <<: *proxy-groups_config
+    name: Google
+    icon: *icon_google
+
+  - <<: *proxy-groups_config
+    name: 手动选择
+    icon: *icon_static
+    proxies:
+      - *direct_policy
+      - 其他区域
+
+  - <<: *proxy-groups_config
+    name: 默认
+    icon: *icon_final
+    proxies:
+      - *direct_policy
+      - 选择代理
+
+    # 基于区域的策略
+  - &proxy-groups_url-test_config
+    <<: *proxy-groups_config
+    name: 香港自动
+    filter: "(?i)(澳门|🇲🇴|港|🇭🇰|hk|hong)"
+    icon: *icon_hk
+    type: url-test
+    proxies: null
+    include-all: true
+
+  - <<: *proxy-groups_url-test_config
+    name: 台湾自动
+    filter: "(?i)(台|🇹🇼|湾|tw|taiwan)"
+    icon: *icon_tw
+
+  - <<: *proxy-groups_url-test_config
+    name: 日本自动
+    filter: "(?i)(日|🇯🇵|东京|大阪|jp|japan)"
+    icon: *icon_jp
+
+  - <<: *proxy-groups_url-test_config
+    name: 狮城自动
+    filter: "(?i)(新加坡|坡|狮城|🇸🇬|sg|singapore)"
+    icon: *icon_sg
+
+  - <<: *proxy-groups_url-test_config
+    name: 美国自动
+    filter: "(?i)(美|🇺🇲|us|states|america|硅)"
+    icon: *icon_us
+
+  - <<: *proxy-groups_url-test_config
+    filter: (?i)^(?!.*(?:🇭🇰|🇹🇼|🇯🇵|🇰🇷|🇺🇸|🇸🇬|🇨🇳|港|hk|hong|台|tw|taiwan|日本|jp|japan|韩|kr|korea|美|us|states|新加坡|sg|singapore|硅谷|硅))
+    name: 其他区域
+    icon: *icon_amytelecom
+
+rules:
+  - GEOSITE,private,*direct_policy
+  - GEOSITE,bilibili,*direct_policy
+  - GEOSITE,spotify,香港自动
+  - GEOSITE,github,香港自动
+  - GEOSITE,microsoft,*direct_policy
+  - GEOSITE,speedtest,*direct_policy
+  - GEOSITE,meta,香港自动
+  - GEOSITE,cloudflare,香港自动
+  - GEOSITE,telegram,Telegram
+  - GEOSITE,youtube,YouTube
+  - GEOSITE,google,Google
+  - GEOSITE,apple,*direct_policy
+  - GEOSITE,geolocation-!cn@cn,*direct_policy
+  - GEOSITE,geolocation-!cn,选择代理
+  - GEOSITE,geolocation-cn@!cn,选择代理
+  - GEOSITE,geolocation-cn,*direct_policy
+  - GEOSITE,tld-cn,*direct_policy
+  - GEOIP,private,*direct_policy
+  - GEOIP,apple,*direct_policy
+  - GEOIP,telegram,Telegram
+  - GEOIP,cloudflare,香港自动
+  - GEOIP,google,Google
+  - GEOIP,bilibili,*direct_policy
+  - GEOIP,cn,*direct_policy
+  - MATCH,默认

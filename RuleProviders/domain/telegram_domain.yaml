@@ -1,0 +1,28 @@
+# =============================================================
+# 来源: meta-rules-dat/geo/geosite/telegram.yaml
+# 原始文件: telegram.yaml
+# 描述: Telegram 域名规则
+# 类型: MetaCubeX
+# 更新时间: 2025-12-09 10:50 (UTC+8)
+# =============================================================
+
+payload:
+    - +.cdn-telegram.org
+    - +.comments.app
+    - +.contest.com
+    - +.fragment.com
+    - +.graph.org
+    - +.quiz.directory
+    - +.t.me
+    - +.tdesktop.com
+    - +.telega.one
+    - +.telegra.ph
+    - +.telegram-cdn.org
+    - +.telegram.dog
+    - +.telegram.me
+    - +.telegram.org
+    - +.telegram.space
+    - +.telesco.pe
+    - +.tg.dev
+    - +.tx.me
+    - +.usercontent.dev
