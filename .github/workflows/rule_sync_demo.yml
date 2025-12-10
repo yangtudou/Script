@@ -174,7 +174,7 @@ jobs:
         run: |
 
           cd rules_sync_tmp
-
+          ls -l
           git status
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -186,11 +186,20 @@ jobs:
           git status
           
           git add ClashMeta/
-          
+          git status
           BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
 
           git commit -m "rules auto sync at [$BEIJING_TIME UTC+8]"
-          
+          git status
           echo "✅ 提交成功，准备推送至 Rules 分支"
 
-          git push origin HEAD:Rules
+          git fetch origin Rules
+          git checkout -b temp_merge
+          git merge origin/Rules --no--commit
+          git checkout main --ClashMeta/
+          git add ClashMeta/
+          git commit -m "CI Auto"
+          git push origin temp_merge:Rules
+          git checkout main
+          git branch -D temp_merge
+          git reset --hard HEAD~1
