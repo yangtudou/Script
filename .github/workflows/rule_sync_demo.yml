@@ -140,10 +140,10 @@ jobs:
             
             # 重试机制 (最多3次)
             for i in {1..3}; do
-              if git pull --rebase origin Rules && git push origin Rules; then
-                echo "::notice::变更已成功提交 (尝试次数: $i)"
-                echo "has_changes=true" >> $GITHUB_OUTPUT
-                break
+              if git fetch origin Rules && git merge origin/Rules --no-edit; then
+                if git push origin Rules; then
+                  echo "✅ 变更提交成功 (第 $i 次尝试)"
+                  break
               else
                 echo "::warning::推送失败，重试中 ($i/3)..."
                 sleep 2
