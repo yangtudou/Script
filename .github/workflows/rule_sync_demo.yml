@@ -34,7 +34,7 @@ jobs:
             exit 1
           fi
           
-          echo "✅ 配置文件验证通过"
+          echo "::notice:: 配置文件验证通过"
 
       - name: 创建目录结构
         run: |
@@ -55,7 +55,7 @@ jobs:
             local target_file="$target_dir/$file_name"
             local download_url="${base_url}${file_name}"
             
-            echo "🔍🔍 开始下载: $description"
+            echo "::notice:: 开始下载: $description"
             echo "下载URL: $download_url"
             echo "目标文件: $target_file"
             
@@ -93,7 +93,7 @@ jobs:
                 
                 # 检查生成的文件是否有效
                 if [ -s "$target_file" ]; then
-                  echo "✅ 下载成功: $file_name ($(wc -l < "$target_file") 行)"
+                  echo "::notice:: 下载成功: $file_name ($(wc -l < "$target_file") 行)"
                   rm -f "temp_download"
                   return 0
                 else
@@ -105,7 +105,7 @@ jobs:
               fi
             done
             
-            echo "❌❌ 最终下载失败: $file_name"
+            echo "❌ 最终下载失败: $file_name"
             return 1
           }
 
