@@ -34,7 +34,7 @@ jobs:
           fi
           
           # 验证 JSON 格式
-          if ! jq empty rule_sync_list.json 2>/dev/null; then
+          if ! jq empty .github/rule_sync_list.json 2>/dev/null; then
             echo "❌ 配置文件格式错误"
             exit 1
           fi
