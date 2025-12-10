@@ -116,7 +116,7 @@ jobs:
           done | xargs -I {} -P 8 bash -c "{}"
 
 
-- name: 提交变更
+      - name: 提交变更
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
