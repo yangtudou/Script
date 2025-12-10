@@ -1,0 +1,30 @@
+# =============================================================
+# 规则组: clash_meta
+# 提供者: MetaCubeX
+# 类型: domain
+# 文件: telegram.yaml
+# 描述: telegram
+# 下载地址: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.yaml
+# 更新时间: 2025-12-10 17:53 (UTC+8)
+# =============================================================
+
+payload:
+    - +.cdn-telegram.org
+    - +.comments.app
+    - +.contest.com
+    - +.fragment.com
+    - +.graph.org
+    - +.quiz.directory
+    - +.t.me
+    - +.tdesktop.com
+    - +.telega.one
+    - +.telegra.ph
+    - +.telegram-cdn.org
+    - +.telegram.dog
+    - +.telegram.me
+    - +.telegram.org
+    - +.telegram.space
+    - +.telesco.pe
+    - +.tg.dev
+    - +.tx.me
+    - +.usercontent.dev
