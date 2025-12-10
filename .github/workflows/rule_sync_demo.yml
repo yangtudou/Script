@@ -76,13 +76,13 @@ jobs:
                 fi
                 
                 # 处理文件并添加头部信息
-                BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+                BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
                 {
                   echo "# ============================================================="
                   echo "# 规则组: $group"
                   echo "# 提供者: $provider"
                   echo "# 类型: $type"
-                  echo "# 文件: $file_name"
+                  echo "# 文件名: $file_name"
                   echo "# 描述: $description"
                   echo "# 下载地址: $download_url"
                   echo "# 更新时间: $BEIJING_TIME (UTC+8)"
