@@ -2,10 +2,10 @@
 # 规则组: clash_meta
 # 提供者: MetaCubeX
 # 类型: ip
-# 文件: cn.yaml
+# 文件名: cn.yaml
 # 描述: cn
 # 下载地址: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.yaml
-# 更新时间: 2025-12-10 17:53 (UTC+8)
+# 更新时间: 2025-12-10 (UTC+8)
 # =============================================================
 
 payload:

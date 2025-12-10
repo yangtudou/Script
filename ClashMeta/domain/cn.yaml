@@ -2,10 +2,10 @@
 # 规则组: clash_meta
 # 提供者: MetaCubeX
 # 类型: domain
-# 文件: cn.yaml
+# 文件名: cn.yaml
 # 描述: 中国域名规则
 # 下载地址: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml
-# 更新时间: 2025-12-10 17:53 (UTC+8)
+# 更新时间: 2025-12-10 (UTC+8)
 # =============================================================
 
 payload:

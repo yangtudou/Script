@@ -2,10 +2,10 @@
 # 规则组: clash_meta
 # 提供者: MetaCubeX
 # 类型: domain
-# 文件: private.yaml
+# 文件名: private.yaml
 # 描述: 私有网络域名规则
 # 下载地址: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.yaml
-# 更新时间: 2025-12-10 17:53 (UTC+8)
+# 更新时间: 2025-12-10 (UTC+8)
 # =============================================================
 
 payload:

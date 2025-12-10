@@ -2,10 +2,10 @@
 # 规则组: clash_meta
 # 提供者: MetaCubeX
 # 类型: ip
-# 文件: google.yaml
+# 文件名: google.yaml
 # 描述: google
 # 下载地址: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.yaml
-# 更新时间: 2025-12-10 17:53 (UTC+8)
+# 更新时间: 2025-12-10 (UTC+8)
 # =============================================================
 
 payload:
