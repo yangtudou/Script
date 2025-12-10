@@ -116,43 +116,37 @@ jobs:
           done | xargs -I {} -P 8 bash -c "{}"
 
 
-      - name: 提交变更
-        id: commit-changes
+- name: 提交变更
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # 设置Git身份
-          git config user.name "github-actions[Bot]"
-          git config user.email "github-actions@users.noreply.github.com"
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "✅ 无变更可提交"
+            exit 0
+          fi
           
-          # 添加所有变更
+          BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
           git add -A
+          git commit -m "🔄🔄 规则同步 [$BEIJING_TIME UTC+8]" \
+                     -m "基于 .github/rule_sync_list.json 自动同步规则文件"
           
-          # 检查是否有变更
-          if git diff --cached --quiet; then
-            echo "::notice::无变更可提交"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            # 获取北京时间
-            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
-            
-            # 提交变更
-            git commit -m "🔄 规则更新 [$BEIJING_TIME UTC+8]"
-            
-            # 重试机制 (最多3次)
-            for i in {1..3}; do
-              if git fetch origin Rules && git merge origin/Rules --no-edit; then
-                if git push origin Rules; then
-                  echo "✅ 变更提交成功 (第 $i 次尝试)"
-                  break
+          # 使用合并而不是 rebase
+          for i in {1..3}; do
+            # 先拉取远程更改，使用合并策略
+            if git fetch origin Rules && git merge origin/Rules --no-edit; then
+              if git push origin Rules; then
+                echo "✅ 变更提交成功 (第 $i 次尝试)"
+                break
               else
-                echo "::warning::推送失败，重试中 ($i/3)..."
+                echo "⚠️ 推送失败，重试中... ($i/3)"
                 sleep 2
               fi
-            done
-            
-            # 检查最终状态
-            if [ $i -eq 3 ]; then
-              echo "::error::提交失败，重试次数用尽"
+            elif [[ $i -eq 3 ]]; then
+              echo "❌❌ 合并失败，达到最大重试次数"
               exit 1
+            else
+              echo "🔄🔄 合并失败，重试中... ($((i+1))/3)"
+              sleep 3
             fi
-          fi
+          done
