@@ -2,7 +2,7 @@ name: Rule Sync
 
 on:
   schedule:
-    - cron: '0 22 * * *'    # 北京时间早上 6:00
+    - cron: '0 22 * * *'
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,7 @@ jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出当前仓库（默认分支）
+      - name: 检出当前仓库
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -67,7 +67,10 @@ jobs:
           
           process_rule_file() {
             local src=$1 dest=$2 type=$3 source=$4 description=$5
-            [[ ! -f "$src" ]] && { echo "::warning::文件不存在: $src"; return 1; }
+            if [[ ! -f "$src" ]]; then
+              echo "::warning::文件不存在: $src"
+              return 1
+            fi
             
             BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
             {
@@ -82,9 +85,13 @@ jobs:
           }
           
           for mapping in "${FILE_MAPPING[@]}"; do
-            IFS=' ' read -r -a args <<< "$mapping"
+            eval "args=($mapping)"
             process_rule_file "${args[@]}" || continue
           done
+          
+          # 验证文件生成
+          echo "=== 生成的文件列表 ==="
+          find ClashMeta -type f -name "*.yaml" | sort
           
       - name: 提交变更到 Rules 分支
         run: |
@@ -92,22 +99,47 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # 切换到 Rules 分支（如果不存在则创建）
+          # 切换到 Rules 分支
           git checkout -B Rules
           
-          # 复制生成的文件到当前分支
-          cp -r ClashMeta/* .
+          # 清理旧文件
+          rm -rf domain ip *.yaml 2>/dev/null || true
           
-          # 检查是否有变更
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "::notice::无变更可提交"
-          else
-            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
-            git add -A
-            git commit -m "🔄 规则自动更新 [$BEIJING_TIME UTC+8]"
+          # 复制新文件（使用更可靠的方法）
+          echo "=== 开始复制文件 ==="
+          if [ -d "ClashMeta" ]; then
+            # 分别复制目录和文件
+            [ -d "ClashMeta/domain" ] && cp -r ClashMeta/domain .
+            [ -d "ClashMeta/ip" ] && cp -r ClashMeta/ip .
             
-            # 推送到 Rules 分支
+            # 复制根目录下的其他文件
+            shopt -s dotglob
+            cp -r ClashMeta/* . 2>/dev/null || true
+          fi
+          
+          echo "=== 复制后的文件结构 ==="
+          ls -la
+          [ -d "domain" ] && echo "domain目录:" && ls -la domain/
+          [ -d "ip" ] && echo "ip目录:" && ls -la ip/
+          
+          # 添加所有文件
+          git add -A
+          
+          # 检查变更
+          if ! git diff --cached --quiet; then
+            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+            git commit -m "🔄 规则自动更新 [$BEIJING_TIME UTC+8]"
             git push origin Rules
+            echo "✅ 成功提交变更到 Rules 分支"
+          else
+            echo "❌ 没有检测到变更"
+            echo "调试信息："
+            echo "当前工作目录: $(pwd)"
+            echo "文件状态:"
+            git status
+            echo "暂存区差异:"
+            git diff --cached --name-status
+            exit 1
           fi
           
       - name: 清理工作区
