@@ -134,8 +134,8 @@ jobs:
           # 使用合并而不是 rebase
           for i in {1..3}; do
             # 先拉取远程更改，使用合并策略
-            if git fetch origin Rules && git merge origin/Rules --no-edit; then
-              if git push origin Rules; then
+            if git fetch origin main && git merge origin/main --no-edit; then
+              if git push origin main; then
                 echo "✅ 变更提交成功 (第 $i 次尝试)"
                 break
               else
