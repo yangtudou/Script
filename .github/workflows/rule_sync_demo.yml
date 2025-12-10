@@ -183,7 +183,7 @@ jobs:
           
           # 再次检查状态
           echo "=== 添加后的状态 ==="
-          git status --short
+          git status
           
           git add ClashMeta/
           
@@ -193,4 +193,4 @@ jobs:
           
           echo "✅ 提交成功，准备推送至 Rules 分支"
 
-          git push origin main:Rules
+          git push origin HEAD:Rules
