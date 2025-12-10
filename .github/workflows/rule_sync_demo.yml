@@ -139,32 +139,6 @@ jobs:
           
           echo "📊 下载报告生成完成"
 
-      - name: 验证下载结果
-        run: |
-          echo "🔍 文件完整性检查:"
-          total_files=0
-          success_files=0
-          
-          for file in ClashMeta/domain/*.yaml ClashMeta/ip/*.yaml; do
-            if [[ -f "$file" ]]; then
-              ((total_files++))
-              line_count=$(wc -l < "$file")
-              if [[ $line_count -gt 5 ]]; then
-                echo "✅ $(basename "$file"): $line_count 行"
-                ((success_files++))
-              else
-                echo "❌ $(basename "$file"): 可能损坏（只有 $line_count 行）"
-              fi
-            fi
-          done
-          
-          echo "📈 成功率: $success_files/$total_files"
-          if [[ $success_files -eq $total_files ]]; then
-            echo "🎉 所有文件下载成功"
-          else
-            echo "⚠️ 部分文件下载失败"
-          fi
-
       - name: 提交变更
         run: |
           git config user.name "github-actions[bot]"
