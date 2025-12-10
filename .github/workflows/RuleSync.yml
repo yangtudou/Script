@@ -17,7 +17,7 @@ jobs:
         with:
           path: rule_sync_temp
           ref: Rules  # 指定 Rules 分支
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: 检出 MetaCubeX 规则
         uses: actions/checkout@v4
