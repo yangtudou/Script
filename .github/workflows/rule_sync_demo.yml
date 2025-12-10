@@ -175,6 +175,7 @@ jobs:
 
           cd rules_sync_tmp
 
+          git status
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
@@ -185,7 +186,7 @@ jobs:
           echo "=== 添加后的状态 ==="
           git status --short
           
-          git add .
+          git add ClashMeta/
           
           BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
 
