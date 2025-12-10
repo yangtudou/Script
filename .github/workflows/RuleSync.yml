@@ -2,8 +2,8 @@ name: Rule Sync
 
 on:
   schedule:
-    - cron: '0 1 * * *'    # UTC 1:00 = 北京时间 9:00
-  workflow_dispatch:        # 允许手动触发
+    - cron: '0 22 * * *'    # 北京时间早上 6:00 = UTC 时间前一天 22:00
+  workflow_dispatch:       # 允许手动触发
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: rule_sync_temp
-          ref: main  # 明确指定分支
+          ref: Rules  # 指定 Rules 分支
           fetch-depth: 0
 
       - name: 检出 MetaCubeX 规则
@@ -25,13 +25,6 @@ jobs:
           repository: MetaCubeX/meta-rules-dat
           ref: meta
           path: meta-rules-dat
-
-      - name: 检出 a-dove-is-dumb 规则
-        uses: actions/checkout@v4
-        with:
-          repository: ignaciocastro/a-dove-is-dumb
-          ref: main
-          path: a-dove-is-dumb
 
       - name: 检出 AWAvenue 秋风广告规则
         uses: actions/checkout@v4
@@ -42,8 +35,8 @@ jobs:
           
       - name: 准备目标目录
         run: |
-          mkdir -p rule_sync_temp/RuleProviders/domain
-          mkdir -p rule_sync_temp/RuleProviders/ip
+          mkdir -p rule_sync_temp/ClashMeta/domain
+          mkdir -p rule_sync_temp/ClashMeta/ip
           
       - name: 处理规则文件
         run: |
@@ -82,8 +75,6 @@ jobs:
             "$geoip_url/telegram.yaml ip/telegram_ip.yaml MetaCubeX ip 'Telegram IP 规则'"
             # ------------------------------- MetaCubeX 部分 End -------------------------------
 
-            # a-dove-is-dumb
-            "a-dove-is-dumb/clash.yaml domain/a-dove-is-dumb.yaml domain a-dove-is-dumb '解决 Adobe 跳激活弹窗'"
             # ------------------------------- AWAvenue 秋风广告规则 -------------------------------
             "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml domain/AWAvenue-Ads-Rule-Clash.yaml domain AWAvenue-Ads-Rule-Clash '去广告规则'"
           )
@@ -115,13 +106,8 @@ jobs:
               echo "# 更新时间: $BEIJING_TIME (UTC+8)"
               echo "# ============================================================="
               echo ""
-              if [[ "$source" == "a-dove-is-dumb" ]]; then
-                sed -i 's/DOMAIN,//g' "$src"
-                cat "$src"
-              else
-                cat "$src"
-              fi
-            } > "rule_sync_temp/RuleProviders/$dest"
+              cat "$src"
+            } > "rule_sync_temp/ClashMeta/$dest"
             
             echo "✅ 处理完成: $dest"
           }
@@ -136,8 +122,8 @@ jobs:
           done
           
           echo "::group::文件处理结果"
-          ls -l rule_sync_temp/RuleProviders/domain
-          ls -l rule_sync_temp/RuleProviders/ip
+          ls -l rule_sync_temp/ClashMeta/domain
+          ls -l rule_sync_temp/ClashMeta/ip
           echo "::endgroup::"
           
       - name: 提交变更
