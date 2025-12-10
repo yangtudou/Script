@@ -1,4 +1,4 @@
-name: Rule Sync Automation
+name: 自动化下载规则集 demo
 
 on:
 #  schedule:
@@ -28,7 +28,7 @@ jobs:
 
       - name: 验证配置文件
         run: |
-          if [[ ! -f "rrule_sync_list.json" ]]; then
+          if [[ ! -f "rule_sync_list.json" ]]; then
             echo "❌ 配置文件 rule_sync_list.json 不存在"
             exit 1
           fi
