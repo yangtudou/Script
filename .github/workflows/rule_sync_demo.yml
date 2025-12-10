@@ -19,7 +19,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          path: rule_sync_temp
           fetch-depth: 1
 
       - name: 安装必要工具
@@ -120,7 +119,6 @@ jobs:
       - name: 提交变更
         id: commit-changes
         run: |
-          cd rule_sync_temp
           
           # 设置Git身份
           git config user.name "github-actions[Bot]"
