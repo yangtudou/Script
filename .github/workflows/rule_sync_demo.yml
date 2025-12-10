@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 #  push:
 #    paths:
-#      - 'rule-config.json'  # 配置文件变更时触发
+#      - 'rule_sync_list.json'  # 配置文件变更时触发
 
 permissions:
   contents: write
@@ -28,13 +28,13 @@ jobs:
 
       - name: 验证配置文件
         run: |
-          if [[ ! -f "rule-config.json" ]]; then
-            echo "❌ 配置文件 rule-config.json 不存在"
+          if [[ ! -f "rrule_sync_list.json" ]]; then
+            echo "❌ 配置文件 rule_sync_list.json 不存在"
             exit 1
           fi
           
           # 验证 JSON 格式
-          if ! jq empty rule-config.json 2>/dev/null; then
+          if ! jq empty rule_sync_list.json 2>/dev/null; then
             echo "❌ 配置文件格式错误"
             exit 1
           fi
