@@ -39,7 +39,7 @@ jobs:
 
       - name: 创建目录结构
         run: |
-          mkdir -p ClashMeta/{domain,ip}
+          mkdir -p rules_sync_tmp/ClashMeta/{domain,ip}
           echo "📁 目录结构创建完成"
 
       - name: 并行下载规则文件
@@ -52,7 +52,7 @@ jobs:
           download_rule_file() {
             local group=$1 provider=$2 type=$3 base_url=$4 file_name=$5 description=$6
             
-            local target_dir="ClashMeta/$type"
+            local target_dir="rules_sync_tmp/ClashMeta/$type"
             local target_file="$target_dir/$file_name"
             local download_url="${base_url}${file_name}"
             
