@@ -1,12 +1,7 @@
 name: 自动化下载规则集 demo
 
 on:
-#  schedule:
-#    - cron: '0 22 * * *'  # 北京时间早上 6:00
   workflow_dispatch:
-#  push:
-#    paths:
-#      - '.github/rule_sync_list.json'  # 配置文件变更时触发
 
 permissions:
   contents: write
@@ -29,13 +24,13 @@ jobs:
       - name: 校验 json 数据
         run: |
           if [[ ! -f ".github/rule_sync_list.json" ]]; then
-            echo "❌ 配置文件 rule_sync_list.json 不存在"
+            echo "❌❌ 配置文件 rule_sync_list.json 不存在"
             exit 1
           fi
           
           # 验证 JSON 格式
           if ! jq empty .github/rule_sync_list.json 2>/dev/null; then
-            echo "❌ 配置文件格式错误"
+            echo "❌❌ 配置文件格式错误"
             exit 1
           fi
           
@@ -44,7 +39,7 @@ jobs:
       - name: 创建目录结构
         run: |
           mkdir -p ClashMeta/{domain,ip}
-          echo "📁 目录结构创建完成"
+          echo "📁📁 目录结构创建完成"
 
       - name: 并行下载规则文件
         env:
@@ -60,7 +55,12 @@ jobs:
             local target_file="$target_dir/$file_name"
             local download_url="${base_url}${file_name}"
             
-            echo "🔍 开始下载: $description"
+            echo "🔍🔍 开始下载: $description"
+            echo "下载URL: $download_url"
+            echo "目标文件: $target_file"
+            
+            # 确保目标目录存在
+            mkdir -p "$target_dir"
             
             # 下载文件（带重试机制）
             for i in {1..3}; do
@@ -68,6 +68,12 @@ jobs:
                   -H "Authorization: token $GITHUB_TOKEN" \
                   -H "Accept: application/vnd.github.raw" \
                   "$download_url" -o "temp_download"; then
+                
+                # 检查下载的文件是否有效
+                if [[ ! -s "temp_download" ]]; then
+                  echo "⚠️ 下载的文件为空 ($i/3): $file_name"
+                  continue
+                fi
                 
                 # 处理文件并添加头部信息
                 BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
@@ -85,23 +91,28 @@ jobs:
                   cat "temp_download"
                 } > "$target_file"
                 
-                rm -f "temp_download"
-                echo "✅ 下载成功: $file_name"
-                return 0
+                # 检查生成的文件是否有效
+                if [[ -s "$target_file" ]]; then
+                  echo "✅ 下载成功: $file_name ($(wc -l < "$target_file") 行)"
+                  rm -f "temp_download"
+                  return 0
+                else
+                  echo "⚠️ 生成的文件为空 ($i/3): $file_name"
+                fi
               else
                 echo "⚠️ 下载失败 ($i/3): $file_name"
                 sleep 2
               fi
             done
             
-            echo "❌ 最终下载失败: $file_name"
+            echo "❌❌ 最终下载失败: $file_name"
             return 1
           }
 
-          # 导出函数以便并行使用
           export -f download_rule_file
 
           # 使用 jq 解析配置并生成下载命令
+          echo "开始解析配置文件..."
           jq -r '
             .rules_group.clash_meta | to_entries[] | 
             .key as $provider | 
@@ -111,30 +122,71 @@ jobs:
             .base_url as $base_url | 
             .files[] | 
             "\($provider)|\($type)|\($base_url)|\(.name)|\(.description)"
-          ' .github/rule_sync_list.json | while IFS='|' read -r provider type base_url name description; do
+          ' .github/rule_sync_list.json > download_list.txt
+          
+          echo "生成的下载列表:"
+          cat download_list.txt
+          
+          # 处理下载
+          while IFS='|' read -r provider type base_url name description; do
             echo "download_rule_file 'clash_meta' '$provider' '$type' '$base_url' '$name' '$description'"
-          done | xargs -I {} -P 8 bash -c "{}"
+          done < download_list.txt | xargs -I {} -P 4 bash -c "{}"
+          
+          echo "下载任务完成"
 
+      - name: 验证下载的文件
+        run: |
+          echo "=== 最终文件验证 ==="
+          echo "域名规则文件:"
+          ls -la ClashMeta/domain/ || echo "无域名规则文件"
+          echo "IP规则文件:"
+          ls -la ClashMeta/ip/ || echo "无IP规则文件"
+          
+          # 检查文件内容
+          for file in ClashMeta/domain/*.yaml ClashMeta/ip/*.yaml 2>/dev/null; do
+            if [[ -f "$file" ]]; then
+              lines=$(wc -l < "$file")
+              echo "文件: $(basename "$file") - $lines 行"
+            fi
+          done || echo "无文件可检查"
 
       - name: 提交变更
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "✅ 无变更可提交"
+          # 详细检查变更
+          echo "=== 详细变更检查 ==="
+          git status
+          echo "=== 未跟踪文件 ==="
+          git ls-files --others --exclude-standard | head -20 || echo "无未跟踪文件"
+          
+          # 强制添加所有文件
+          git add -A -f
+          
+          # 再次检查状态
+          echo "=== 添加后的状态 ==="
+          git status --short
+          
+          # 检查是否有变更
+          if git diff --cached --quiet; then
+            echo "❌❌ 确实无变更可提交"
+            echo "可能的原因:"
+            echo "1. 文件没有成功下载"
+            echo "2. 文件已经存在且内容相同"
+            echo "3. Git 配置问题"
             exit 0
           fi
           
           BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
-          git add -A
-          git commit -m "🔄🔄 规则同步 [$BEIJING_TIME UTC+8]" \
+          git commit -m "🔄🔄🔄🔄 规则同步 [$BEIJING_TIME UTC+8]" \
                      -m "基于 .github/rule_sync_list.json 自动同步规则文件"
+          
+          echo "✅ 提交成功，准备推送..."
           
           # 使用合并而不是 rebase
           for i in {1..3}; do
-            # 先拉取远程更改，使用合并策略
-            if git fetch origin main && git merge origin/main --no-edit; then
+            if git fetch origin main && git merge --no-edit origin/main; then
               if git push origin main; then
                 echo "✅ 变更提交成功 (第 $i 次尝试)"
                 break
@@ -143,10 +195,10 @@ jobs:
                 sleep 2
               fi
             elif [[ $i -eq 3 ]]; then
-              echo "❌❌ 合并失败，达到最大重试次数"
+              echo "❌❌❌❌ 合并失败，达到最大重试次数"
               exit 1
             else
-              echo "🔄🔄 合并失败，重试中... ($((i+1))/3)"
+              echo "🔄🔄🔄🔄 合并失败，重试中... ($((i+1))/3)"
               sleep 3
             fi
           done
