@@ -23,7 +23,7 @@ jobs:
 
       - name: 校验 json 数据
         run: |
-          if [[ ! -f ".github/rule_sync_list.json" ]]; then
+          if [ ! -f ".github/rule_sync_list.json" ]; then
             echo "❌❌ 配置文件 rule_sync_list.json 不存在"
             exit 1
           fi
@@ -70,7 +70,7 @@ jobs:
                   "$download_url" -o "temp_download"; then
                 
                 # 检查下载的文件是否有效
-                if [[ ! -s "temp_download" ]]; then
+                if [ ! -s "temp_download" ]; then
                   echo "⚠️ 下载的文件为空 ($i/3): $file_name"
                   continue
                 fi
@@ -92,7 +92,7 @@ jobs:
                 } > "$target_file"
                 
                 # 检查生成的文件是否有效
-                if [[ -s "$target_file" ]]; then
+                if [ -s "$target_file" ]; then
                   echo "✅ 下载成功: $file_name ($(wc -l < "$target_file") 行)"
                   rm -f "temp_download"
                   return 0
@@ -138,17 +138,98 @@ jobs:
         run: |
           echo "=== 最终文件验证 ==="
           echo "域名规则文件:"
-          ls -la ClashMeta/domain/ || echo "无域名规则文件"
+          if [ -d "ClashMeta/domain" ]; then
+            ls -la ClashMeta/domain/
+          else
+            echo "无域名规则文件"
+          fi
           echo "IP规则文件:"
-          ls -la ClashMeta/ip/ || echo "无IP规则文件"
+          if [ -d "ClashMeta/ip" ]; then
+            ls -la ClashMeta/ip/
+          else
+            echo "无IP规则文件"
+          fi
           
           # 检查文件内容
-          for file in ClashMeta/domain/*.yaml ClashMeta/ip/*.yaml 2>/dev/null; do
-            if [[ -f "$file" ]]; then
-              lines=$(wc -l < "$file")
-              echo "文件: $(basename "$file") - $lines 行"
-            fi
-          done || echo "无文件可检查"
+          if [ -d "ClashMeta/domain" ]; then
+            for file in ClashMeta/domain/*.yaml; do
+              if [ -f "$file" ]; then
+                lines=$(wc -l < "$file" 2>/dev/null || echo 0)
+                echo "文件: $(basename "$file") - $lines 行"
+              fi
+            done
+          fi
+          
+          if [ -d "ClashMeta/ip" ]; then
+            for file in ClashMeta/ip/*.yaml; do
+              if [ -f "$file" ]; then
+                lines=$(wc -l < "$file" 2>/dev/null || echo 0)
+                echo "文件: $(basename "$file") - $lines 行"
+              fi
+            done
+          fi
+
+      - name: 验证下载结果
+        run: |
+          echo "🔍🔍 文件完整性检查:"
+          total_files=0
+          success_files=0
+          
+          # 检查目录是否存在
+          if [ ! -d "ClashMeta/domain" ] && [ ! -d "ClashMeta/ip" ]; then
+            echo "❌❌ 错误: ClashMeta 目录不存在，可能下载步骤完全失败"
+            exit 1
+          fi
+          
+          # 安全地处理文件列表
+          echo "检查域名规则文件:"
+          if [ -d "ClashMeta/domain" ]; then
+            for file in ClashMeta/domain/*.yaml; do
+              # 检查文件是否存在（处理通配符扩展）
+              if [ -f "$file" ]; then
+                ((total_files++))
+                line_count=$(wc -l < "$file" 2>/dev/null || echo 0)
+                if [ "$line_count" -gt 5 ]; then
+                  echo "✅ $(basename "$file"): $line_count 行"
+                  ((success_files++))
+                else
+                  echo "❌❌ $(basename "$file"): 可能损坏（只有 $line_count 行）"
+                fi
+              fi
+            done
+          else
+            echo "⚠️ ClashMeta/domain 目录不存在"
+          fi
+          
+          echo "检查IP规则文件:"
+          if [ -d "ClashMeta/ip" ]; then
+            for file in ClashMeta/ip/*.yaml; do
+              if [ -f "$file" ]; then
+                ((total_files++))
+                line_count=$(wc -l < "$file" 2>/dev/null || echo 0)
+                if [ "$line_count" -gt 5 ]; then
+                  echo "✅ $(basename "$file"): $line_count 行"
+                  ((success_files++))
+                else
+                  echo "❌❌ $(basename "$file"): 可能损坏（只有 $line_count 行）"
+                fi
+              fi
+            done
+          else
+            echo "⚠️ ClashMeta/ip 目录不存在"
+          fi
+          
+          echo "📈📈 总计文件: $total_files, 成功: $success_files"
+          if [ "$total_files" -eq 0 ]; then
+            echo "❌❌ 错误: 没有找到任何规则文件，请检查下载步骤"
+            exit 1
+          elif [ "$success_files" -eq "$total_files" ]; then
+            echo "🎉🎉 所有文件下载成功"
+          else
+            echo "⚠️ 部分文件下载失败"
+            # 这里可以选择是否让工作流失败
+            # exit 1  # 取消注释这行可以让工作流在部分失败时停止
+          fi
 
       - name: 提交变更
         run: |
@@ -194,7 +275,7 @@ jobs:
                 echo "⚠️ 推送失败，重试中... ($i/3)"
                 sleep 2
               fi
-            elif [[ $i -eq 3 ]]; then
+            elif [ $i -eq 3 ]; then
               echo "❌❌❌❌ 合并失败，达到最大重试次数"
               exit 1
             else
