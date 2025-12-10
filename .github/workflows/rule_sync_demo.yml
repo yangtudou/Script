@@ -179,8 +179,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          git checkout Rules
-          git checkout main -- ClashMeta/
+          
           
           # 再次检查状态
           echo "=== 添加后的状态 ==="
@@ -194,4 +193,4 @@ jobs:
           
           echo "✅ 提交成功，准备推送至 Rules 分支"
 
-          git push origin Rules
+          git push origin main:Rules
