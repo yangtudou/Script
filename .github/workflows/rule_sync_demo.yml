@@ -1,0 +1,196 @@
+name: Rule Sync Automation
+
+on:
+#  schedule:
+#    - cron: '0 22 * * *'  # 北京时间早上 6:00
+  workflow_dispatch:
+#  push:
+#    paths:
+#      - 'rule-config.json'  # 配置文件变更时触发
+
+permissions:
+  contents: write
+
+jobs:
+  rule_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出当前仓库
+        uses: actions/checkout@v4
+        with:
+          ref: Rules
+          fetch-depth: 1
+
+      - name: 安装必要工具
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      - name: 验证配置文件
+        run: |
+          if [[ ! -f "rule-config.json" ]]; then
+            echo "❌ 配置文件 rule-config.json 不存在"
+            exit 1
+          fi
+          
+          # 验证 JSON 格式
+          if ! jq empty rule-config.json 2>/dev/null; then
+            echo "❌ 配置文件格式错误"
+            exit 1
+          fi
+          
+          echo "✅ 配置文件验证通过"
+
+      - name: 创建目录结构
+        run: |
+          mkdir -p ClashMeta/{domain,ip}
+          echo "📁 目录结构创建完成"
+
+      - name: 并行下载规则文件
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          
+          # 核心下载函数
+          download_rule_file() {
+            local group=$1 provider=$2 type=$3 base_url=$4 file_name=$5 description=$6
+            
+            local target_dir="ClashMeta/$type"
+            local target_file="$target_dir/$file_name"
+            local download_url="${base_url}${file_name}"
+            
+            echo "🔍 开始下载: $description"
+            
+            # 下载文件（带重试机制）
+            for i in {1..3}; do
+              if curl -s -f -L \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.raw" \
+                  "$download_url" -o "temp_download"; then
+                
+                # 处理文件并添加头部信息
+                BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+                {
+                  echo "# ============================================================="
+                  echo "# 规则组: $group"
+                  echo "# 提供者: $provider"
+                  echo "# 类型: $type"
+                  echo "# 文件: $file_name"
+                  echo "# 描述: $description"
+                  echo "# 下载地址: $download_url"
+                  echo "# 更新时间: $BEIJING_TIME (UTC+8)"
+                  echo "# ============================================================="
+                  echo ""
+                  cat "temp_download"
+                } > "$target_file"
+                
+                rm -f "temp_download"
+                echo "✅ 下载成功: $file_name"
+                return 0
+              else
+                echo "⚠️ 下载失败 ($i/3): $file_name"
+                sleep 2
+              fi
+            done
+            
+            echo "❌ 最终下载失败: $file_name"
+            return 1
+          }
+
+          # 导出函数以便并行使用
+          export -f download_rule_file
+
+          # 使用 jq 解析配置并生成下载命令
+          jq -r '
+            .rules_group.clash_meta | to_entries[] | 
+            .key as $provider | 
+            .value | to_entries[] | 
+            .key as $type | 
+            .value | 
+            .base_url as $base_url | 
+            .files[] | 
+            "\($provider)|\($type)|\($base_url)|\(.name)|\(.description)"
+          ' rule-config.json | while IFS='|' read -r provider type base_url name description; do
+            echo "download_rule_file 'clash_meta' '$provider' '$type' '$base_url' '$name' '$description'"
+          done | xargs -I {} -P 8 bash -c "{}"
+
+      - name: 生成下载报告
+        run: |
+          BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+          cat > ClashMeta/README.md << EOF
+          # ClashMeta 规则文件
+          
+          最后更新时间: $BEIJING_TIME (UTC+8)
+          
+          ## 文件统计
+          - 域名规则文件: \$(find ClashMeta/domain -name '*.yaml' | wc -l) 个
+          - IP规则文件: \$(find ClashMeta/ip -name '*.yaml' | wc -l) 个
+          - 总计: \$(find ClashMeta -name '*.yaml' | wc -l) 个
+          
+          ## 文件列表
+          \`\`\`
+          $(tree ClashMeta 2>/dev/null || find ClashMeta -type f | sort)
+          \`\`\`
+          
+          ## 配置信息
+          此文件由自动化规则同步系统生成，配置文件: rule-config.json
+          EOF
+          
+          echo "📊 下载报告生成完成"
+
+      - name: 验证下载结果
+        run: |
+          echo "🔍 文件完整性检查:"
+          total_files=0
+          success_files=0
+          
+          for file in ClashMeta/domain/*.yaml ClashMeta/ip/*.yaml; do
+            if [[ -f "$file" ]]; then
+              ((total_files++))
+              line_count=$(wc -l < "$file")
+              if [[ $line_count -gt 5 ]]; then
+                echo "✅ $(basename "$file"): $line_count 行"
+                ((success_files++))
+              else
+                echo "❌ $(basename "$file"): 可能损坏（只有 $line_count 行）"
+              fi
+            fi
+          done
+          
+          echo "📈 成功率: $success_files/$total_files"
+          if [[ $success_files -eq $total_files ]]; then
+            echo "🎉 所有文件下载成功"
+          else
+            echo "⚠️ 部分文件下载失败"
+          fi
+
+      - name: 提交变更
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 检查是否有变更
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "✅ 无变更可提交"
+            exit 0
+          fi
+          
+          BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+          git add -A
+          git commit -m "🔄 规则同步 [$BEIJING_TIME UTC+8]" \
+                     -m "基于 rule-config.json 自动同步规则文件"
+          
+          # 推送变更（带重试）
+          for i in {1..3}; do
+            if git pull --rebase origin Rules && git push origin Rules; then
+              echo "✅ 变更提交成功 (第 $i 次尝试)"
+              break
+            elif [[ $i -eq 3 ]]; then
+              echo "❌ 推送失败，达到最大重试次数"
+              exit 1
+            else
+              echo "🔄 推送失败，重试中... ($((i+1))/3)"
+              sleep 3
+            fi
+          done
