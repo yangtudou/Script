@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 #  push:
 #    paths:
-#      - 'rule_sync_list.json'  # 配置文件变更时触发
+#      - '.github/rule_sync_list.json'  # 配置文件变更时触发
 
 permissions:
   contents: write
@@ -28,7 +28,7 @@ jobs:
 
       - name: 验证配置文件
         run: |
-          if [[ ! -f "rule_sync_list.json" ]]; then
+          if [[ ! -f ".github/rule_sync_list.json" ]]; then
             echo "❌ 配置文件 rule_sync_list.json 不存在"
             exit 1
           fi
