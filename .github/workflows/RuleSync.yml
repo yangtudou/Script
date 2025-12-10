@@ -1,9 +1,9 @@
-name: Rule Sync
+name: ClashMeta Rule Sync
 
 on:
   schedule:
-    - cron: '0 22 * * *'
-  workflow_dispatch:
+    - cron: '0 22 * * *'  # 每天 UTC 14:00（北京时间 22:00）运行
+  workflow_dispatch:      # 允许手动触发
 
 permissions:
   contents: write
@@ -43,25 +43,28 @@ jobs:
           
           declare -a FILE_MAPPING=(
             "$geosite_url/geolocation-!cn.yaml domain/geolocation-!cn_domain.yaml domain MetaCubeX '非中国域名规则'"
-            "$geosite_url/cn.yaml domain/cn_domain.yaml domain MetaCubeX '中国域名规则'"
-            "$geosite_url/google.yaml domain/google_domain.yaml domain MetaCubeX 'Google服务域名规则'"
-            "$geosite_url/spotify.yaml domain/spotify_domain.yaml domain MetaCubeX 'Spotify域名规则'"
-            "$geosite_url/telegram.yaml domain/telegram_domain.yaml domain MetaCubeX 'Telegram域名规则'"
-            "$geosite_url/youtube.yaml domain/youtube_domain.yaml domain MetaCubeX 'YouTube域名规则'"
-            "$geosite_url/github.yaml domain/github_domain.yaml domain MetaCubeX 'GitHub域名规则'"
-            "$geosite_url/apple.yaml domain/apple_domain.yaml domain MetaCubeX 'Apple服务域名规则'"
-            "$geosite_url/meta.yaml domain/meta_domain.yaml domain MetaCubeX 'Meta服务域名规则'"
-            "$geosite_url/cloudflare.yaml domain/cloudflare_domain.yaml domain MetaCubeX 'Cloudflare域名规则'"
-            "$geosite_url/microsoft.yaml domain/microsoft_domain.yaml domain MetaCubeX 'Microsoft域名规则'"
-            "$geosite_url/private.yaml domain/private_domain.yaml domain MetaCubeX '私有网络域名规则'"
-            "$geosite_url/speedtest.yaml domain/speedtest_domain.yaml domain MetaCubeX '测速服务域名规则'"
-            
-            "$geoip_url/cloudflare.yaml ip/cloudflare_ip.yaml ip MetaCubeX 'Cloudflare IP规则'"
+            "$geosite_url/category-porn.yaml domain/category-porn_domain.yaml domain MetaCubeX '成人网站规则'"
+            "$geosite_url/category-games.yaml domain/category-games_domain.yaml domain MetaCubeX '游戏规则'"
+            "$geosite_url/category-social.yaml domain/category-social_domain.yaml domain MetaCubeX '社交媒体规则'"
+            "$geosite_url/category-developer.yaml domain/category-developer_domain.yaml domain MetaCubeX '开发者规则'"
+            "$geosite_url/category-music.yaml domain/category-music_domain.yaml domain MetaCubeX '音乐规则'"
+            "$geosite_url/category-video.yaml domain/category-video_domain.yaml domain MetaCubeX '视频规则'"
+            "$geosite_url/geolocation-cn.yaml domain/geolocation-cn_domain.yaml domain MetaCubeX '中国域名规则'"
+            "$geosite_url/category-news.yaml domain/category-news_domain.yaml domain MetaCubeX '新闻规则'"
+            "$geosite_url/apple.yaml domain/apple_domain.yaml domain MetaCubeX '苹果服务规则'"
+            "$geosite_url/google.yaml domain/google_domain.yaml domain MetaCubeX '谷歌服务规则'"
+            "$geosite_url/microsoft.yaml domain/microsoft_domain.yaml domain MetaCubeX '微软服务规则'"
+            "$geosite_url/telegram.yaml domain/telegram_domain.yaml domain MetaCubeX 'Telegram规则'"
+            "$geosite_url/openai.yaml domain/openai_domain.yaml domain MetaCubeX 'OpenAI规则'"
+            "$geosite_url/twitter.yaml domain/twitter_domain.yaml domain MetaCubeX 'Twitter规则'"
+            "$geosite_url/facebook.yaml domain/facebook_domain.yaml domain MetaCubeX 'Facebook规则'"
+            "$geosite_url/instagram.yaml domain/instagram_domain.yaml domain MetaCubeX 'Instagram规则'"
+            "$geosite_url/spotify.yaml domain/spotify_domain.yaml domain MetaCubeX 'Spotify规则'"
+            "$geosite_url/netflix.yaml domain/netflix_domain.yaml domain MetaCubeX 'Netflix规则'"
+            "$geosite_url/geolocation-!cn-ads.yaml domain/geolocation-!cn-ads_domain.yaml domain MetaCubeX '非中国广告规则'"
+            "$geosite_url/category-ads.yaml domain/category-ads_domain.yaml domain MetaCubeX '广告规则'"
             "$geoip_url/cn.yaml ip/cn_ip.yaml ip MetaCubeX '中国IP规则'"
-            "$geoip_url/google.yaml ip/google_ip.yaml ip MetaCubeX 'Google服务IP规则'"
-            "$geoip_url/private.yaml ip/private_ip.yaml ip MetaCubeX '私有网络IP规则'"
-            "$geoip_url/telegram.yaml ip/telegram_ip.yaml ip MetaCubeX 'Telegram IP规则'"
-            
+            "$geoip_url/private.yaml ip/private_ip.yaml ip MetaCubeX '私有IP规则'"
             "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml domain/AWAvenue-Ads-Rule-Clash.yaml domain AWAvenue '去广告规则'"
           )
           
@@ -89,59 +92,48 @@ jobs:
             process_rule_file "${args[@]}" || continue
           done
           
-          # 验证文件生成
-          echo "=== 生成的文件列表 ==="
-          find ClashMeta -type f -name "*.yaml" | sort
-          
-      - name: 提交变更到 Rules 分支
+      - name: 创建规则列表文件
         run: |
-          # 设置Git身份
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+          cat > ClashMeta/README.md << 'EOF'
+          # ClashMeta 规则集
           
-          # 切换到 Rules 分支
-          git checkout -B Rules
+          自动生成的 ClashMeta 规则文件，包含域名和IP规则。
           
-          # 清理旧文件
-          rm -rf domain ip *.yaml 2>/dev/null || true
+          ## 更新时间
+          **最后更新:** $BEIJING_TIME (UTC+8)
           
-          # 复制新文件（使用更可靠的方法）
-          echo "=== 开始复制文件 ==="
-          if [ -d "ClashMeta" ]; then
-            # 分别复制目录和文件
-            [ -d "ClashMeta/domain" ] && cp -r ClashMeta/domain .
-            [ -d "ClashMeta/ip" ] && cp -r ClashMeta/ip .
-            
-            # 复制根目录下的其他文件
-            shopt -s dotglob
-            cp -r ClashMeta/* . 2>/dev/null || true
+          ## 文件列表
+          
+          ### 域名规则 (domain/)
+          EOF
+          
+          # 添加域名文件列表
+          if [ -d "ClashMeta/domain" ]; then
+            for file in ClashMeta/domain/*.yaml; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                echo "- \`$filename\`" >> ClashMeta/README.md
+              fi
+            done
           fi
           
-          echo "=== 复制后的文件结构 ==="
-          ls -la
-          [ -d "domain" ] && echo "domain目录:" && ls -la domain/
-          [ -d "ip" ] && echo "ip目录:" && ls -la ip/
+          echo "" >> ClashMeta/README.md
+          echo "### IP规则 (ip/)" >> ClashMeta/README.md
           
-          # 添加所有文件
-          git add -A
-          
-          # 检查变更
-          if ! git diff --cached --quiet; then
-            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
-            git commit -m "🔄 规则自动更新 [$BEIJING_TIME UTC+8]"
-            git push origin Rules
-            echo "✅ 成功提交变更到 Rules 分支"
-          else
-            echo "❌ 没有检测到变更"
-            echo "调试信息："
-            echo "当前工作目录: $(pwd)"
-            echo "文件状态:"
-            git status
-            echo "暂存区差异:"
-            git diff --cached --name-status
-            exit 1
+          # 添加IP文件列表
+          if [ -d "ClashMeta/ip" ]; then
+            for file in ClashMeta/ip/*.yaml; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                echo "- \`$filename\`" >> ClashMeta/README.md
+              fi
+            done
           fi
           
-      - name: 清理工作区
-        run: |
-          rm -rf meta-rules-dat AWAvenue-Ads-Rule ClashMeta
+          echo "" >> ClashMeta/README.md
+          echo "## 使用说明" >> ClashMeta/README.md
+          cat >> ClashMeta/README.md << 'EOF'
+          这些规则文件可以直接在 ClashMeta 配置文件中引用。
+          
+          示例配置：
