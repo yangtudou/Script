@@ -1,4 +1,4 @@
-name: 自动化规则下载 demo
+name: 自动化规则下载 v2.0
 
 on:
   schedule:
