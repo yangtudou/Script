@@ -37,11 +37,11 @@ jobs:
             geo/geosite/private.yaml
             geo/geosite/cloudflare.yaml
             # geoip
-            geo/geosite/cloudflare.yaml
-            geo/geosite/cn.yaml
-            geo/geosite/google.yaml
-            geo/geosite/private.yaml
-            geo/geosite/telegram.yaml
+            geo/geoip/cloudflare.yaml
+            geo/geoip/cn.yaml
+            geo/geoip/google.yaml
+            geo/geoip/private.yaml
+            geo/geoip/telegram.yaml
           sparse-checkout-concise: true
 
       - name: 检出 AWAvenue 秋风广告规则仓库
@@ -56,7 +56,7 @@ jobs:
           
       - name: 复制文件
         run: |
-          # shopt -s nullglob
+          #shopt -s nullglob
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
           cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
