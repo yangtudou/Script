@@ -42,6 +42,7 @@ jobs:
             geo/geosite/google.yaml
             geo/geosite/private.yaml
             geo/geosite/telegram.yaml
+          sparse-checkout-concise: true
 
       - name: 检出 AWAvenue 秋风广告规则仓库
         uses: actions/checkout@v6
@@ -51,14 +52,15 @@ jobs:
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
             Filters/AWAvenue-Ads-Rule-Clash.yaml
+          sparse-checkout-concise: true
           
       - name: 复制文件
         run: |
-          shopt -s nullglob
-          mkdir -p ClashMeta/{domain,ip}
-          cp -r meta-rules-dat/geo/geosite/* ClashMeta/domain/
-          cp -r meta-rules-dat/geo/geoip/* ClashMeta/ip/
-          cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
+          # shopt -s nullglob
+          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
+          cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
+          cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
+          cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
           
       - name: 提交变更
         id: commit-changes
