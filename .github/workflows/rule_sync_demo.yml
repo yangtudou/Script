@@ -195,7 +195,7 @@ jobs:
 
           git fetch origin Rules
           git checkout -b temp_merge
-          git merge origin/Rules --no--commit
+          git merge origin/Rules --no-commit
           git checkout main --ClashMeta/
           git add ClashMeta/
           git commit -m "CI Auto"
