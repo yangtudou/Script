@@ -10,175 +10,104 @@ jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出当前仓库
+      - name: 检出仓库
         uses: actions/checkout@v4
         with:
           ref: main
-          path: rules_sync_tmp
+          path: repo
           fetch-depth: 1
 
-      - name: 安装必要工具
+      - name: 安装依赖
         run: |
-          sudo apt-get update
-          sudo apt-get install -y jq curl
+          sudo apt-get update && sudo apt-get install -y jq curl
 
-      - name: 校验 json 数据
+      - name: 验证配置文件
+        working-directory: repo
         run: |
-          if [ ! -f "rules_sync_tmp/.github/rule_sync_list.json" ]; then
-            echo "配置文件 rule_sync_list.json 不存在"
-            exit 1
-          fi
+          test -f ".github/rule_sync_list.json" || { echo "配置文件不存在"; exit 1; }
+          jq empty .github/rule_sync_list.json || { echo "JSON 格式错误"; exit 1; }
           
-          # 验证 JSON 格式
-          if ! jq empty rules_sync_tmp/.github/rule_sync_list.json 2>/dev/null; then
-            echo "配置文件格式错误"
-            exit 1
-          fi
-          
-          echo "::notice:: 配置文件验证通过"
-
-      - name: 创建目录结构
-        run: |
-          mkdir -p rules_sync_tmp/ClashMeta/{domain,ip}
-          echo "📁 目录结构创建完成"
+          # 创建目录结构
+          mkdir -p ClashMeta/{domain,ip}
 
       - name: 并行下载规则文件
+        working-directory: repo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
-
-          # 核心下载函数
-          download_rule_file() {
-            local group=$1 provider=$2 type=$3 base_url=$4 file_name=$5 description=$6
+          # 下载函数
+          download_rule() {
+            local provider="$1" type="$2" base_url="$3" name="$4" desc="$5"
+            local dir="ClashMeta/$type" url="${base_url}${name}" temp_file="temp_$$"
             
-            local target_dir="rules_sync_tmp/ClashMeta/$type"
-            local target_file="$target_dir/$file_name"
-            local download_url="${base_url}${file_name}"
+            # 确保目录存在
+            mkdir -p "$dir"
             
-            echo "::notice:: 开始下载: $description"
-            echo "下载URL: $download_url"
-            echo "目标文件: $target_file"
-            
-            # 确保目标目录存在
-            mkdir -p "$target_dir"
-            
-            # 下载文件（带重试机制）
-            for i in {1..3}; do
-              if curl -s -f -L \
+            # 下载（最多重试3次）
+            for attempt in {1..3}; do
+              if curl -sfL \
                   -H "Authorization: token $GITHUB_TOKEN" \
                   -H "Accept: application/vnd.github.raw" \
-                  "$download_url" -o "temp_download"; then
+                  "$url" -o "$temp_file"; then
                 
-                # 检查下载的文件是否有效
-                if [ ! -s "temp_download" ]; then
-                  echo "⚠️ 下载的文件为空 ($i/3): $file_name"
-                  continue
-                fi
-                
-                # 处理文件并添加头部信息
-                BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-                {
-                  echo "# ============================================================="
-                  echo "# $group 规则"
-                  echo "# 来源: $provider"
-                  echo "# 类型: $type"
-                  echo "# 名称: $file_name"
-                  echo "# 描述: $description"
-                  echo "# 下载地址: $download_url"
-                  echo "# 更新时间: $BEIJING_TIME (UTC+8)"
-                  echo "# ============================================================="
-                  echo ""
-                  cat "temp_download"
-                } > "$target_file"
-                
-                # 检查生成的文件是否有效
-                if [ -s "$target_file" ]; then
-                  echo "::notice:: 下载成功: $file_name ($(wc -l < "$target_file") 行)"
-                  rm -f "temp_download"
+                if [ -s "$temp_file" ]; then
+                  # 添加元数据头部
+                  {
+                    echo "# Rule: $desc"
+                    echo "# Provider: $provider"
+                    echo "# Type: $type"
+                    echo "# Updated: $(date +'%Y-%m-%d %H:%M:%S' -u)"
+                    echo "# Source: $url"
+                    echo ""
+                    cat "$temp_file"
+                  } > "${dir}/${name}"
+                  
+                  echo "::notice:: 成功: $name ($(wc -l < "${dir}/${name}") 行)"
+                  rm -f "$temp_file"
                   return 0
-                else
-                  echo "⚠️ 生成的文件为空 ($i/3): $file_name"
                 fi
-              else
-                echo "⚠️ 下载失败 ($i/3): $file_name"
-                sleep 2
               fi
+              
+              echo "::warning:: 尝试 $attempt/3 失败: $name"
+              sleep 2
             done
             
-            echo "❌ 最终下载失败: $file_name"
+            echo "::error:: 下载失败: $name"
             return 1
           }
-
-          export -f download_rule_file
-
-          # 使用 jq 解析配置并生成下载命令
-          echo "开始解析配置文件..."
+          
+          export -f download_rule
+          
+          # 解析配置并下载
           jq -r '
-            .rules_group.clash_meta | to_entries[] | 
-            .key as $provider | 
-            .value | to_entries[] | 
-            .key as $type | 
-            .value | 
-            .base_url as $base_url | 
-            .files[] | 
+            .rules_group.clash_meta | to_entries[] |
+            .key as $provider |
+            .value | to_entries[] |
+            .key as $type |
+            .value |
+            .base_url as $base_url |
+            .files[] |
             "\($provider)|\($type)|\($base_url)|\(.name)|\(.description)"
-          ' rules_sync_tmp/.github/rule_sync_list.json > rules_download_list.txt
+          ' .github/rule_sync_list.json | \
+          while IFS='|' read -r provider type base_url name desc; do
+            download_rule "$provider" "$type" "$base_url" "$name" "$desc" &
+          done
           
-          echo "生成的下载列表:"
-          cat rules_download_list.txt
-          
-          # 处理下载
-          while IFS='|' read -r provider type base_url name description; do
-            echo "download_rule_file 'clash_meta' '$provider' '$type' '$base_url' '$name' '$description'"
-          done < rules_download_list.txt | xargs -I {} -P 4 bash -c "{}"
-          
-          echo "下载任务完成"
+          wait # 等待所有后台任务完成
 
-      - name: 验证下载的文件
+      - name: 提交并推送至 Rules 分支
+        working-directory: repo
         run: |
-          echo "=== 最终文件验证 ==="
-          echo "域名规则文件:"
-          if [ -d "ClashMeta/domain" ]; then
-            ls -la ClashMeta/domain/
-          else
-            echo "无域名规则文件"
-          fi
-          echo "IP规则文件:"
-          if [ -d "ClashMeta/ip" ]; then
-            ls -la ClashMeta/ip/
-          else
-            echo "无IP规则文件"
-          fi
-          
-          # 检查文件内容
-          if [ -d "ClashMeta/domain" ]; then
-            for file in ClashMeta/domain/*.yaml; do
-              if [ -f "$file" ]; then
-                lines=$(wc -l < "$file" 2>/dev/null || echo 0)
-                echo "文件: $(basename "$file") - $lines 行"
-              fi
-            done
-          fi
-          
-          if [ -d "ClashMeta/ip" ]; then
-            for file in ClashMeta/ip/*.yaml; do
-              if [ -f "$file" ]; then
-                lines=$(wc -l < "$file" 2>/dev/null || echo 0)
-                echo "文件: $(basename "$file") - $lines 行"
-              fi
-            done
-          fi
-
-      - name: 推送到 Rules 分支
-        run: |
-          cd rules_sync_tmp
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # 切换到Rules分支
           git checkout Rules || git checkout -b Rules
-    
           git add ClashMeta/
-          git commit -m "CI Auto"
-          git push origin Rules
+          
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto sync rules - $(date +'%Y-%m-%d %H:%M')"
+            git push origin Rules
+            echo "✅ 规则已更新并推送到 Rules 分支"
+          else
+            echo "ℹ️ 没有变化需要提交"
+          fi
