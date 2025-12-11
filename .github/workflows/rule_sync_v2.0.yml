@@ -18,14 +18,14 @@ jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出当前仓库
+      - name: 检出当前仓库 main 分支
         uses: actions/checkout@v6
         with:
           path: rule_sync_temp
-          ref: rules
+          ref: main
           fetch-depth: 1
 
-      - name: 检出 MetaCubeX 仓库
+      - name: 检出 MetaCubeX 仓库 meta 分支
         uses: actions/checkout@v6
         with:
           repository: MetaCubeX/meta-rules-dat
@@ -49,7 +49,7 @@ jobs:
             geo/geoip/telegram.yaml
           sparse-checkout-cone-mode: false
 
-      - name: 检出 AWAvenue 秋风广告规则仓库
+      - name: 检出 AWAvenue 仓库 main 分支
         uses: actions/checkout@v6
         with:
           repository: TG-Twilight/AWAvenue-Ads-Rule
@@ -73,7 +73,7 @@ jobs:
           
           
 
-      - name: 提交变更
+      - name: 覆盖到当前仓库的 rules 分支
         working-directory: rule_sync_temp
         run: |
           git config user.name "github-actions[bot]"
