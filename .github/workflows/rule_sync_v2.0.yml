@@ -80,8 +80,8 @@ jobs:
       - name: 整理 ClashMeta 规则
         run: |
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
-          cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
-          cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
+          find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/domain/ \;
+          find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/ip/ \;
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
           find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d')" {} \;
           
