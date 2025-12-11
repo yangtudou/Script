@@ -54,6 +54,7 @@ jobs:
           
       - name: 复制文件
         run: |
+          shopt -s nullglob
           mkdir -p ClashMeta/{domain,ip}
           cp -r meta-rules-dat/geo/geosite/* ClashMeta/domain/
           cp -r meta-rules-dat/geo/geoip/* ClashMeta/ip/
