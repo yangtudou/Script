@@ -1,3 +1,9 @@
+# version: v2.0
+# updated at: 2025-12-11
+# 主要改用了 checkout sparse-checkout 方法
+# 简化了整个 Github Action 流程
+
+
 name: 自动化规则下载 v2.0
 
 on:
@@ -24,6 +30,7 @@ jobs:
         with:
           repository: MetaCubeX/meta-rules-dat
           ref: meta
+          fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
             geo/geosite/geolocation-!cn.yaml
@@ -47,6 +54,7 @@ jobs:
         with:
           repository: TG-Twilight/AWAvenue-Ads-Rule
           ref: main
+          fetch-depth: 1
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
             Filters/AWAvenue-Ads-Rule-Clash.yaml
@@ -63,41 +71,27 @@ jobs:
       - name: 提交变更
         id: commit-changes
         run: |
+          # 变换目录
           cd rule_sync_temp
           
           # 设置Git身份
           git config user.name "github-actions[Bot]"
           git config user.email "github-actions@users.noreply.github.com"
           
-          # 添加所有变更
-          git add -A
+          # 创建临时分支
+          git checkout --orphan temp
           
-          # 检查是否有变更
-          if git diff --cached --quiet; then
-            echo "::notice::无变更可提交"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            # 获取北京时间
-            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
-            
-            # 提交变更
-            git commit -m "auto sync at [$BEIJING_TIME UTC+8]"
-            
-            # 重试机制 (最多3次)
-            for i in {1..3}; do
-              if git pull --rebase origin Rules && git push origin Rules; then
-                echo "::notice::变更已成功提交 (尝试次数: $i)"
-                echo "has_changes=true" >> $GITHUB_OUTPUT
-                break
-              else
-                echo "::warning::推送失败，重试中 ($i/3)..."
-                sleep 2
-              fi
-            done
-            
-            # 检查最终状态
-            if [ $i -eq 3 ]; then
-              echo "::error::提交失败，重试次数用尽"
-              exit 1
-            fi
-          fi
+          # 强制删除 Rule 分支
+          git branch -D Rules
+          
+          # 创建一个名为 Rules 的孤儿分支
+          git checkout --orphan Rules
+          
+          # 添加所有变更
+          git add .
+          
+          # 添加变更备注
+          git commit -m "CI Updated"
+          
+          # 强制覆盖分支内容
+          git push -f origin Rules
