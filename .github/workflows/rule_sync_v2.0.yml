@@ -52,6 +52,7 @@ jobs:
             geo/geoip/private.yaml
             geo/geoip/telegram.yaml
             # Surge list
+            ## domain
             geo/geosite/classical/cloudflare.list
             geo/geosite/classical/category-porn.list
             geo/geosite/classical/github.list
@@ -79,6 +80,7 @@ jobs:
  
       - name: 整理 ClashMeta 规则
         run: |
+          rm -rf rule_sync_temp/ClashMeta
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/domain/ \;
           find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/ip/ \;
