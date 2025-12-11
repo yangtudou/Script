@@ -64,15 +64,26 @@ jobs:
         id: commit-changes
         run: |
           cd rule_sync_temp
+          
+          # 设置Git身份
           git config user.name "github-actions[Bot]"
           git config user.email "github-actions@users.noreply.github.com"
+          
+          # 添加所有变更
           git add -A
+          
+          # 检查是否有变更
           if git diff --cached --quiet; then
             echo "::notice::无变更可提交"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
+            # 获取北京时间
             BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+            
+            # 提交变更
             git commit -m "🔄 规则更新 [$BEIJING_TIME UTC+8]"
+            
+            # 重试机制 (最多3次)
             for i in {1..3}; do
               if git pull --rebase origin Rules && git push origin Rules; then
                 echo "::notice::变更已成功提交 (尝试次数: $i)"
@@ -83,7 +94,10 @@ jobs:
                 sleep 2
               fi
             done
+            
+            # 检查最终状态
             if [ $i -eq 3 ]; then
               echo "::error::提交失败，重试次数用尽"
               exit 1
             fi
+          fi
