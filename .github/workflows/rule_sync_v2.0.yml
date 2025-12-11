@@ -89,7 +89,7 @@ jobs:
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
           
           # 处理 ip/ 下的每个 .list 文件
-          for ip_file in meta-rules-dat/geo/geosite/classical/*.list; do
+          for ip_file in meta-rules-dat/geo/geoip/classical/*.list; do
             # 跳过无文件的情况
             [ -e "$ip_file" ] || continue
 
