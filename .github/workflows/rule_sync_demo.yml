@@ -39,7 +39,7 @@ jobs:
             geo/geoip/google.yaml
             geo/geoip/private.yaml
             geo/geoip/telegram.yaml
-          sparse-checkout-cone: false
+          sparse-checkout-cone-mode: false
 
       - name: 检出 AWAvenue 秋风广告规则仓库
         uses: actions/checkout@v6
@@ -49,12 +49,12 @@ jobs:
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
             Filters/AWAvenue-Ads-Rule-Clash.yaml
-          sparse-checkout-cone: false
+          sparse-checkout-cone-mode: false
  
 
       - name: 复制文件（安全版）
         run: |
-          ls -la meta-rules-dat/geo/geosite/
+          ls -la AWAvenue-Ads-Rule/Filters/
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
           cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
