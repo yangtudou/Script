@@ -95,13 +95,21 @@ jobs:
           
           wait # 等待所有后台任务完成
 
-      - name: 提交并推送至 Rules 分支
+      - name: 同步远程分支并推送
         working-directory: repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          git checkout Rules || git checkout -b Rules
+          # 检查并切换或创建 Rules 分支
+          git fetch origin
+          if git show-ref --verify --quiet refs/remotes/origin/Rules; then
+            git checkout Rules
+            git pull origin Rules --rebase
+          else
+            git checkout -b Rules
+          fi
+          
           git add ClashMeta/
           
           if ! git diff --cached --quiet; then
