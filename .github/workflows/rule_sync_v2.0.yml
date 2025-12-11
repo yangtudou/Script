@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           path: rule_sync_temp
-          ref: Rules
+          ref: rules
           fetch-depth: 1
 
       - name: 检出 MetaCubeX 仓库
@@ -82,10 +82,10 @@ jobs:
           git checkout --orphan temp
           
           # 强制删除 Rule 分支
-          git branch -D Rules
+          git branch -D rules
           
-          # 创建一个名为 Rules 的孤儿分支
-          git checkout --orphan Rules
+          # 创建一个名为 rules 的孤儿分支
+          git checkout --orphan rules
           
           # 添加所有变更
           git add .
@@ -94,4 +94,4 @@ jobs:
           git commit -m "CI Updated"
           
           # 强制覆盖分支内容
-          git push -f origin Rules
+          git push -f origin rules
