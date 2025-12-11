@@ -74,29 +74,11 @@ jobs:
           
 
       - name: 提交变更
-        id: commit-changes
+        working-directory: rule_sync_temp
         run: |
-          # 变换目录
-          cd rule_sync_temp
-          
-          # 设置Git身份
-          git config user.name "github-actions[Bot]"
-          git config user.email "github-actions@users.noreply.github.com"
-          
-          # 创建临时分支
-          git checkout --orphan temp
-          
-          # 强制删除 Rule 分支
-          git branch -D rules
-          
-          # 创建一个名为 rules 的孤儿分支
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan rules
-          
-          # 添加所有变更
           git add .
-          
-          # 添加变更备注
-          git commit -m "CI Updated"
-          
-          # 强制覆盖分支内容
+          git commit -m "CI Auto Updated"
           git push -f origin rules
