@@ -58,6 +58,7 @@ jobs:
             geo/geosite/classical/meta.list
             geo/geosite/classical/private.list
             geo/geosite/classical/telegram.list
+            ## ip
             geo/geoip/classical/cloudflare.list
             geo/geoip/classical/google.list
             geo/geoip/classical/private.list
@@ -96,9 +97,12 @@ jobs:
             filename=$(basename "$ip_file")
             surge_target="rule_sync_temp/Surge/$filename"
 
+            sed -i -e '$a\' "$ip_file"
+
             if [ -f "$surge_target" ]; then
               # 同名文件已存在 → 合并内容（去重）
               echo "合并: $filename"
+              sed -i -e '$a\' "$surge_target"
               cat "$ip_file" >> "$surge_target.tmp"
               cat "$surge_target" >> "$surge_target.tmp"
               # 去重（保留顺序，只对有效规则去重，注释保留）
