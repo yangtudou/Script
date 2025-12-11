@@ -1,191 +1,102 @@
-name: 自动化下载规则集 (路径修复版)
+name: 自动化规则下载 demo
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * *'    # 北京时间早上 6:00 = UTC 时间前一天 22:00
+  workflow_dispatch:       # 允许手动触发
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出仓库
-        uses: actions/checkout@v4
+      - name: 检出当前仓库
+        uses: actions/checkout@v6
         with:
-          ref: main
-          path: repo
+          path: rule_sync_temp
+          ref: Rules  # 指定 Rules 分支
           fetch-depth: 1
 
-      - name: 安装依赖
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq curl python3 python3-pip
-          pip3 install requests
+      - name: 检出 MetaCubeX 仓库
+        uses: actions/checkout@v6
+        with:
+          repository: MetaCubeX/meta-rules-dat
+          ref: meta
+          path: meta-rules-dat
+          sparse-checkout: |
+            # geosite
+            geo/geosite/geolocation-!cn.yaml
+            geo/geosite/cn.yaml
+            geo/geosite/google.yaml
+            geo/geosite/telegram.yaml
+            geo/geosite/github.yaml
+            geo/geosite/apple.yaml
+            geo/geosite/meta.yaml
+            geo/geosite/private.yaml
+            geo/geosite/cloudflare.yaml
+            # geoip
+            geo/geosite/cloudflare.yaml
+            geo/geosite/cn.yaml
+            geo/geosite/google.yaml
+            geo/geosite/private.yaml
+            geo/geosite/telegram.yaml
 
-      - name: 验证配置文件
-        working-directory: repo
-        run: |
-          test -f ".github/rule_sync_list.json" || { echo "配置文件不存在"; exit 1; }
-          jq empty .github/rule_sync_list.json || { echo "JSON 格式错误"; exit 1; }
+      - name: 检出 AWAvenue 秋风广告规则仓库
+        uses: actions/checkout@v6
+        with:
+          repository: TG-Twilight/AWAvenue-Ads-Rule
+          ref: main
+          path: AWAvenue-Ads-Rule
+          sparse-checkout: |
+            Filters/AWAvenue-Ads-Rule-Clash.yaml
           
-          # 创建目录结构
+      - name: 复制文件
+        run: |
           mkdir -p ClashMeta/{domain,ip}
-
-      - name: 并行下载规则文件
-        working-directory: repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          cp -r meta-rules-dat/geo/geosite/* ClashMeta/domain/
+          cp -r meta-rules-dat/geo/geoip/* ClashMeta/ip/
+          cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
+          
+      - name: 提交变更
+        id: commit-changes
         run: |
-          # 创建下载脚本
-          cat > download_rules.py << 'PYTHON_SCRIPT_EOF'
-          import json
-          import os
-          import requests
-          import sys
-          import time
-          from concurrent.futures import ThreadPoolExecutor, as_completed
-          from datetime import datetime
+          cd rule_sync_temp
           
-          # 从命令行参数获取 GITHUB_TOKEN
-          if len(sys.argv) < 2:
-              print("❌ 错误: 未提供 GITHUB_TOKEN")
-              sys.exit(1)
-              
-          github_token = sys.argv[1]
+          # 设置Git身份
+          git config user.name "github-actions[Bot]"
+          git config user.email "github-actions@users.noreply.github.com"
           
-          # 读取配置文件
-          with open('.github/rule_sync_list.json', 'r', encoding='utf-8') as f:
-              config = json.load(f)
+          # 添加所有变更
+          git add -A
           
-          # 构建下载任务列表
-          tasks = []
-          for provider, types in config.get('rules_group', {}).get('clash_meta', {}).items():
-              for rule_type, data in types.items():
-                  base_url = data['base_url']
-                  for file_info in data['files']:
-                      task = {
-                          'provider': provider,
-                          'type': rule_type,
-                          'base_url': base_url,
-                          'name': file_info['name'],
-                          'description': file_info['description']
-                      }
-                      tasks.append(task)
-          
-          # 下载函数
-          def download_rule(task):
-              provider = task['provider']
-              rule_type = task['type']
-              base_url = task['base_url']
-              name = task['name']
-              desc = task['description']
-              
-              headers = {
-                  'Authorization': f'token {github_token}',
-                  'Accept': 'application/vnd.github.raw'
-              }
-              
-              url = f"{base_url}{name}"
-              target_dir = f"ClashMeta/{rule_type}"
-              os.makedirs(target_dir, exist_ok=True)
-              target_file = os.path.join(target_dir, name)
-              
-              # 重试机制
-              for attempt in range(3):
-                  try:
-                      response = requests.get(url, headers=headers, timeout=30)
-                      response.raise_for_status()
-                      
-                      if len(response.text.strip()) == 0:
-                          print(f"⚠️  下载的文件为空 ({attempt+1}/3): {name}")
-                          time.sleep(2)
-                          continue
-                      
-                      # 写入文件，添加头部信息
-                      content_with_header = f"""# Rule: {desc}
-          # Provider: {provider}
-          # Type: {rule_type}
-          # Updated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
-          # Source: {url}
-          
-          {response.text}"""
-                      
-                      with open(target_file, 'w', encoding='utf-8') as f:
-                          f.write(content_with_header)
-                      
-                      print(f"✅ 成功: {name} ({len(content_with_header.splitlines())} 行)")
-                      return True
-                      
-                  except requests.exceptions.RequestException as e:
-                      print(f"⚠️  HTTP错误 ({attempt+1}/3): {name}, 错误: {str(e)}")
-                      if attempt < 2:
-                          time.sleep(2)
-                      else:
-                          print(f"❌ 最终HTTP错误: {name}")
-                  except Exception as e:
-                      print(f"⚠️  任务异常 ({attempt+1}/3): {name}, 错误: {str(e)}")
-                      if attempt < 2:
-                          time.sleep(2)
-                      else:
-                          print(f"❌ 最终异常: {name}")
-              
-              return False
-          
-          # 并行下载
-          max_workers = min(6, len(tasks))  # 限制并发数量
-          print(f"开始并行下载 {len(tasks)} 个文件，最大并发数: {max_workers}")
-          
-          success_count = 0
-          with ThreadPoolExecutor(max_workers=max_workers) as executor:
-              future_to_task = {executor.submit(download_rule, task): task for task in tasks}
-              
-              for future in as_completed(future_to_task):
-                  task = future_to_task[future]
-                  try:
-                      result = future.result()
-                      if result:
-                          success_count += 1
-                  except Exception as e:
-                      print(f"❌ 任务执行异常 {task['name']}: {str(e)}")
-          
-          print(f"\n下载完成: {success_count}/{len(tasks)} 成功")
-          PYTHON_SCRIPT_EOF
-          
-          # 运行下载脚本，传入 GITHUB_TOKEN
-          python3 download_rules.py "$GITHUB_TOKEN"
-
-      - name: 创建分支并推送更改
-        working-directory: repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 创建专用分支用于 PR
-          BRANCH_NAME="auto-sync-rules-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b "$BRANCH_NAME"
-          
-          git add ClashMeta/
-          
-          if ! git diff --cached --quiet; then
-            git commit -m "Auto sync rules - $(date +'%Y-%m-%d %H:%M')"
-            git push origin "$BRANCH_NAME"
-            echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-            echo "✅ 更改已推送到分支: $BRANCH_NAME"
+          # 检查是否有变更
+          if git diff --cached --quiet; then
+            echo "::notice::无变更可提交"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "ℹ️ 没有变化需要提交"
-            exit 0
+            # 获取北京时间
+            BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+            
+            # 提交变更
+            git commit -m "🔄 规则更新 [$BEIJING_TIME UTC+8]"
+            
+            # 重试机制 (最多3次)
+            for i in {1..3}; do
+              if git pull --rebase origin Rules && git push origin Rules; then
+                echo "::notice::变更已成功提交 (尝试次数: $i)"
+                echo "has_changes=true" >> $GITHUB_OUTPUT
+                break
+              else
+                echo "::warning::推送失败，重试中 ($i/3)..."
+                sleep 2
+              fi
+            done
+            
+            # 检查最终状态
+            if [ $i -eq 3 ]; then
+              echo "::error::提交失败，重试次数用尽"
+              exit 1
+            fi
           fi
-
-      - name: 创建 Pull Request
-        working-directory: repo  # 关键修复：指定工作目录
-        if: env.BRANCH_NAME != ''
-        run: |
-          gh pr create \
-            --title "Auto Sync Rules - $(date +'%Y-%m-%d %H:%M')" \
-            --body "自动化规则集同步\n\n- 同步时间: $(date +'%Y-%m-%d %H:%M:%S')\n- 包含最新的规则更新" \
-            --head "${{ env.BRANCH_NAME }}" \
-            --base "Rules" \
-            --label "automated-pr"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
