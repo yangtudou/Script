@@ -75,20 +75,42 @@ jobs:
             Filters/AWAvenue-Ads-Rule-Clash.yaml
           sparse-checkout-cone-mode: false
  
-
-      - name: 复制文件
+      - name: 整理 ClashMeta 规则
         run: |
-          # ClashMeta
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
           cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
-          find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d') UTC+8" {} \;
+          find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d')" {} \;
           
-          # Surge
-          mkdir -p rule_sync_temp/surge
+      - name: 整理 Surge 规则
+        run: |
+          mkdir -p rule_sync_temp/Surge
+          cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
           
-          
+          # 处理 ip/ 下的每个 .list 文件
+          for ip_file in meta-rules-dat/geo/geosite/classical/*.list; do
+            # 跳过无文件的情况
+            [ -e "$ip_file" ] || continue
+
+            filename=$(basename "$ip_file")
+            surge_target="rule_sync_temp/Surge/$filename"
+
+            if [ -f "$surge_target" ]; then
+              # 同名文件已存在 → 合并内容（去重）
+              echo "合并: $filename"
+              cat "$ip_file" >> "$surge_target.tmp"
+              cat "$surge_target" >> "$surge_target.tmp"
+              # 去重（保留顺序，只对有效规则去重，注释保留）
+              awk '!/^#/ && !/^\s*$/ { if (!seen[$0]++) print $0; next } { print }' "$surge_target.tmp" > "$surge_target"
+              rm -f "$surge_target.tmp"
+            else
+              # 无同名文件 → 直接移动
+              echo "移动: $filename"
+              mv "$ip_file" "$surge_target"
+            fi
+          done
+
 
       - name: 提交变更
         working-directory: rule_sync_temp
