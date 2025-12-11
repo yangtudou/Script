@@ -2,6 +2,8 @@
 # updated at: 2025-12-11
 # 主要改用了 checkout sparse-checkout 方法
 # 简化了整个 Github Action 流程
+#
+# 支持 ClashMeta 规则
 
 
 name: 自动化规则下载 v2.0
@@ -33,6 +35,7 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
+            # ClashMeta yaml
             geo/geosite/geolocation-!cn.yaml
             geo/geosite/cn.yaml
             geo/geosite/google.yaml
@@ -47,6 +50,18 @@ jobs:
             geo/geoip/google.yaml
             geo/geoip/private.yaml
             geo/geoip/telegram.yaml
+            # Surge list
+            geo/geosite/classical/cloudflare.list
+            geo/geosite/classical/category-porn.list
+            geo/geosite/classical/github.list
+            geo/geosite/classical/google.list
+            geo/geosite/classical/meta.list
+            geo/geosite/classical/private.list
+            geo/geosite/classical/telegram.list
+            geo/geoip/classical/cloudflare.list
+            geo/geoip/classical/google.list
+            geo/geoip/classical/private.list
+            geo/geoip/classical/telegram.list
           sparse-checkout-cone-mode: false
 
       - name: 检出 AWAvenue 仓库 main 分支
@@ -63,13 +78,17 @@ jobs:
 
       - name: 复制文件
         run: |
+          # ClashMeta
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
           cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
-          
-          # 添加时间戳
           find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d') UTC+8" {} \;
+          
+          # Surge
+          mkdir -p rule_sync_temp/surge
+          
+          
 
       - name: 提交变更
         working-directory: rule_sync_temp
