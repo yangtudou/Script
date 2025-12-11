@@ -76,11 +76,12 @@ jobs:
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
             Filters/AWAvenue-Ads-Rule-Clash.yaml
+            Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
           sparse-checkout-cone-mode: false
  
       - name: 整理 ClashMeta 规则
         run: |
-          rm -rf rule_sync_temp/ClashMeta
+          # rm -rf rule_sync_temp/ClashMeta #初始化用
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/domain/ \;
           find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/ip/ \;
@@ -89,7 +90,11 @@ jobs:
           
       - name: 整理 Surge 规则
         run: |
+          # rm -rf rule_sync_temp/Surge # 初始化用
           mkdir -p rule_sync_temp/Surge
+
+          cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
           
           # 处理 ip/ 下的每个 .list 文件
