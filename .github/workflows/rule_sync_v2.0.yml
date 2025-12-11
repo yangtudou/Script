@@ -18,11 +18,11 @@ jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出当前仓库 main 分支
+      - name: 检出当前仓库 rules 分支
         uses: actions/checkout@v6
         with:
           path: rule_sync_temp
-          ref: main
+          ref: rules
           fetch-depth: 1
 
       - name: 检出 MetaCubeX 仓库 meta 分支
@@ -69,16 +69,17 @@ jobs:
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
           
           # 添加时间戳
-          find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d %H:%M:%S') UTC+8" {} \;
-          
-          
+          find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d') UTC+8" {} \;
 
-      - name: 覆盖到当前仓库的 rules 分支
+      - name: 提交变更
         working-directory: rule_sync_temp
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[Bot]"
+          git config user.email "github-actions@users.noreply.github.com"
+          
+          git branch -D rules 2>/dev/null || true
           git checkout --orphan rules
+          
           git add .
-          git commit -m "CI Auto Updated"
+          git commit -m "CI Updated"
           git push -f origin rules
