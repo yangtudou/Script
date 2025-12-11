@@ -115,6 +115,10 @@ jobs:
             fi
           done
 
+          sed -i '/^IP-CIDR/s/$/, no-resolve/' rule_sync_temp/Surge/*.list
+          sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' rule_sync_temp/Surge/*.list
+
+          sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
 
       - name: 提交变更
         working-directory: rule_sync_temp
