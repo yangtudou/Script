@@ -1,10 +1,11 @@
-name: 自动化下载规则集
+name: 自动化下载规则集 (优雅版)
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   rule_sync:
@@ -19,7 +20,7 @@ jobs:
 
       - name: 安装依赖
         run: |
-          sudo apt-get update && sudo apt-get install -y jq curl
+          sudo apt-get update && sudo apt-get install -y jq curl python3
 
       - name: 验证配置文件
         working-directory: repo
@@ -30,98 +31,141 @@ jobs:
           # 创建目录结构
           mkdir -p ClashMeta/{domain,ip}
 
-      - name: 并行下载规则文件
+      - name: 并行下载规则文件 (Python版)
         working-directory: repo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          python3 << 'EOF'
+          import json
+          import os
+          import requests
+          import time
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from datetime import datetime
+          
+          # 读取配置文件
+          with open('.github/rule_sync_list.json', 'r', encoding='utf-8') as f:
+              config = json.load(f)
+          
+          # 构建下载任务列表
+          tasks = []
+          for provider, types in config.get('rules_group', {}).get('clash_meta', {}).items():
+              for rule_type, data in types.items():
+                  base_url = data['base_url']
+                  for file_info in data['files']:
+                      task = {
+                          'provider': provider,
+                          'type': rule_type,
+                          'base_url': base_url,
+                          'name': file_info['name'],
+                          'description': file_info['description']
+                      }
+                      tasks.append(task)
+          
           # 下载函数
-          download_rule() {
-            local provider="$1" type="$2" base_url="$3" name="$4" desc="$5"
-            local dir="ClashMeta/$type" url="${base_url}${name}" temp_file="temp_$$"
-            
-            # 确保目录存在
-            mkdir -p "$dir"
-            
-            # 下载（最多重试3次）
-            for attempt in {1..3}; do
-              if curl -sfL \
-                  -H "Authorization: token $GITHUB_TOKEN" \
-                  -H "Accept: application/vnd.github.raw" \
-                  "$url" -o "$temp_file"; then
-                
-                if [ -s "$temp_file" ]; then
-                  # 添加元数据头部
-                  {
-                    echo "# Rule: $desc"
-                    echo "# Provider: $provider"
-                    echo "# Type: $type"
-                    echo "# Updated: $(date +'%Y-%m-%d %H:%M:%S' -u)"
-                    echo "# Source: $url"
-                    echo ""
-                    cat "$temp_file"
-                  } > "${dir}/${name}"
-                  
-                  echo "::notice:: 成功: $name ($(wc -l < "${dir}/${name}") 行)"
-                  rm -f "$temp_file"
-                  return 0
-                fi
-              fi
+          def download_rule(task):
+              provider = task['provider']
+              rule_type = task['type']
+              base_url = task['base_url']
+              name = task['name']
+              desc = task['description']
               
-              echo "::warning:: 尝试 $attempt/3 失败: $name"
-              sleep 2
-            done
-            
-            echo "::error:: 下载失败: $name"
-            return 1
-          }
+              headers = {
+                  'Authorization': f'token ${GITHUB_TOKEN}',
+                  'Accept': 'application/vnd.github.raw'
+              }
+              
+              url = f"{base_url}{name}"
+              target_dir = f"ClashMeta/{rule_type}"
+              os.makedirs(target_dir, exist_ok=True)
+              target_file = os.path.join(target_dir, name)
+              
+              # 重试机制
+              for attempt in range(3):
+                  try:
+                      response = requests.get(url, headers=headers, timeout=30)
+                      response.raise_for_status()
+                      
+                      if len(response.content.strip()) == 0:
+                          print(f"⚠️  下载的文件为空 ({attempt+1}/3): {name}")
+                          time.sleep(2)
+                          continue
+                      
+                      # 写入文件，添加头部信息
+                      content_with_header = f"""# Rule: {desc}
+          # Provider: {provider}
+          # Type: {rule_type}
+          # Updated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
+          # Source: {url}
           
-          export -f download_rule
+          {response.text}"""
+                      
+                      with open(target_file, 'w', encoding='utf-8') as f:
+                          f.write(content_with_header)
+                      
+                      print(f"✅ 成功: {name} ({len(content_with_header.split())} 行)")
+                      return True
+                      
+                  except Exception as e:
+                      print(f"⚠️  下载失败 ({attempt+1}/3): {name}, 错误: {str(e)}")
+                      if attempt < 2:
+                          time.sleep(2)
+                      else:
+                          print(f"❌ 最终失败: {name}")
+              
+              return False
           
-          # 解析配置并下载
-          jq -r '
-            .rules_group.clash_meta | to_entries[] |
-            .key as $provider |
-            .value | to_entries[] |
-            .key as $type |
-            .value |
-            .base_url as $base_url |
-            .files[] |
-            "\($provider)|\($type)|\($base_url)|\(.name)|\(.description)"
-          ' .github/rule_sync_list.json | \
-          while IFS='|' read -r provider type base_url name desc; do
-            download_rule "$provider" "$type" "$base_url" "$name" "$desc" &
-          done
+          # 并行下载
+          max_workers = min(6, len(tasks))  # 限制并发数量
+          print(f"开始并行下载 {len(tasks)} 个文件，最大并发数: {max_workers}")
           
-          wait # 等待所有后台任务完成
+          success_count = 0
+          with ThreadPoolExecutor(max_workers=max_workers) as executor:
+              future_to_task = {executor.submit(download_rule, task): task for task in tasks}
+              
+              for future in as_completed(future_to_task):
+                  task = future_to_task[future]
+                  try:
+                      result = future.result()
+                      if result:
+                          success_count += 1
+                  except Exception as e:
+                      print(f"❌ 任务异常 {task['name']}: {str(e)}")
+          
+          print(f"\n下载完成: {success_count}/{len(tasks)} 成功")
+          EOF
 
-      - name: 同步远程分支并推送
+      - name: 创建分支并推送更改
         working-directory: repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # 获取远程分支信息
-          git fetch origin
-          
-          # 如果 Rules 分支存在，切换到该分支并清理本地更改
-          if git show-ref --verify --quiet refs/remotes/origin/Rules; then
-            git checkout Rules
-            # 清理本地未提交的更改
-            git reset --hard HEAD
-            git clean -fd
-            git pull origin Rules --rebase
-          else
-            # 如果远程分支不存在，则创建本地分支
-            git checkout -b Rules
-          fi
+          # 创建专用分支用于 PR
+          BRANCH_NAME="auto-sync-rules-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH_NAME"
           
           git add ClashMeta/
           
           if ! git diff --cached --quiet; then
             git commit -m "Auto sync rules - $(date +'%Y-%m-%d %H:%M')"
-            git push origin Rules
-            echo "✅ 规则已更新并推送到 Rules 分支"
+            git push origin "$BRANCH_NAME"
+            echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+            echo "✅ 更改已推送到分支: $BRANCH_NAME"
           else
             echo "ℹ️ 没有变化需要提交"
+            exit 0
           fi
+
+      - name: 创建 Pull Request
+        if: env.BRANCH_NAME != ''
+        run: |
+          gh pr create \
+            --title "Auto Sync Rules - $(date +'%Y-%m-%d %H:%M')" \
+            --body "自动化规则集同步\n\n- 同步时间: $(date +'%Y-%m-%d %H:%M:%S')\n- 包含最新的规则更新" \
+            --head "${{ env.BRANCH_NAME }}" \
+            --base "Rules" \
+            --label "automated-pr"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
