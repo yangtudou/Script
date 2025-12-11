@@ -1,4 +1,4 @@
-name: 自动化下载规则集 (修复版)
+name: 自动化下载规则集 (路径修复版)
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
           # 创建目录结构
           mkdir -p ClashMeta/{domain,ip}
 
-      - name: 并行下载规则文件 (修复版)
+      - name: 并行下载规则文件
         working-directory: repo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -178,6 +178,7 @@ jobs:
           fi
 
       - name: 创建 Pull Request
+        working-directory: repo  # 关键修复：指定工作目录
         if: env.BRANCH_NAME != ''
         run: |
           gh pr create \
