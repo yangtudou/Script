@@ -26,7 +26,6 @@ jobs:
           ref: meta
           path: meta-rules-dat
           sparse-checkout: |
-            geo/geosite/geolocation-!cn.yaml
             geo/geosite/cn.yaml
             geo/geosite/google.yaml
             geo/geosite/telegram.yaml
@@ -40,7 +39,7 @@ jobs:
             geo/geoip/google.yaml
             geo/geoip/private.yaml
             geo/geoip/telegram.yaml
-          sparse-checkout-concise: false  # ✅ 修复点1：必须设为false
+          sparse-checkout-cone: false
 
       - name: 检出 AWAvenue 秋风广告规则仓库
         uses: actions/checkout@v6
@@ -50,11 +49,12 @@ jobs:
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
             Filters/AWAvenue-Ads-Rule-Clash.yaml
-          sparse-checkout-concise: false  # ✅ 修复点2：必须设为false
+          sparse-checkout-cone: false
+ 
 
       - name: 复制文件（安全版）
         run: |
-          shopt -s nullglob  # ✅ 修复点3：解决通配符问题
+          ls -la meta-rules-dat/geo/geosite/
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           cp -r meta-rules-dat/geo/geosite/* rule_sync_temp/ClashMeta/domain/
           cp -r meta-rules-dat/geo/geoip/* rule_sync_temp/ClashMeta/ip/
