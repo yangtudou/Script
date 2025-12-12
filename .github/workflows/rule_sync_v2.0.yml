@@ -161,3 +161,9 @@ jobs:
           git add .
           git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
           git push -f origin rules
+
+      - name: 清除工作流
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 0
+          keep_minimum_runs: 0
