@@ -145,7 +145,7 @@ jobs:
       - name: 统一添加时间戳
         run: |
           beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-          find rule_sync_temp/ClashMeta -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: $beijing_time" {} \;
+          find rule_sync_temp -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: 北京时间 $beijing_time" {} \;
       
       - name: 提交变更
         working-directory: rule_sync_temp
@@ -158,5 +158,5 @@ jobs:
           git checkout --orphan rules
           
           git add .
-          git commit -m "CI: Auto update at $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
+          git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
           git push -f origin rules
