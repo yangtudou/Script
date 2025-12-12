@@ -1,7 +1,9 @@
 # version: v2.0
 # updated at: 2025-12-11
 # 主要改用了 checkout sparse-checkout 方法
+# 改用 rules 分支管理
 # 简化了整个 Github Action 流程
+# UTC 22:00 (北京时间早 6:00 自动拉取) 
 #
 # 支持 ClashMeta 规则
 # 支持 Surge 规则
@@ -11,7 +13,7 @@ name: 自动化规则下载 v2.0
 
 on:
   schedule:
-    - cron: '0 22 * * *'  # UTC 22:00 (北京时间次日 6:00)
+    - cron: '0 22 * * *'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +39,7 @@ jobs:
           path: meta-rules-dat
           sparse-checkout: |
             # ClashMeta yaml
+            ## domain
             geo/geosite/geolocation-!cn.yaml
             geo/geosite/cn.yaml
             geo/geosite/google.yaml
@@ -46,6 +49,7 @@ jobs:
             geo/geosite/meta.yaml
             geo/geosite/private.yaml
             geo/geosite/cloudflare.yaml
+            ## ip
             geo/geoip/cloudflare.yaml
             geo/geoip/cn.yaml
             geo/geoip/google.yaml
@@ -75,29 +79,33 @@ jobs:
           fetch-depth: 1
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
+            # ClashMeta
             Filters/AWAvenue-Ads-Rule-Clash.yaml
+            # Surge
             Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
           sparse-checkout-cone-mode: false
  
       - name: 整理 ClashMeta 规则
         run: |
-          # rm -rf rule_sync_temp/ClashMeta #初始化用
-          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
+          # rm -rf rule_sync_temp/ClashMeta # 清空原始目录
+          mkdir -p rule_sync_temp/ClashMeta/{domain,ip} # 创建目标目录
+          
           find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/domain/ \;
           find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/ip/ \;
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
-          find rule_sync_temp/ClashMeta -type f -name "*.yaml" -exec sed -i "1i # 更新时间: $(date +'%Y-%m-%d')" {} \;
           
       - name: 整理 Surge 规则
         run: |
-          # rm -rf rule_sync_temp/Surge # 初始化用
-          mkdir -p rule_sync_temp/Surge
+          # rm -rf rule_sync_temp/Surge # 清空原始目录
+          mkdir -p rule_sync_temp/Surge # 创建目标目录
 
+          # 复制 AWAvenue-Ads-Rule 规则到目标目录
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
+          # 复制 domain 下规则到目标目录
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
           
-          # 处理 ip/ 下的每个 .list 文件
+          # 处理 ip 下的每个 list 文件
           for ip_file in meta-rules-dat/geo/geoip/classical/*.list; do
             # 跳过无文件的情况
             [ -e "$ip_file" ] || continue
@@ -105,6 +113,7 @@ jobs:
             filename=$(basename "$ip_file")
             surge_target="rule_sync_temp/Surge/$filename"
 
+            # 避免出现文件前后没有断行
             sed -i -e '$a\' "$ip_file"
 
             if [ -f "$surge_target" ]; then
@@ -123,11 +132,21 @@ jobs:
             fi
           done
 
+          # step 1
+          # 给所有 IP-CIDR 增加 ,no-resolve
           sed -i '/^IP-CIDR/s/$/,no-resolve/' rule_sync_temp/Surge/*.list
+          # step 2
+          # 匹配 ipv6 地址，IP-CIDR → IP-CIDR6
           sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' rule_sync_temp/Surge/*.list
-
+          # step 3
+          # DOMAIN-REGEX → URL-REGEX
           sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
 
+      - name: 统一添加时间戳
+        run: |
+          beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
+          find rule_sync_temp/ClashMeta -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: $beijing_time" {} \;
+      
       - name: 提交变更
         working-directory: rule_sync_temp
         run: |
@@ -139,5 +158,5 @@ jobs:
           git checkout --orphan rules
           
           git add .
-          git commit -m "CI: Auto update at $(date +'%Y-%m-%d %H')"
+          git commit -m "CI: Auto update at $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
           git push -f origin rules
