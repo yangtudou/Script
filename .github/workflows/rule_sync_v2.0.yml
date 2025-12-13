@@ -149,23 +149,24 @@ jobs:
 
           for f in rule_sync_temp/Surge/*.list; do
             if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && "$f" != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
+              sed -i -e '$a\' "$f"
               cat "$f"
             fi
           done > rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
-          awk '
-          /IP-CIDR6?=/ {
-              if (!seen6[$0]++) IP_CIDR6_rules[IP_CIDR6_count++] = $0
-              next
+          cat rule_sync_temp/Surge/y3_proxy_rules@surge.list | awk '
+          /^[Ii][Pp]-[Cc][Ii][Dd][Rr],/ {
+              if (!seen[$0]++) ip_cidr_rules[ip_cidr_count++] = $0
           }
-          {
+          !(/^[Ii][Pp]-[Cc][Ii][Dd][Rr],/) {
               if (!seen[$0]++) other_rules[other_count++] = $0
           }
           END {
-              for (i = 0; i < IP_CIDR6_count; i++) print IP_CIDR6_rules[i]
+              for (i = 0; i < ip_cidr_count; i++) print ip_cidr_rules[i]
               for (i = 0; i < other_count; i++) print other_rules[i]
           }
-          ' rule_sync_temp/Surge/y3_proxy_rules@surge.list > rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp && mv rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp rule_sync_temp/Surge/y3_proxy_rules@surge.list
+          ' | sort -u > rule_sync_temp/Surge/y3_proxy_rules@surge.list || echo "处理失败，原文件保留"
+
 
 
 
