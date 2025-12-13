@@ -1,5 +1,5 @@
 # version: v2.0.1
-# updated at: 2025-12-11
+# updated at: 2025-12-14
 # 主要改用了 checkout sparse-checkout 方法
 # 改用 rules 分支管理
 # 简化了整个 Github Action 流程
@@ -153,6 +153,10 @@ jobs:
               cat "$f"
             fi
           done > rule_sync_temp/Surge/y3_proxy_rules@surge.list
+
+          # 使用 awk 去重，sort 排序
+          awk '!seen[$0]++' rule_sync_temp/Surge/y3_proxy_rules@surge.list | sort -t, -k1,1 -k2,2
+
 
           # 临时追加一些规则，后续会改成文件的方法添加
           echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
