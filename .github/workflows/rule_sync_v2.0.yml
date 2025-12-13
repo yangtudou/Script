@@ -92,8 +92,8 @@ jobs:
  
       - name: 整理 ClashMeta 规则
         run: |
-          rm -rf rule_sync_temp/ClashMeta # 清空原始目录
-          mkdir -p rule_sync_temp/ClashMeta/{domain,ip} # 创建目标目录
+          rm -rf rule_sync_temp/ClashMeta
+          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
           
           find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/domain/ \;
           find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/ip/ \;
@@ -101,8 +101,8 @@ jobs:
           
       - name: 整理 Surge 规则
         run: |
-          rm -rf rule_sync_temp/Surge # 清空原始目录
-          mkdir -p rule_sync_temp/Surge # 创建目标目录
+          rm -rf rule_sync_temp/Surge
+          mkdir -p rule_sync_temp/Surge
 
           # 复制 AWAvenue-Ads-Rule 规则到目标目录
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
@@ -148,7 +148,7 @@ jobs:
           sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
 
           for f in rule_sync_temp/Surge/*.list; do
-            if [[ "$f" != "direct.list" ]]; then
+            if [[ "$f" != "y3_proxy_rules@surge.list" ]]; then
               echo "# ================= #"
               echo "# $f start"
               cat "$f"
