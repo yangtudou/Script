@@ -149,7 +149,7 @@ jobs:
 
           # 先合并文件
           for f in rule_sync_temp/Surge/*.list; do
-            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && "$f" != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
+            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && "$f" != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" && "$f" != "rule_sync_temp/Surge/private.list" ]]; then
               # 确保文件以换行符结尾
               if [[ -s "$f" ]]; then
                 # 使用 sed 确保每行完整
