@@ -155,7 +155,7 @@ jobs:
               echo "# $f end"
               echo "# ================= #"
             fi
-          done > y3_proxy_rules@surge.list
+          done > rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
           # 临时追加一些规则，后续会改成文件的方法添加
           cat <<EOF >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
