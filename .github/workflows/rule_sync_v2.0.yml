@@ -148,14 +148,27 @@ jobs:
           sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
 
           for f in rule_sync_temp/Surge/*.list; do
-            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" ]]; then
-              echo "# ================= #"
-              echo "# $f start"
+            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
               cat "$f"
-              echo "# $f end"
-              echo "# ================= #"
             fi
           done > rule_sync_temp/Surge/y3_proxy_rules@surge.list
+
+          awk '
+          /IP-CIDER6?=/ {
+              if (!seen6[$0]++) IP_CIDER6_rules[IP_CIDER6_count++] = $0
+              next
+          }
+          {
+              if (!seen[$0]++) other_rules[other_count++] = $0
+          }
+          END {
+              for (i = 0; i < IP_CIDER6_count; i++) print IP_CIDER6_rules[i]
+              for (i = 0; i < other_count; i++) print other_rules[i]
+          }
+          ' rule_sync_temp/Surge/y3_proxy_rules@surge.list > rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp && mv rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp rule_sync_temp/Surge/y3_proxy_rules@surge.list
+
+
+
 
           # 临时追加一些规则，后续会改成文件的方法添加
           echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
