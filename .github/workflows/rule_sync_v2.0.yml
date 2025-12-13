@@ -154,15 +154,15 @@ jobs:
           done > rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
           awk '
-          /IP-CIDER6?=/ {
-              if (!seen6[$0]++) IP_CIDER6_rules[IP_CIDER6_count++] = $0
+          /IP-CIDR6?=/ {
+              if (!seen6[$0]++) IP_CIDR6_rules[IP_CIDR6_count++] = $0
               next
           }
           {
               if (!seen[$0]++) other_rules[other_count++] = $0
           }
           END {
-              for (i = 0; i < IP_CIDER6_count; i++) print IP_CIDER6_rules[i]
+              for (i = 0; i < IP_CIDR6_count; i++) print IP_CIDR6_rules[i]
               for (i = 0; i < other_count; i++) print other_rules[i]
           }
           ' rule_sync_temp/Surge/y3_proxy_rules@surge.list > rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp && mv rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp rule_sync_temp/Surge/y3_proxy_rules@surge.list
