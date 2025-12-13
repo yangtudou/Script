@@ -158,7 +158,7 @@ jobs:
           done > y3_proxy_rules@surge.list
 
           # 临时追加一些规则，后续会改成文件的方法添加
-          cat >> rule_sync_temp/Surge/y3_proxy_rules@surge.list << EOF
+          cat <<EOF >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
           # 以下临时规则
           DOMAIN-SUFFIX,v2ex.com
           
