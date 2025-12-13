@@ -147,7 +147,7 @@ jobs:
           # DOMAIN-REGEX → URL-REGEX
           # sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
           # Remove DOMAIN-REGEX rules
-          sed -i 's/^DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
+          sed -i '/DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
 
           echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" > rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
