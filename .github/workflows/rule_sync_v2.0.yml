@@ -58,9 +58,12 @@ jobs:
             geo/geoip/telegram.yaml
             # Surge list
             ## domain
+            # geo/geosite/classical/category-porn.list # nsfw
+            geo/geosite/classical/missav.list # nsfw
+            geo/geosite/classical/javbus.list # nsfw
+            # geo/geosite/classical/gfw.list # gfw pinterest
+            geo/geosite/classical/pinterest.list # pinterest
             geo/geosite/classical/cloudflare.list
-            # geo/geosite/classical/category-porn.list
-            geo/geosite/classical/gfw.list
             geo/geosite/classical/github.list
             geo/geosite/classical/google.list
             geo/geosite/classical/meta.list
@@ -106,6 +109,11 @@ jobs:
 
           # 复制 domain 下规则到目标目录
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
+
+          # 临时性增加一些规则，后续会改成文件的方法添加
+          cat > y3_proxy_rules@surge.list << EOF
+          DOMAIN-SUFFIX,v2ex.com
+          EOF
           
           # 处理 ip 下的每个 list 文件
           for ip_file in meta-rules-dat/geo/geoip/classical/*.list; do
