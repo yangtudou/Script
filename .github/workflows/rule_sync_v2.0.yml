@@ -61,7 +61,7 @@ jobs:
             # geo/geosite/classical/category-porn.list # nsfw
             geo/geosite/classical/missav.list # nsfw
             geo/geosite/classical/javbus.list # nsfw
-            # geo/geosite/classical/gfw.list # gfw pinterest
+            # geo/geosite/classical/gfw.list # gfw
             geo/geosite/classical/pinterest.list # pinterest
             geo/geosite/classical/cloudflare.list
             geo/geosite/classical/github.list
@@ -111,8 +111,9 @@ jobs:
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
 
           # 临时性增加一些规则，后续会改成文件的方法添加
-          cat > y3_proxy_rules@surge.list << EOF
+          cat > rule_sync_temp/Surge/y3_proxy_rules@surge.list << EOF
           DOMAIN-SUFFIX,v2ex.com
+          
           EOF
           
           # 处理 ip 下的每个 list 文件
