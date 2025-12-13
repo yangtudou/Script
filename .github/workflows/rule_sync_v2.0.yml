@@ -147,15 +147,33 @@ jobs:
           # DOMAIN-REGEX → URL-REGEX
           sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
 
-          # 将所有文件合并、去重、排序，一次性处理
-          {
-            for f in rule_sync_temp/Surge/*.list; do
-              if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && "$f" != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
-                sed -i -e '$a\' "$f"
+          # 先合并文件
+          for f in rule_sync_temp/Surge/*.list; do
+            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && "$f" != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
+              # 确保文件以换行符结尾
+              if [[ -s "$f" ]]; then
+                # 使用 sed 确保每行完整
+                sed -i '$a\' "$f"
                 cat "$f"
               fi
-            done
-          } | awk '!seen[$0]++' | sort -t, -k1,1 -k2,2 | echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" > rule_sync_temp/Surge/y3_proxy_rules@surge.list
+            fi
+          done > rule_sync_temp/Surge/merged_temp.list
+
+          # 对合并后的文件进行去重和排序
+          if [[ -s "rule_sync_temp/Surge/merged_temp.list" ]]; then
+            awk '!seen[$0]++' rule_sync_temp/Surge/merged_temp.list > rule_sync_temp/Surge/deduped_temp.list
+  
+            # 对去重后的文件排序
+            sort -t, -k1,1 -k2,2 rule_sync_temp/Surge/deduped_temp.list > rule_sync_temp/Surge/y3_proxy_rules@surge.list
+  
+            # 清理临时文件
+            rm -f rule_sync_temp/Surge/merged_temp.list rule_sync_temp/Surge/deduped_temp.list
+          else
+            echo "警告：没有要处理的文件"
+            : > rule_sync_temp/Surge/y3_proxy_rules@surge.list
+          fi
+
+          #echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" > rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
       - name: 统一添加时间戳
         run: |
