@@ -1,4 +1,4 @@
-# version: v2.0
+# version: v2.0.1
 # updated at: 2025-12-11
 # 主要改用了 checkout sparse-checkout 方法
 # 改用 rules 分支管理
@@ -109,12 +109,6 @@ jobs:
 
           # 复制 domain 下规则到目标目录
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
-
-          # 临时追加一些规则，后续会改成文件的方法添加
-          cat >> rule_sync_temp/Surge/y3_proxy_rules@surge.list << EOF
-          DOMAIN-SUFFIX,v2ex.com
-          
-          EOF
           
           # 处理 ip 下的每个 list 文件
           for ip_file in meta-rules-dat/geo/geoip/classical/*.list; do
@@ -152,6 +146,23 @@ jobs:
           # step 3
           # DOMAIN-REGEX → URL-REGEX
           sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
+
+          for f in rule_sync_temp/Surge/*.list; do
+            if [[ "$f" != "direct.list" ]]; then
+              echo "# ================= #"
+              echo "# $f start"
+              cat "$f"
+              echo "# $f end"
+              echo "# ================= #"
+            fi
+          done > y3_proxy_rules@surge.list
+
+          # 临时追加一些规则，后续会改成文件的方法添加
+          cat >> rule_sync_temp/Surge/y3_proxy_rules@surge.list << EOF
+          # 以下临时规则
+          DOMAIN-SUFFIX,v2ex.com
+          
+          EOF
 
       - name: 统一添加时间戳
         run: |
