@@ -148,7 +148,7 @@ jobs:
           sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
 
           for f in rule_sync_temp/Surge/*.list; do
-            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
+            if [[ "$f" != "rule_sync_temp/Surge/y3_proxy_rules@surge.list" && "$f" != "rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list" ]]; then
               cat "$f"
             fi
           done > rule_sync_temp/Surge/y3_proxy_rules@surge.list
