@@ -186,6 +186,40 @@ jobs:
           echo "合并完成，目标文件位于：$TARGET_FILE"
 
 
+          # ===================
+          # 使用 AWK 排序 + 格式化
+          # ===================
+          echo "开始处理合并后的文件：$TARGET_FILE"
+
+          awk '
+              BEGIN { OFS=FS }  # 保留字段分隔符
+              {
+                  # 跳过空行
+                  if ($0 ~ /^\s*$/) next
+        
+                  # 如果为 IP-CIDR 内容，保存到 ip_cidr_lns 数组
+                  if ($0 ~ /IP-CIDR/) ip_cidr_lns[NR] = $0
+                  # 如果为 IP-CIDR6 内容，保存到 ip_cidr6_lns 数组
+                  else if ($0 ~ /IP-CIDR6/) ip_cidr6_lns[NR] = $0
+                  # 其他内容，去重保存到 other_lns 数组
+                  else other_lns[$0] = $0
+              }
+              END {
+                  # 先输出 IP-CIDR 的内容
+                  for (i in ip_cidr_lns) print ip_cidr_lns[i]
+                  # 然后输出 IP-CIDR6 的内容
+                  for (i in ip_cidr6_lns) print ip_cidr6_lns[i]
+                  # 最后输出其他去重、排序的内容
+                  for (ln in other_lns) print ln
+              }
+          ' "$TARGET_FILE" | sort > "$TARGET_FILE.tmp"
+
+          # 用处理后的文件替换原始文件
+          mv "$TARGET_FILE.tmp" "$TARGET_FILE"
+          echo "处理完成，最终文件位于：$TARGET_FILE"
+
+
+
 
 
           echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
