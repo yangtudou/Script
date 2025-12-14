@@ -149,6 +149,39 @@ jobs:
           # Remove DOMAIN-REGEX rules
           sed -i '/DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
 
+
+          # 定义要合并的 list 文件和目标 proxy_rules 文件
+          declare -a FILES_TO_MERGE=(
+            "rule_sync_temp/Surge/google.list"
+            "rule_sync_temp/Surge/meta.list"
+          )
+          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+
+          # 检查目标文件是否存在，不存在则创建
+          if [ ! -f "$TARGET_FILE" ]; then
+            echo "创建目标文件：$TARGET_FILE"
+            touch "$TARGET_FILE"
+          fi
+
+          # 清空目标文件的内容（如果需要保留内容可注释掉这行）
+          > "$TARGET_FILE"
+
+          # 合并 list 文件到目标文件
+          for file in "${FILES_TO_MERGE[@]}"; do
+            if [ -f "$file" ]; then
+              echo "合并文 to proxy：$file"
+              cat "$file" >> "$TARGET_FILE"
+              echo "" >> "$TARGET_FILE"
+            else
+              echo "未找到文件：$file，跳过合并"
+            fi
+          done
+
+          echo "合并完成，目标文件位于：$TARGET_FILE"
+
+
+
+
           echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" > rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
       - name: 统一添加时间戳
