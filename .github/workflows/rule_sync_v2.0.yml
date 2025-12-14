@@ -182,7 +182,7 @@ jobs:
 
 
 
-          echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" > rule_sync_temp/Surge/y3_proxy_rules@surge.list
+          echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
       - name: 统一添加时间戳
         run: |
