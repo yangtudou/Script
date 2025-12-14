@@ -154,6 +154,12 @@ jobs:
           declare -a FILES_TO_MERGE=(
             "rule_sync_temp/Surge/google.list"
             "rule_sync_temp/Surge/meta.list"
+            "rule_sync_temp/Surge/pinterest.list"
+            "rule_sync_temp/Surge/github.list"
+            "rule_sync_temp/Surge/cloudflare.list"
+            "rule_sync_temp/Surge/javbus.list"
+            "rule_sync_temp/Surge/missav.list"
+            "rule_sync_temp/Surge/telegram.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
