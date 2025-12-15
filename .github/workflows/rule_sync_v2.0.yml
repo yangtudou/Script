@@ -92,12 +92,16 @@ jobs:
  
       - name: 整理 ClashMeta 规则
         run: |
-          rm -rf rule_sync_temp/ClashMeta
-          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
+          set -e
           
-          find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/domain/ \;
-          find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} rule_sync_temp/ClashMeta/ip/ \;
+          echo "开始整理 ClashMeta 规则..."
+          # 定义常量
+          CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"    
+          
+          rsync -a meta-rules-dat/geo/ "$CLASHMETA_RULE_DIR/" --include='*.yaml' --exclude='*'
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
+          
+          echo "✅ ClashMeta 规则整理完成"
           
       - name: 整理 Surge 规则
         run: |
