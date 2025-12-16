@@ -213,8 +213,8 @@ jobs:
             touch "$TMPDIR/others.sorted"
           fi
 
-          # 合并最终结果：IP-CIDR (IPv4) -> IP-CIDR6 (IPv6) -> 其他
-          cat "$TMPDIR/ip4.tmp" "$TMPDIR/ip6.tmp" "$TMPDIR/others.sorted" > "$TARGET_FILE.tmp" || true
+          # 合并最终结果：DOMAIN -> IP-CIDR (IPv4) -> IP-CIDR6 (IPv6)
+          cat "$TMPDIR/others.sorted" "$TMPDIR/ip4.tmp" "$TMPDIR/ip6.tmp"  > "$TARGET_FILE.tmp" || true
           mv "$TARGET_FILE.tmp" "$TARGET_FILE"
           echo "处理完成，最终文件位于：$TARGET_FILE"
 
