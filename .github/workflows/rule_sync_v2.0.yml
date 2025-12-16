@@ -61,7 +61,7 @@ jobs:
             # geo/geosite/classical/category-porn.list
             geo/geosite/classical/missav.list
             geo/geosite/classical/javbus.list
-            # geo/geosite/classical/gfw.list
+            geo/geosite/classical/gfw.list
             geo/geosite/classical/pinterest.list
             geo/geosite/classical/cloudflare.list
             geo/geosite/classical/github.list
@@ -164,6 +164,7 @@ jobs:
             "rule_sync_temp/Surge/javbus.list"
             "rule_sync_temp/Surge/missav.list"
             "rule_sync_temp/Surge/telegram.list"
+            "rule_sync_temp/Surge/gfw.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
@@ -188,8 +189,6 @@ jobs:
           done
 
           echo "合并完成，目标文件位于：$TARGET_FILE"
-
-
 
           # ===================
           # 使用 AWK 排序 + 格式化
@@ -219,9 +218,7 @@ jobs:
           mv "$TARGET_FILE.tmp" "$TARGET_FILE"
           echo "处理完成，最终文件位于：$TARGET_FILE"
 
-
-
-          echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
+          # echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
       - name: 统一添加时间戳
         run: |
