@@ -129,8 +129,8 @@ jobs:
               # 同名文件已存在 → 合并内容（去重）
               echo "合并: $filename"
               sed -i -e '$a\\' "$surge_target"
-              cat "$ip_file" >> "$surge_target.tmp"
               cat "$surge_target" >> "$surge_target.tmp"
+              cat "$ip_file" >> "$surge_target.tmp"
               # 去重（保留顺序，只对有效规则去重，注释保留）
               awk '!/^#/ && !/^\\s*$/ { if (!seen[$0]++) print $0; next } { print }' "$surge_target.tmp" > "$surge_target"
               rm -f "$surge_target.tmp"
