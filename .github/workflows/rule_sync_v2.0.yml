@@ -96,8 +96,16 @@ jobs:
           
           echo "开始整理 ClashMeta 规则..."
           # 定义常量
-          CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"    
-          rsync -av --delete --include='*.yaml' --exclude='*' meta-rules-dat/geo/ "$CLASHMETA_RULE_DIR/"
+          CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"
+
+          echo "清空 & 重建 ClashMeta 目录..."
+          rm -rf $CLASHMETA_RULE_DIR
+          mkdir -p $CLASHMETA_RULE_DIR/{domain,ip}
+          echo "复制文件到目标目录..."
+          find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/domain/ \;
+          find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/ip/ \;
+
+          # 秋风去广告
           # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
           
           echo "✅ ClashMeta 规则整理完成"
