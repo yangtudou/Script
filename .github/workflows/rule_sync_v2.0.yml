@@ -98,7 +98,7 @@ jobs:
           # 定义常量
           CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"    
           
-          rsync -a meta-rules-dat/geo/ "$CLASHMETA_RULE_DIR/" --include='*.yaml' --exclude='*'
+          rsync -a --delete meta-rules-dat/geo/ "$CLASHMETA_RULE_DIR/" --include='*.yaml' --exclude='*'
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
           
           echo "✅ ClashMeta 规则整理完成"
