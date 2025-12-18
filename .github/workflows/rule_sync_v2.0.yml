@@ -190,37 +190,48 @@ jobs:
 
           # 定义合并规则文件的函数
           merge_rules() {
-            # 函数功能：安全合并 Surge 规则文件
+            # 函数功能：安全合并规则文件（自动处理新建/合并去重，无临时文件残留）
             # 参数：
-            #   $1 = 目标文件
-            #   $2 = 源文件
+            #   $1 = 目标文件路径
+            #   $2 = 源文件路径
+            #
+            # 安全设计：
+            #   1. 用 mktemp 创建安全临时文件（避免冲突）
+            #   2. 用 trap 确保退出时自动清理
+            #   3. 保留所有原有逻辑（去重/空行/注释处理）
           
             local target_file="$1"
             local source_file="$2"
-            local tmpfile=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
-            trap 'rm -f "$tmpfile"' EXIT # 退出函数时，自动删除临时文件
           
-            # 目标文件不存在 → 直接创建
+            # === 步骤1：目标文件不存在 → 直接创建（安全复制） ===
             if [ ! -f "$target_file" ]; then
-              echo "创建新文件: $target_file (初始内容来自 $source_file)"
-              cat "$source_file" > "$target_file"
+              echo "创建新文件: $target_file (内容来自 $source_file)"
+              cat "$source_file" > "$target_file"  # 安全覆盖创建
               return 0
             fi
           
-            # 目标文件存在 → 安全合并去重
-            echo "$source_file → $target_file"
-            
-            # 添加空行（避免规则粘连，安全处理空文件）
+            # === 步骤2：目标文件存在 → 安全合并去重 ===
+            echo "合并 & 去重: $source_file → $target_file"
+          
+            # 2.1 创建安全临时文件（自动在 /tmp 生成唯一文件名）
+            local tmpfile=$(mktemp) || { 
+              echo "创建临时文件失败！" >&2
+              exit 1
+            }
+          
+            # 2.2 设置退出时自动清理（无论成功/失败都删除）
+            trap 'rm -f "$tmpfile"' EXIT
+          
+            # 2.3 添加空行（避免规则粘连，安全处理空文件）
             sed -i -e '$a\\' "$target_file" 2>/dev/null || true
             sed -i -e '$a\\' "$source_file" 2>/dev/null || true
           
-            # 合并内容到安全临时文件
+            # 2.4 合并内容到安全临时文件
             cat "$target_file" > "$tmpfile"    # 写入目标文件内容
             cat "$source_file" >> "$tmpfile"   # 追加源文件内容
-
-            #
+          
+            # 2.5 去重处理（保留顺序，跳过注释/空行）
             awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile" > "$target_file"
-
           }
 
 
