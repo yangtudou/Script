@@ -93,17 +93,17 @@ jobs:
             Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
           sparse-checkout-cone-mode: false
 
-      - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
-        uses: actions/checkout@v6
-        with:
-          repository: Loyalsoldier/surge-rules
-          ref: release
-          fetch-depth: 1
-          path: Loyalsoldier_surge-rules
-          sparse-checkout: |
-            # Surge domain
-            ruleset/apple.txt
-          sparse-checkout-cone-mode: false
+      # - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
+        # uses: actions/checkout@v6
+        # with:
+          # repository: Loyalsoldier/surge-rules
+          # ref: release
+          # fetch-depth: 1
+          # path: Loyalsoldier_surge-rules
+          # sparse-checkout: |
+            # # Surge domain
+            # ruleset/apple.txt
+          # sparse-checkout-cone-mode: false
  
       - name: 整理 ClashMeta 规则
         run: |
@@ -187,6 +187,8 @@ jobs:
             # mv "$target_file.tmp" "$target_file"
           }
 
+
+          # 定义合并规则文件的函数
           merge_rules() {
             # 函数功能：安全合并 Surge 规则文件
             # 参数：
@@ -195,8 +197,8 @@ jobs:
           
             local target_file="$1"
             local source_file="$2"
-            # local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
-            # trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
+            local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
+            trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
           
             # 目标文件不存在 → 直接创建
             if [ ! -f "$target_file" ]; then
@@ -213,8 +215,11 @@ jobs:
             sed -i -e '$a\\' "$source_file" 2>/dev/null || true
           
             # 合并内容到安全临时文件
-            cat "$target_file" > "$target_file"    # 写入目标文件内容
-            cat "$source_file" >> "$target_file"   # 追加源文件内容
+            cat "$target_file" > "$tmpfile"    # 写入目标文件内容
+            cat "$source_file" >> "$tmpfile"   # 追加源文件内容
+
+            #
+            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile" > "$target_file"
 
           }
 
