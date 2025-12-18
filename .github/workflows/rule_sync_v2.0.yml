@@ -237,19 +237,17 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/google.list"
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
-          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp"
+          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           
           for file in "${FILES_TO_MERGE[@]}"; do
-            # echo "合并文件 > y3_proxy_rule@surge.list.tmp"
+            # echo "合并文件 > y3_proxy_rule@surge.list"
             merge_rules "$TARGET_FILE" "$file"
           done
 
-          arrange_rules "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "$TARGET_FILE"
-
-      - name: 统一添加时间戳
-        run: |
-          beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-          find rule_sync_temp -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: 北京时间 $beijing_time" {} \;
+      # - name: 统一添加时间戳
+        # run: |
+          # beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
+          # find rule_sync_temp -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: 北京时间 $beijing_time" {} \;
       
       - name: 提交变更
         working-directory: rule_sync_temp
