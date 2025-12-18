@@ -176,7 +176,7 @@ jobs:
             sed -i '/DOMAIN-REGEX/d' "$tmpdir/merged.tmp"
             # 注意这里有执行顺序
             # 给所有 IP-CIDR 加上 no-resolve
-            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/merged.tmp"
+            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/merged.tmp"
             # 把 ipv6 改成 IP-CIDR6
             sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/merged.tmp"
 
