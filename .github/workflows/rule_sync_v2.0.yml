@@ -175,6 +175,10 @@ jobs:
             # 把 ipv6 改成 IP-CIDR6
             sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/combined.tmp"
 
+            # 给所有 IP-CIDR 加上 no-resolve
+            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
+
+
             # 开始匹配规则类型
             awk '{
               if (/^DOMAIN,/) print > "'"$tmpdir/domain.tmp"'"
@@ -183,9 +187,6 @@ jobs:
               else if (/^IP-CIDR6,/) print > "'"$tmpdir/ipv6.tmp"'"
               else print > "'"$tmpdir/others.tmp"'"
             }' "$tmpdir/combined.tmp"
-
-            # 给所有 IP-CIDR 加上 no-resolve
-            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
 
             # 按顺序合并
             {
