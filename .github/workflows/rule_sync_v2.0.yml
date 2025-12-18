@@ -170,10 +170,10 @@ jobs:
             cat "$source_file" >> "$tmpdir/combined.tmp"   # 追加源文件内容
 
             # 删除所有的 DOMAIN-REGEX
-            # sed -i '/DOMAIN-REGEX/d' "$tmpdir/merged.tmp"
+            sed -i '/DOMAIN-REGEX/d' "$tmpdir/combined.tmp"
             # 注意这里有执行顺序
             # 把 ipv6 改成 IP-CIDR6
-            # sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/merged.tmp"
+            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/combined.tmp"
 
             # 开始匹配规则类型
             awk '{
@@ -182,7 +182,7 @@ jobs:
               else if (/^IP-CIDR,/) print > "'"$tmpdir/ipv4.tmp"'"
               else if (/^IP-CIDR6,/) print > "'"$tmpdir/ipv6.tmp"'"
               else print > "'"$tmpdir/others.tmp"'"
-            }' "$tmpdir/merged.tmp"
+            }' "$tmpdir/combined.tmp"
 
             # 按顺序合并
             {
