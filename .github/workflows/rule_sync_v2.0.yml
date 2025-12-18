@@ -150,10 +150,10 @@ jobs:
             trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
 
             # 删除所有的 DOMAIN-REGEX
-            sed -i '/DOMAIN-REGEX/d' "$source_file"
+            sed -i '/DOMAIN-REGEX/d' "$source_file" > "$tmpdir"
 
             # 把 ipv6 改成 IP-CIDR6
-            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$source_file"
+            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir"
 
 
           # 开始匹配规则类型
@@ -163,7 +163,7 @@ jobs:
               else if (/^IP-CIDR,/) print > "'"$tmpdir/ipv4.tmp"'"
               else if (/^IP-CIDR6,/) print > "'"$tmpdir/ipv6.tmp"'"
               else print > "'"$tmpdir/others.tmp"'"
-            }' "$source_file"
+            }' "$tmpdir"
 
             # 按顺序合并
             {
@@ -179,12 +179,12 @@ jobs:
 
 
             # 去重、去注释、去空行、排序
-            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpdir/combined.tmp" > "$target_file.tmp"
+            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpdir/combined.tmp" > "$target_file"
 
 
 
             # 结束合并
-            mv "$target_file.tmp" "$target_file"
+            # mv "$target_file.tmp" "$target_file"
           }
 
           merge_rules() {
