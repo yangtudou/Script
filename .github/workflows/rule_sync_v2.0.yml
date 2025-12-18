@@ -179,31 +179,79 @@ jobs:
           sed -i '/DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
 
           # =================== 函数部分 START =================== #
-          # 定义合并文件函数
-          merge_files() {
+          # # 定义合并文件函数
+          # merge_files() {
+          #   local target_file="$1"
+          #   shift
+          #   local files=("$@")
+            
+          #   # 检查目标文件是否存在，不存在则创建
+          #   if [ ! -f "$target_file" ]; then
+          #     touch "$target_file"
+          #   fi
+            
+          #   # 清空目标文件内容（确保从头开始合并）
+          #   > "$target_file"
+            
+          #   # 开始合并所有源文件
+          #   for file in "${files[@]}"; do
+          #     if [ -f "$file" ]; then
+          #       echo "合并：$file 到 $target_file"
+          #       echo "" >> "$target_file"   # 每个文件间加空行（清晰分隔）
+          #       cat "$file" >> "$target_file"
+          #     else
+          #       echo "未找到文件：$file，跳过合并"
+          #     fi
+          #   done
+          # }
+          
+          merge_rules() {
+            # 函数功能：安全合并规则文件（自动处理新建/合并去重，无临时文件残留）
+            # 参数：
+            #   $1 = 目标文件路径
+            #   $2 = 源文件路径
+            #
+            # 安全设计：
+            #   1. 用 mktemp 创建安全临时文件（避免冲突）
+            #   2. 用 trap 确保退出时自动清理
+            #   3. 保留所有原有逻辑（去重/空行/注释处理）
+          
             local target_file="$1"
-            shift
-            local files=("$@")
-            
-            # 检查目标文件是否存在，不存在则创建
+            local source_file="$2"
+          
+            # === 步骤1：目标文件不存在 → 直接创建（安全复制） ===
             if [ ! -f "$target_file" ]; then
-              touch "$target_file"
+              echo "创建新文件: $target_file (内容来自 $source_file)"
+              cat "$source_file" > "$target_file"  # 安全覆盖创建
+              return 0
             fi
-            
-            # 清空目标文件内容（确保从头开始合并）
-            > "$target_file"
-            
-            # 开始合并所有源文件
-            for file in "${files[@]}"; do
-              if [ -f "$file" ]; then
-                echo "合并：$file 到 $target_file"
-                echo "" >> "$target_file"   # 每个文件间加空行（清晰分隔）
-                cat "$file" >> "$target_file"
-              else
-                echo "未找到文件：$file，跳过合并"
-              fi
-            done
+          
+            # === 步骤2：目标文件存在 → 安全合并去重 ===
+            echo "合并 & 去重: $source_file → $target_file"
+          
+            # 2.1 创建安全临时文件（自动在 /tmp 生成唯一文件名）
+            local tmpfile=$(mktemp) || { 
+              echo "创建临时文件失败！" >&2
+              exit 1
+            }
+          
+            # 2.2 设置退出时自动清理（无论成功/失败都删除）
+            trap 'rm -f "$tmpfile"' EXIT
+          
+            # 2.3 添加空行（避免规则粘连，安全处理空文件）
+            sed -i -e '$a\\' "$target_file" 2>/dev/null || true
+            sed -i -e '$a\\' "$source_file" 2>/dev/null || true
+          
+            # 2.4 合并内容到安全临时文件
+            cat "$target_file" > "$tmpfile"    # 写入目标文件内容
+            cat "$source_file" >> "$tmpfile"   # 追加源文件内容
+          
+            # 2.5 去重处理（保留顺序，跳过注释/空行）
+            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile" > "$target_file"
           }
+
+
+          
           # =================== 函数部分 END =================== #
           
           # 筛选需要合并到 y3_proxy_rules@surge 的文件
@@ -243,7 +291,11 @@ jobs:
           # echo "合并完成，目标文件位于：$TARGET_FILE"
 
           # 执行合并（关键：${FILES_TO_MERGE[@]} 展开数组）
-          merge_files "$TARGET_FILE" "${FILES_TO_MERGE[@]}"
+          # merge_files "$TARGET_FILE" "${FILES_TO_MERGE[@]}"
+          for file in "${FILES_TO_MERGE[@]}"; do
+            echo "合并文件 > y3_proxy_rule@surge.list"
+            merge_rules "$TARGET_FILE" "$file"
+          done
 
           # ===================
           # 使用 AWK 排序 + 格式化
