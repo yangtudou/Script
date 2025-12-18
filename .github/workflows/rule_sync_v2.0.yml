@@ -176,7 +176,7 @@ jobs:
             sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/combined.tmp"
 
             # 给所有 IP-CIDR 加上 no-resolve
-            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
+            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
 
 
             # 开始匹配规则类型
@@ -195,15 +195,15 @@ jobs:
               [ -s "$tmpdir/ipv4.tmp" ] && cat "$tmpdir/ipv4.tmp"
               [ -s "$tmpdir/ipv6.tmp" ] && cat "$tmpdir/ipv6.tmp"
               [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
-            } > "$target_file"
+            } > "$tmpdir/combined.tmp"
 
 
 
             # 去重、去注释、去空行、排序
-            # awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$target_file.tmp" > "$target_file"
+            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpdir/combined.tmp" > "$target_file.tmp"
 
             # 结束合并
-            # mv "$target_file.tmp" "$target_file"
+            mv "$target_file.tmp" "$target_file"
           }
 
 
