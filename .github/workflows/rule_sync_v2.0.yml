@@ -67,8 +67,11 @@ jobs:
             geo/geosite/classical/github.list
             geo/geosite/classical/google.list
             geo/geosite/classical/meta.list
+            ## DIRECT
             geo/geosite/classical/private.list
             geo/geosite/classical/telegram.list
+            geo/geosite/classical/icloud@cn.list
+            geo/geosite/classical/apple@cn.list
             ## ip
             geo/geoip/classical/cloudflare.list
             geo/geoip/classical/google.list
@@ -88,6 +91,18 @@ jobs:
             Filters/AWAvenue-Ads-Rule-Clash.yaml
             # Surge
             Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+          sparse-checkout-cone-mode: false
+
+      - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
+        uses: actions/checkout@v6
+        with:
+          repository: Loyalsoldier/surge-rules
+          ref: release
+          fetch-depth: 1
+          path: Loyalsoldier_surge-rules
+          sparse-checkout: |
+            # Surge domain
+            ruleset/apple.txt
           sparse-checkout-cone-mode: false
  
       - name: 整理 ClashMeta 规则
@@ -114,13 +129,14 @@ jobs:
         run: |
           set -e
 
+          echo "开始整理 Surge 规则..."
           rm -rf rule_sync_temp/Surge
           mkdir -p rule_sync_temp/Surge
 
-          # 复制 AWAvenue-Ads-Rule 规则到目标目录
+          echo "AWAvenue-Ads-Rule 规则到目标目录"
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
-          # 复制 domain 下规则到目标目录
+          echo "复制 domain list 下规则到目标目录"
           cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
           
           # 处理 ip 下的每个 list 文件
@@ -163,7 +179,7 @@ jobs:
           sed -i '/DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
 
 
-          # 定义要合并的 list 文件和目标 proxy_rules 文件
+          # 筛选需要合并到 y3_proxy_rules@surge 的文件
           declare -a FILES_TO_MERGE=(
             "rule_sync_temp/Surge/google.list"
             "rule_sync_temp/Surge/meta.list"
@@ -202,6 +218,7 @@ jobs:
           # ===================
           # 使用 AWK 排序 + 格式化
           # ===================
+          
           echo "开始处理合并后的文件：$TARGET_FILE"
 
           TMPDIR=$(mktemp -d)
@@ -222,12 +239,10 @@ jobs:
             touch "$TMPDIR/others.sorted"
           fi
 
-          # 合并最终结果：DOMAIN -> IP-CIDR (IPv4) -> IP-CIDR6 (IPv6)
+          echo "按顺序合并最终结果：DOMAIN -> IP-CIDR (IPv4) -> IP-CIDR6 (IPv6)"
           cat "$TMPDIR/others.sorted" "$TMPDIR/ip4.tmp" "$TMPDIR/ip6.tmp"  > "$TARGET_FILE.tmp" || true
           mv "$TARGET_FILE.tmp" "$TARGET_FILE"
           echo "处理完成，最终文件位于：$TARGET_FILE"
-
-          # echo -e "# 以下临时规则\nDOMAIN-SUFFIX,v2ex.com" >> rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
       - name: 统一添加时间戳
         run: |
