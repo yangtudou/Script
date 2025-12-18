@@ -217,9 +217,9 @@ jobs:
             "meta-rules-dat/geo/geosite/classical/missav.list"
             "meta-rules-dat/geo/geosite/classical/telegram.list"
             "meta-rules-dat/geo/geosite/classical/gfw.list"
-            "meta-rules-dat/geo/geosite/classical/cloudflare.list"
-            "meta-rules-dat/geo/geosite/classical/google.list"
-            "meta-rules-dat/geo/geosite/classical/telegram.list"
+            "meta-rules-dat/geo/geoip/classical/cloudflare.list"
+            "meta-rules-dat/geo/geoip/classical/google.list"
+            "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           
