@@ -150,10 +150,10 @@ jobs:
             trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
 
             # 删除所有的 DOMAIN-REGEX
-            sed -i '/DOMAIN-REGEX/d' "$source_file" > "$tmpdir"
+            sed -i '/DOMAIN-REGEX/d' "$source_file"
 
             # 把 ipv6 改成 IP-CIDR6
-            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir"
+            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$source_file"
 
 
           # 开始匹配规则类型
