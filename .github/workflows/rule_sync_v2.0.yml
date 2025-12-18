@@ -197,8 +197,8 @@ jobs:
           
             local target_file="$1"
             local source_file="$2"
-            local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
-            trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
+            local tmpfile=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
+            trap 'rm -f "$tmpfile"' EXIT # 退出函数时，自动删除临时文件
           
             # 目标文件不存在 → 直接创建
             if [ ! -f "$target_file" ]; then
