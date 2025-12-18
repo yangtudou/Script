@@ -191,10 +191,10 @@ jobs:
 
             # 按顺序合并
             {
-              [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/domain.tmp"
-              [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/domain-suffix.tmp"
-              [ -s "$tmpdir/ip4.tmp" ] && cat "$tmpdir/ip4.tmp"
-              [ -s "$tmpdir/ip6.tmp" ] && cat "$tmpdir/ip6.tmp"
+              [ -s "$tmpdir/domain.tmp" ] && cat "$tmpdir/domain.tmp"
+              [ -s "$tmpdir/domain-suffix.tmp" ] && cat "$tmpdir/domain-suffix.tmp"
+              [ -s "$tmpdir/ipv4.tmp" ] && cat "$tmpdir/ipv4.tmp"
+              [ -s "$tmpdir/ipv6.tmp" ] && cat "$tmpdir/ipv6.tmp"
               [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
             } > "$target_file.tmp"
 
