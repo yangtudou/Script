@@ -67,9 +67,9 @@ jobs:
             geo/geosite/classical/github.list
             geo/geosite/classical/google.list
             geo/geosite/classical/meta.list
+            geo/geosite/classical/telegram.list
             ## DIRECT
             geo/geosite/classical/private.list
-            geo/geosite/classical/telegram.list
             geo/geosite/classical/icloud@cn.list
             geo/geosite/classical/apple@cn.list
             ## ip
@@ -217,6 +217,9 @@ jobs:
             "meta-rules-dat/geo/geosite/classical/missav.list"
             "meta-rules-dat/geo/geosite/classical/telegram.list"
             "meta-rules-dat/geo/geosite/classical/gfw.list"
+            "meta-rules-dat/geo/geosite/classical/cloudflare.list"
+            "meta-rules-dat/geo/geosite/classical/google.list"
+            "meta-rules-dat/geo/geosite/classical/telegram.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           
