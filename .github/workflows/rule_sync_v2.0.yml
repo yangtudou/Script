@@ -208,15 +208,15 @@ jobs:
           
           # 筛选需要合并到 y3_proxy_rules@surge 的文件
           declare -a FILES_TO_MERGE=(
-            "rule_sync_temp/Surge/google.list"
-            "rule_sync_temp/Surge/meta.list"
-            "rule_sync_temp/Surge/pinterest.list"
-            "rule_sync_temp/Surge/github.list"
-            "rule_sync_temp/Surge/cloudflare.list"
-            "rule_sync_temp/Surge/javbus.list"
-            "rule_sync_temp/Surge/missav.list"
-            "rule_sync_temp/Surge/telegram.list"
-            "rule_sync_temp/Surge/gfw.list"
+            "geo/geosite/classical/google.list"
+            "geo/geosite/classical/meta.list"
+            "geo/geosite/classical/pinterest.list"
+            "geo/geosite/classical/github.list"
+            "geo/geosite/classical/cloudflare.list"
+            "geo/geosite/classical/javbus.list"
+            "geo/geosite/classical/missav.list"
+            "geo/geosite/classical/telegram.list"
+            "geo/geosite/classical/gfw.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           
