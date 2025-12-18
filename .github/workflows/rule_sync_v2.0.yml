@@ -138,9 +138,8 @@ jobs:
 
 
           # =================== 函数部分 START =================== #
-          
-          merge_rules() {
-            # 函数功能：安全合并 Surge 规则文件
+          arrange_rules() {
+            # 函数功能：整理规则内容
             # 参数：
             #   $1 = 目标文件
             #   $2 = 源文件
@@ -149,44 +148,22 @@ jobs:
             local source_file="$2"
             local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
             trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
-          
-            # 目标文件不存在 → 直接创建
-            if [ ! -f "$target_file" ]; then
-              echo "创建新文件: $target_file (初始内容来自 $source_file)"
-              cat "$source_file" > "$target_file"
-              return 0
-            fi
-          
-            # 目标文件存在 → 安全合并去重
-            echo "合并 & 去重: $source_file → $target_file"
-            
-          
-            # 添加空行（避免规则粘连，安全处理空文件）
-            sed -i -e '$a\\' "$target_file" 2>/dev/null || true
-            sed -i -e '$a\\' "$source_file" 2>/dev/null || true
-          
-            # 合并内容到安全临时文件
-            cat "$target_file" > "$tmpdir/combined.tmp"    # 写入目标文件内容
-            cat "$source_file" >> "$tmpdir/combined.tmp"   # 追加源文件内容
 
             # 删除所有的 DOMAIN-REGEX
-            sed -i '/DOMAIN-REGEX/d' "$tmpdir/combined.tmp"
-            # 注意这里有执行顺序
+            sed -i '/DOMAIN-REGEX/d' "$source_file"
+
             # 把 ipv6 改成 IP-CIDR6
-            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/combined.tmp"
-
-            # 给所有 IP-CIDR 加上 no-resolve
-            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
+            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$source_file"
 
 
-            # 开始匹配规则类型
+          # 开始匹配规则类型
             awk '{
               if (/^DOMAIN,/) print > "'"$tmpdir/domain.tmp"'"
               else if (/^DOMAIN-SUFFIX,/) print > "'"$tmpdir/domain-suffix.tmp"'"
               else if (/^IP-CIDR,/) print > "'"$tmpdir/ipv4.tmp"'"
               else if (/^IP-CIDR6,/) print > "'"$tmpdir/ipv6.tmp"'"
               else print > "'"$tmpdir/others.tmp"'"
-            }' "$tmpdir/combined.tmp"
+            }' "$source_file"
 
             # 按顺序合并
             {
@@ -197,13 +174,48 @@ jobs:
               [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
             } > "$tmpdir/combined.tmp"
 
+            # 给所有 IP-CIDR 加上 no-resolve
+            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
 
 
             # 去重、去注释、去空行、排序
             awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpdir/combined.tmp" > "$target_file.tmp"
 
+
+
             # 结束合并
             mv "$target_file.tmp" "$target_file"
+          }
+
+          merge_rules() {
+            # 函数功能：安全合并 Surge 规则文件
+            # 参数：
+            #   $1 = 目标文件
+            #   $2 = 源文件
+          
+            local target_file="$1"
+            local source_file="$2"
+            # local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
+            # trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
+          
+            # 目标文件不存在 → 直接创建
+            if [ ! -f "$target_file" ]; then
+              echo "创建新文件: $target_file (初始内容来自 $source_file)"
+              cat "$source_file" > "$target_file"
+              return 0
+            fi
+          
+            # 目标文件存在 → 安全合并去重
+            echo "$source_file → $target_file"
+            
+            # 添加空行（避免规则粘连，安全处理空文件）
+            sed -i -e '$a\\' "$target_file" 2>/dev/null || true
+            sed -i -e '$a\\' "$source_file" 2>/dev/null || true
+          
+            # 合并内容到安全临时文件
+            cat "$target_file" > "$target_file"    # 写入目标文件内容
+            cat "$source_file" >> "$target_file"   # 追加源文件内容
+
           }
 
 
@@ -225,12 +237,14 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/google.list"
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
-          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list.tmp"
           
           for file in "${FILES_TO_MERGE[@]}"; do
-            # echo "合并文件 > y3_proxy_rule@surge.list"
+            # echo "合并文件 > y3_proxy_rule@surge.list.tmp"
             merge_rules "$TARGET_FILE" "$file"
           done
+
+          arrange_rules "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "$TARGET_FILE"
 
       - name: 统一添加时间戳
         run: |
