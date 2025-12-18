@@ -178,7 +178,34 @@ jobs:
           # Remove DOMAIN-REGEX rules
           sed -i '/DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
 
-
+          # =================== 函数部分 START =================== #
+          # 定义合并文件函数
+          merge_files() {
+            local target_file="$1"
+            shift
+            local files=("$@")
+            
+            # 检查目标文件是否存在，不存在则创建
+            if [ ! -f "$target_file" ]; then
+              touch "$target_file"
+            fi
+            
+            # 清空目标文件内容（确保从头开始合并）
+            > "$target_file"
+            
+            # 开始合并所有源文件
+            for file in "${files[@]}"; do
+              if [ -f "$file" ]; then
+                echo "合并：$file 到 $target_file"
+                echo "" >> "$target_file"   # 每个文件间加空行（清晰分隔）
+                cat "$file" >> "$target_file"
+              else
+                echo "未找到文件：$file，跳过合并"
+              fi
+            done
+          }
+          # =================== 函数部分 END =================== #
+          
           # 筛选需要合并到 y3_proxy_rules@surge 的文件
           declare -a FILES_TO_MERGE=(
             "rule_sync_temp/Surge/google.list"
@@ -191,29 +218,32 @@ jobs:
             "rule_sync_temp/Surge/telegram.list"
             "rule_sync_temp/Surge/gfw.list"
           )
-          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          # TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
-          # 检查目标文件是否存在，不存在则创建
-          if [ ! -f "$TARGET_FILE" ]; then
-            echo "创建目标文件：$TARGET_FILE"
-            touch "$TARGET_FILE"
-          fi
+          # # 检查目标文件是否存在，不存在则创建
+          # if [ ! -f "$TARGET_FILE" ]; then
+          #   echo "创建目标文件：$TARGET_FILE"
+          #   touch "$TARGET_FILE"
+          # fi
 
-          # 清空目标文件的内容（如果需要保留内容可注释掉这行）
-          > "$TARGET_FILE"
+          # # 清空目标文件的内容（如果需要保留内容可注释掉这行）
+          # > "$TARGET_FILE"
 
-          # 合并 list 文件到目标文件
-          for file in "${FILES_TO_MERGE[@]}"; do
-            if [ -f "$file" ]; then
-              echo "合并文 to proxy：$file"
-              cat "$file" >> "$TARGET_FILE"
-              echo "" >> "$TARGET_FILE"
-            else
-              echo "未找到文件：$file，跳过合并"
-            fi
-          done
+          # # 合并 list 文件到目标文件
+          # for file in "${FILES_TO_MERGE[@]}"; do
+          #   if [ -f "$file" ]; then
+          #     echo "合并文 to proxy：$file"
+          #     cat "$file" >> "$TARGET_FILE"
+          #     echo "" >> "$TARGET_FILE"
+          #   else
+          #     echo "未找到文件：$file，跳过合并"
+          #   fi
+          # done
 
-          echo "合并完成，目标文件位于：$TARGET_FILE"
+          # echo "合并完成，目标文件位于：$TARGET_FILE"
+
+          # 执行合并（关键：${FILES_TO_MERGE[@]} 展开数组）
+          merge_files "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "${FILES_TO_MERGE[@]}"
 
           # ===================
           # 使用 AWK 排序 + 格式化
