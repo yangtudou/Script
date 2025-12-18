@@ -1,4 +1,4 @@
-# version: v2.0.1
+# version: v2.1_beta
 # updated at: 2025-12-14
 # 主要改用了 checkout sparse-checkout 方法
 # 改用 rules 分支管理
@@ -9,7 +9,7 @@
 # 支持 Surge 规则
 
 
-name: 自动化规则下载 v2.0
+name: 自动化规则下载 v2.1_beta
 
 on:
   schedule:
@@ -202,25 +202,20 @@ jobs:
           
             local target_file="$1"
             local source_file="$2"
-          
+            local tmpfile=$(mktemp) || { echo "创建临时文件失败!" >&2; exit 1; }
+            trap 'rm -f "$tmpfile"' EXIT
+
+
+
             # === 步骤1：目标文件不存在 → 直接创建（安全复制） ===
             if [ ! -f "$target_file" ]; then
               echo "创建新文件: $target_file (内容来自 $source_file)"
               cat "$source_file" > "$target_file"  # 安全覆盖创建
               return 0
             fi
-          
-            # === 步骤2：目标文件存在 → 安全合并去重 ===
+
             echo "合并 & 去重: $source_file → $target_file"
-          
-            # 2.1 创建安全临时文件（自动在 /tmp 生成唯一文件名）
-            local tmpfile=$(mktemp) || { 
-              echo "创建临时文件失败！" >&2
-              exit 1
-            }
-          
-            # 2.2 设置退出时自动清理（无论成功/失败都删除）
-            trap 'rm -f "$tmpfile"' EXIT
+            
           
             # 2.3 添加空行（避免规则粘连，安全处理空文件）
             sed -i -e '$a\\' "$target_file" 2>/dev/null || true
