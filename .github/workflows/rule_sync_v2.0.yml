@@ -136,118 +136,70 @@ jobs:
           echo "AWAvenue-Ads-Rule 规则到目标目录"
           cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
-          echo "复制 domain list 下规则到目标目录"
-          cp -r meta-rules-dat/geo/geosite/classical/* rule_sync_temp/Surge/
-          
-          # 处理 ip 下的每个 list 文件
-          for ip_file in meta-rules-dat/geo/geoip/classical/*.list; do
-            # 跳过无文件的情况
-            [ -e "$ip_file" ] || continue
-
-            filename=$(basename "$ip_file")
-            surge_target="rule_sync_temp/Surge/$filename"
-
-            # 避免出现文件前后没有断行
-            sed -i -e '$a\\' "$ip_file"
-
-            if [ -f "$surge_target" ]; then
-              # 同名文件已存在 → 合并内容（去重）
-              echo "合并: $filename"
-              sed -i -e '$a\\' "$surge_target"
-              cat "$surge_target" >> "$surge_target.tmp"
-              cat "$ip_file" >> "$surge_target.tmp"
-              # 去重（保留顺序，只对有效规则去重，注释保留）
-              awk '!/^#/ && !/^\\s*$/ { if (!seen[$0]++) print $0; next } { print }' "$surge_target.tmp" > "$surge_target"
-              rm -f "$surge_target.tmp"
-            else
-              # 无同名文件 → 直接移动
-              echo "移动: $filename"
-              mv "$ip_file" "$surge_target"
-            fi
-          done
-
-          # step 1
-          # 给所有 IP-CIDR 增加 ,no-resolve
-          sed -i '/^IP-CIDR/s/$/,no-resolve/' rule_sync_temp/Surge/*.list
-          # step 2
-          # 匹配 ipv6 地址，IP-CIDR → IP-CIDR6
-          sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' rule_sync_temp/Surge/*.list
-          # step 3
-          # DOMAIN-REGEX → URL-REGEX
-          # sed -i 's/^DOMAIN-REGEX/URL-REGEX/' rule_sync_temp/Surge/*.list
-          # Remove DOMAIN-REGEX rules
-          sed -i '/DOMAIN-REGEX/d' rule_sync_temp/Surge/*.list
 
           # =================== 函数部分 START =================== #
-          # # 定义合并文件函数
-          # merge_files() {
-          #   local target_file="$1"
-          #   shift
-          #   local files=("$@")
-            
-          #   # 检查目标文件是否存在，不存在则创建
-          #   if [ ! -f "$target_file" ]; then
-          #     touch "$target_file"
-          #   fi
-            
-          #   # 清空目标文件内容（确保从头开始合并）
-          #   > "$target_file"
-            
-          #   # 开始合并所有源文件
-          #   for file in "${files[@]}"; do
-          #     if [ -f "$file" ]; then
-          #       echo "合并：$file 到 $target_file"
-          #       echo "" >> "$target_file"   # 每个文件间加空行（清晰分隔）
-          #       cat "$file" >> "$target_file"
-          #     else
-          #       echo "未找到文件：$file，跳过合并"
-          #     fi
-          #   done
-          # }
           
           merge_rules() {
-            # 函数功能：安全合并规则文件（自动处理新建/合并去重，无临时文件残留）
+            # 函数功能：安全合并 Surge 规则文件
             # 参数：
-            #   $1 = 目标文件路径
-            #   $2 = 源文件路径
-            #
-            # 安全设计：
-            #   1. 用 mktemp 创建安全临时文件（避免冲突）
-            #   2. 用 trap 确保退出时自动清理
-            #   3. 保留所有原有逻辑（去重/空行/注释处理）
+            #   $1 = 目标文件
+            #   $2 = 源文件
           
             local target_file="$1"
             local source_file="$2"
+            local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
+            trap 'rm -f "$tmpfile"' EXIT # 退出函数时，自动删除临时文件
           
-            # === 步骤1：目标文件不存在 → 直接创建（安全复制） ===
+            # 目标文件不存在 → 直接创建
             if [ ! -f "$target_file" ]; then
-              echo "创建新文件: $target_file (内容来自 $source_file)"
-              cat "$source_file" > "$target_file"  # 安全覆盖创建
+              echo "创建新文件: $target_file (初始内容来自 $source_file)"
+              cat "$source_file" > "$target_file"
               return 0
             fi
           
-            # === 步骤2：目标文件存在 → 安全合并去重 ===
+            # 目标文件存在 → 安全合并去重
             echo "合并 & 去重: $source_file → $target_file"
+            
           
-            # 2.1 创建安全临时文件（自动在 /tmp 生成唯一文件名）
-            local tmpfile=$(mktemp) || { 
-              echo "创建临时文件失败！" >&2
-              exit 1
-            }
-          
-            # 2.2 设置退出时自动清理（无论成功/失败都删除）
-            trap 'rm -f "$tmpfile"' EXIT
-          
-            # 2.3 添加空行（避免规则粘连，安全处理空文件）
+            # 添加空行（避免规则粘连，安全处理空文件）
             sed -i -e '$a\\' "$target_file" 2>/dev/null || true
             sed -i -e '$a\\' "$source_file" 2>/dev/null || true
           
-            # 2.4 合并内容到安全临时文件
-            cat "$target_file" > "$tmpfile"    # 写入目标文件内容
-            cat "$source_file" >> "$tmpfile"   # 追加源文件内容
+            # 合并内容到安全临时文件
+            cat "$target_file" > "$tmpfile/combined.tmp"    # 写入目标文件内容
+            cat "$source_file" >> "$tmpfile/combined.tmp"   # 追加源文件内容
           
-            # 2.5 去重处理（保留顺序，跳过注释/空行）
-            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile" > "$target_file"
+            # 去重、去注释、去空行、排序
+            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile/combined.tmp" > "$tmpdir/merged.tmp"
+
+            # 删除所有的 DOMAIN-REGEX
+            sed -i '/DOMAIN-REGEX/d' "$tmpdir/merged.tmp"
+            # 注意这里有执行顺序
+            # 给所有 IP-CIDR 加上 no-resolve
+            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/merged.tmp"
+            # 把 ipv6 改成 IP-CIDR6
+            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/merged.tmp"
+
+            # 开始匹配规则类型
+            awk '{
+              if (/^DOMAIN,/) print > "'"$tmpdir/domain.tmp"'"
+              else if (/^DOMAIN-SUFFIX,/) print > "'"$tmpdir/domain-suffix.tmp"'"
+              else if (/^IP-CIDR,/) print > "'"$tmpdir/ipv4.tmp"'"
+              else if (/^IP-CIDR6,/) print > "'"$tmpdir/ipv6.tmp"'"
+              else print > "'"$tmpdir/others.tmp"'"
+            }' "$tmpdir/merged.tmp"
+
+            # 按顺序合并
+            {
+              [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/domain.tmp"
+              [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/domain-suffix.tmp"
+              [ -s "$tmpdir/ip4.tmp" ] && cat "$tmpdir/ip4.tmp"
+              [ -s "$tmpdir/ip6.tmp" ] && cat "$tmpdir/ip6.tmp"
+              [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
+            } > "$target_file.tmp"
+
+            # 结束合并
+            mv "$target_file.tmp" "$target_file"
           }
 
 
@@ -267,64 +219,11 @@ jobs:
             "rule_sync_temp/Surge/gfw.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
-
-          # # 检查目标文件是否存在，不存在则创建
-          # if [ ! -f "$TARGET_FILE" ]; then
-          #   echo "创建目标文件：$TARGET_FILE"
-          #   touch "$TARGET_FILE"
-          # fi
-
-          # # 清空目标文件的内容（如果需要保留内容可注释掉这行）
-          # > "$TARGET_FILE"
-
-          # # 合并 list 文件到目标文件
-          # for file in "${FILES_TO_MERGE[@]}"; do
-          #   if [ -f "$file" ]; then
-          #     echo "合并文 to proxy：$file"
-          #     cat "$file" >> "$TARGET_FILE"
-          #     echo "" >> "$TARGET_FILE"
-          #   else
-          #     echo "未找到文件：$file，跳过合并"
-          #   fi
-          # done
-
-          # echo "合并完成，目标文件位于：$TARGET_FILE"
-
-          # 执行合并（关键：${FILES_TO_MERGE[@]} 展开数组）
-          # merge_files "$TARGET_FILE" "${FILES_TO_MERGE[@]}"
+          
           for file in "${FILES_TO_MERGE[@]}"; do
             echo "合并文件 > y3_proxy_rule@surge.list"
             merge_rules "$TARGET_FILE" "$file"
           done
-
-          # ===================
-          # 使用 AWK 排序 + 格式化
-          # ===================
-          
-          echo "开始处理合并后的文件：$TARGET_FILE"
-
-          TMPDIR=$(mktemp -d)
-          trap 'rm -rf "${TMPDIR}"' EXIT
-
-          # 将不同类型的规则分别写入临时文件：ip4/ip6/others
-          awk -v ip4="$TMPDIR/ip4.tmp" -v ip6="$TMPDIR/ip6.tmp" -v others="$TMPDIR/others.tmp" '
-              /^\\s*$/ { next }
-              /^IP-CIDR6,/ { if (!seen[$0]++) print $0 > ip6; next }
-              /^IP-CIDR,/  { if (!seen[$0]++) print $0 > ip4; next }
-              { if (!seen[$0]++) print $0 > others }
-          ' "$TARGET_FILE"
-
-          # 只对其他规则进行去重并排序，防止打乱 IP 段顺序
-          if [ -f "$TMPDIR/others.tmp" ]; then
-            sort -u "$TMPDIR/others.tmp" > "$TMPDIR/others.sorted"
-          else
-            touch "$TMPDIR/others.sorted"
-          fi
-
-          echo "按顺序合并最终结果：DOMAIN -> IP-CIDR (IPv4) -> IP-CIDR6 (IPv6)"
-          cat "$TMPDIR/others.sorted" "$TMPDIR/ip4.tmp" "$TMPDIR/ip6.tmp"  > "$TARGET_FILE.tmp" || true
-          mv "$TARGET_FILE.tmp" "$TARGET_FILE"
-          echo "处理完成，最终文件位于：$TARGET_FILE"
 
       - name: 统一添加时间戳
         run: |
