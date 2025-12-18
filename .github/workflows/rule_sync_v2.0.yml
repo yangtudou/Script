@@ -168,15 +168,10 @@ jobs:
             # 合并内容到安全临时文件
             cat "$target_file" > "$tmpdir/combined.tmp"    # 写入目标文件内容
             cat "$source_file" >> "$tmpdir/combined.tmp"   # 追加源文件内容
-          
-            # 去重、去注释、去空行、排序
-            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpdir/combined.tmp" > "$tmpdir/merged.tmp"
 
             # 删除所有的 DOMAIN-REGEX
             sed -i '/DOMAIN-REGEX/d' "$tmpdir/merged.tmp"
             # 注意这里有执行顺序
-            # 给所有 IP-CIDR 加上 no-resolve
-            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/merged.tmp"
             # 把 ipv6 改成 IP-CIDR6
             sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$tmpdir/merged.tmp"
 
@@ -198,8 +193,14 @@ jobs:
               [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
             } > "$target_file.tmp"
 
+            # 给所有 IP-CIDR 加上 no-resolve
+            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$target_file.tmp"
+
+            # 去重、去注释、去空行、排序
+            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$target_file.tmp" > "$target_file"
+
             # 结束合并
-            mv "$target_file.tmp" "$target_file"
+            # mv "$target_file.tmp" "$target_file"
           }
 
 
