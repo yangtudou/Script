@@ -218,7 +218,7 @@ jobs:
             "rule_sync_temp/Surge/telegram.list"
             "rule_sync_temp/Surge/gfw.list"
           )
-          # TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # # 检查目标文件是否存在，不存在则创建
           # if [ ! -f "$TARGET_FILE" ]; then
@@ -243,7 +243,7 @@ jobs:
           # echo "合并完成，目标文件位于：$TARGET_FILE"
 
           # 执行合并（关键：${FILES_TO_MERGE[@]} 展开数组）
-          merge_files "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "${FILES_TO_MERGE[@]}"
+          merge_files "$TARGET_FILE" "${FILES_TO_MERGE[@]}"
 
           # ===================
           # 使用 AWK 排序 + 格式化
