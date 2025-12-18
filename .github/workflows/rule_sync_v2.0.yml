@@ -191,13 +191,13 @@ jobs:
               [ -s "$tmpdir/ipv4.tmp" ] && cat "$tmpdir/ipv4.tmp"
               [ -s "$tmpdir/ipv6.tmp" ] && cat "$tmpdir/ipv6.tmp"
               [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
-            } > "$target_file.tmp"
+            } > "$target_file"
 
             # 给所有 IP-CIDR 加上 no-resolve
-            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$target_file.tmp"
+            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$target_file"
 
             # 去重、去注释、去空行、排序
-            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$target_file.tmp" > "$target_file"
+            # awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$target_file.tmp" > "$target_file"
 
             # 结束合并
             # mv "$target_file.tmp" "$target_file"
