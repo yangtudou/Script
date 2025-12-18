@@ -148,7 +148,7 @@ jobs:
             local target_file="$1"
             local source_file="$2"
             local tmpdir=$(mktemp -d) || { echo "创建临时目录失败！" >&2; exit 1; }
-            trap 'rm -f "$tmpfile"' EXIT # 退出函数时，自动删除临时文件
+            trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
           
             # 目标文件不存在 → 直接创建
             if [ ! -f "$target_file" ]; then
@@ -166,8 +166,8 @@ jobs:
             sed -i -e '$a\\' "$source_file" 2>/dev/null || true
           
             # 合并内容到安全临时文件
-            cat "$target_file" > "$tmpfile/combined.tmp"    # 写入目标文件内容
-            cat "$source_file" >> "$tmpfile/combined.tmp"   # 追加源文件内容
+            cat "$target_file" > "$tmpdir/combined.tmp"    # 写入目标文件内容
+            cat "$source_file" >> "$tmpdir/combined.tmp"   # 追加源文件内容
           
             # 去重、去注释、去空行、排序
             awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile/combined.tmp" > "$tmpdir/merged.tmp"
