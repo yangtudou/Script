@@ -194,7 +194,7 @@ jobs:
             } > "$target_file.tmp"
 
             # 给所有 IP-CIDR 加上 no-resolve
-            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$target_file.tmp"
+            sed -i '/^IP-CIDR/s/$/,no-resolve/' "$target_file.tmp"
 
             # 去重、去注释、去空行、排序
             awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$target_file.tmp" > "$target_file"
@@ -225,7 +225,7 @@ jobs:
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           
           for file in "${FILES_TO_MERGE[@]}"; do
-            echo "合并文件 > y3_proxy_rule@surge.list"
+            # echo "合并文件 > y3_proxy_rule@surge.list"
             merge_rules "$TARGET_FILE" "$file"
           done
 
