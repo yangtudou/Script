@@ -419,7 +419,7 @@ _handle_directory_to_array() {
 }
 
 
-
+#######################################################################
 #============================ 数组 -> 文件 ============================#
 # 数组 → 文件：将数组中的文件内容合并到输出文件
 _handle_array_to_file() {
@@ -433,6 +433,12 @@ _handle_array_to_file() {
     echo "=========================================="
     echo ""
     
+    # 明确声明整数变量
+    local -i success_count=0
+    local -i error_count=0
+    local -i skip_count=0
+    local -i array_length=0
+    
     # ========== 1. 展开数组 ==========
     echo "[步骤1/3] 展开数组..."
     echo "------------------------------------------"
@@ -441,8 +447,6 @@ _handle_array_to_file() {
     echo "✓ 检查输入变量 '$input_var' 是否为数组..."
     if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
         echo "✗ 错误: '$input_var' 不是有效的数组变量" >&2
-        echo "调试信息:"
-        declare -p "$input_var" 2>&1 || echo "无法获取变量信息"
         return 1
     fi
     echo "✓ 输入变量是有效的数组"
@@ -451,7 +455,7 @@ _handle_array_to_file() {
     echo "✓ 获取数组内容..."
     local array_files
     eval "array_files=(\"\${$input_var[@]}\")"
-    local array_length=${#array_files[@]}
+    array_length=${#array_files[@]}
     echo "✓ 数组包含 $array_length 个元素"
     
     # 检查数组是否为空
@@ -527,10 +531,6 @@ _handle_array_to_file() {
     echo "[步骤3/3] 开始合并文件内容..."
     echo "------------------------------------------"
     
-    local success_count=0
-    local error_count=0
-    local skip_count=0
-    
     # 遍历数组中的每个文件路径
     for i in "${!array_files[@]}"; do
         local file_path="${array_files[$i]}"
@@ -590,12 +590,13 @@ _handle_array_to_file() {
             local end_time=$(date +%s.%N)
             local duration=$(echo "$end_time - $start_time" | bc)
             echo "  ├─ ✓ 追加成功 (耗时: ${duration}秒)"
-            ((success_count++))
+            # 使用安全的整数递增
+            success_count=$((success_count + 1))
         else
             local end_time=$(date +%s.%N)
             local duration=$(echo "$end_time - $start_time" | bc)
             echo "  ├─ ✗ 追加失败 (耗时: ${duration}秒)" >&2
-            ((error_count++))
+            error_count=$((error_count + 1))
         fi
         
         echo "  └─ [文件 $current_file/$array_length 处理完成]"
@@ -647,7 +648,7 @@ _handle_array_to_file() {
     fi
 }
 
-
+##################################################################
 ##################################################################
 # 8. 数组 -> 目录
 _handle_array_to_directory() {
