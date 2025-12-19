@@ -162,7 +162,7 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
 
-          merge_rules "$FILES_TO_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          merge_rules "FILES_TO_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
       # - name: 统一添加时间戳
       #   run: |
