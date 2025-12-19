@@ -152,6 +152,7 @@ _handle_file_to_file() {
 }
 
 # 2. 文件 -> 目录
+# 2. 文件 -> 目录：复制或合并
 _handle_file_to_directory() {
     local input="$1"
     local output="$2"
@@ -168,7 +169,7 @@ _handle_file_to_directory() {
         return 1
     fi
     
-    # 检查目标目录是否可写（主函数已确保是目录，但可能不可写）
+    # 检查目标目录是否可写
     if [[ ! -w "$output" ]]; then
         echo "错误: 目标目录不可写" >&2
         return 1
@@ -180,6 +181,15 @@ _handle_file_to_directory() {
         
         if cp "$input" "$target_path"; then
             echo "复制成功: 已将 $input_basename 复制到 $output"
+            
+            # 调用清理函数处理目标文件
+            echo "✓ 开始清理目标文件内容..."
+            if _clean_file_content "$target_path"; then
+                echo "✓ 目标文件内容清理完成"
+            else
+                echo "⚠️ 目标文件内容清理过程中出现警告" >&2
+            fi
+            
             return 0
         else
             echo "错误: 文件复制失败" >&2
@@ -206,6 +216,15 @@ _handle_file_to_directory() {
                     echo "内容合并成功"
                     echo "输入文件大小: $input_size 字节"
                     echo "目标文件大小: $target_size 字节"
+                    
+                    # 调用清理函数处理目标文件
+                    echo "✓ 开始清理合并后的目标文件..."
+                    if _clean_file_content "$target_path"; then
+                        echo "✓ 目标文件内容清理完成"
+                    else
+                        echo "⚠️ 目标文件内容清理过程中出现警告" >&2
+                    fi
+                    
                     return 0
                 else
                     echo "错误: 内容合并失败" >&2
@@ -220,6 +239,15 @@ _handle_file_to_directory() {
             
             if cp "$input" "$target_path"; then
                 echo "复制成功: 已将 $input_basename 复制到 $output"
+                
+                # 调用清理函数处理目标文件
+                echo "✓ 开始清理目标文件内容..."
+                if _clean_file_content "$target_path"; then
+                    echo "✓ 目标文件内容清理完成"
+                else
+                    echo "⚠️ 目标文件内容清理过程中出现警告" >&2
+                fi
+                
                 return 0
             else
                 echo "错误: 文件复制失败" >&2
@@ -227,20 +255,8 @@ _handle_file_to_directory() {
             fi
         fi
     fi
-    
-    if [[ -f "$output" ]] && [[ -s "$output" ]]; then
-        _clean_file_content "$output"
-        local clean_result=$?
-            if [[ $clean_result -eq 0 ]]; then
-                echo "✅ 文件内容清理完成"
-            else
-                echo "⚠️ 文件内容清理过程中出现警告"
-            fi
-    else
-        echo "! 输出文件为空或不存在，跳过清理步骤"
-	fi
-    
 }
+
 
 # 3. 文件 -> 数组
 _handle_file_to_array() {
