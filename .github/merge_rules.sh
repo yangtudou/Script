@@ -152,110 +152,105 @@ _handle_file_to_file() {
 }
 
 # 2. 文件 -> 目录
-# 2. 文件 -> 目录：复制或合并
+# 2. 文件 -> 目录：复制或合并（完整修复版）
 _handle_file_to_directory() {
     local input="$1"
     local output="$2"
     local input_basename=$(basename "$input")
     local target_path="$output/$input_basename"
     
+    echo "=========================================="
     echo "处理: 文件 -> 目录"
     echo "输入文件: $input"
     echo "目标目录: $output"
+    echo "=========================================="
+    echo ""
     
-    # 安全检查：确保输入文件存在且可读
-    if [[ ! -r "$input" ]]; then
-        echo "错误: 输入文件不存在或不可读" >&2
+    # 输入验证
+    echo "✓ 验证输入文件..."
+    if [[ ! -f "$input" ]] || [[ ! -r "$input" ]]; then
+        echo "✗ 错误: 输入文件不存在或不可读" >&2
         return 1
     fi
     
-    # 检查目标目录是否可写
-    if [[ ! -w "$output" ]]; then
-        echo "错误: 目标目录不可写" >&2
+    echo "✓ 验证目标目录..."
+    if [[ ! -d "$output" ]] || [[ ! -w "$output" ]]; then
+        echo "✗ 错误: 目标目录不存在或不可写" >&2
         return 1
     fi
     
-    # 检查目标目录是否为空
-    if [[ -z "$(ls -A "$output" 2>/dev/null)" ]]; then
-        echo "目标目录为空，执行复制操作"
-        
-        if cp "$input" "$target_path"; then
-            echo "复制成功: 已将 $input_basename 复制到 $output"
-            
-            # 调用清理函数处理目标文件
-            echo "✓ 开始清理目标文件内容..."
-            if _clean_file_content "$target_path"; then
-                echo "✓ 目标文件内容清理完成"
-            else
-                echo "⚠️ 目标文件内容清理过程中出现警告" >&2
-            fi
-            
-            return 0
-        else
-            echo "错误: 文件复制失败" >&2
-            return 1
-        fi
+    # 确定操作类型
+    local operation=""
+    if [[ -f "$target_path" ]]; then
+        operation="merge"
+        echo "✓ 目标文件已存在，执行内容合并操作"
     else
-        echo "目标目录非空"
-        echo "检查是否存在同名文件: $input_basename"
-        
-        # 检查目标目录是否存在同名文件
-        if [[ -e "$target_path" ]]; then
-            if [[ -f "$target_path" ]]; then
-                echo "存在同名文件，执行内容合并"
-                
-                # 检查是否为同一个文件（相同路径）
-                if [[ "$(realpath "$input")" == "$(realpath "$target_path")" ]]; then
-                    echo "警告: 输入文件和目标文件是同一个文件，将导致内容重复" >&2
-                fi
-                
-                # 执行内容合并
-                if cat "$input" >> "$target_path"; then
-                    local input_size=$(wc -c < "$input")
-                    local target_size=$(wc -c < "$target_path")
-                    echo "内容合并成功"
-                    echo "输入文件大小: $input_size 字节"
-                    echo "目标文件大小: $target_size 字节"
-                    
-                    # 调用清理函数处理目标文件
-                    echo "✓ 开始清理合并后的目标文件..."
-                    if _clean_file_content "$target_path"; then
-                        echo "✓ 目标文件内容清理完成"
-                    else
-                        echo "⚠️ 目标文件内容清理过程中出现警告" >&2
-                    fi
-                    
-                    return 0
-                else
-                    echo "错误: 内容合并失败" >&2
-                    return 1
-                fi
-            else
-                echo "错误: 目标路径已存在但不是文件（可能是目录或其他类型）" >&2
-                return 1
-            fi
-        else
-            echo "不存在同名文件，执行复制操作"
-            
+        operation="copy"
+        echo "✓ 目标文件不存在，执行复制操作"
+    fi
+    
+    # 执行操作
+    case "$operation" in
+        "copy")
+            echo "✓ 开始复制文件..."
             if cp "$input" "$target_path"; then
-                echo "复制成功: 已将 $input_basename 复制到 $output"
-                
-                # 调用清理函数处理目标文件
-                echo "✓ 开始清理目标文件内容..."
-                if _clean_file_content "$target_path"; then
-                    echo "✓ 目标文件内容清理完成"
-                else
-                    echo "⚠️ 目标文件内容清理过程中出现警告" >&2
-                fi
-                
-                return 0
+                echo "✓ 文件复制成功"
             else
-                echo "错误: 文件复制失败" >&2
+                echo "✗ 错误: 文件复制失败" >&2
                 return 1
             fi
+            ;;
+        "merge")
+            echo "✓ 开始合并文件内容..."
+            # 检查是否为同一个文件
+            if [[ "$(realpath "$input")" == "$(realpath "$target_path")" ]]; then
+                echo "⚠️ 警告: 输入文件和目标文件是同一个文件" >&2
+            fi
+            
+            if cat "$input" >> "$target_path"; then
+                local input_size=$(wc -c < "$input")
+                local target_size=$(wc -c < "$target_path")
+                echo "✓ 内容合并成功"
+                echo "  → 输入文件: $input_size 字节"
+                echo "  → 目标文件: $target_size 字节"
+            else
+                echo "✗ 错误: 内容合并失败" >&2
+                return 1
+            fi
+            ;;
+        *)
+            echo "✗ 错误: 未知操作类型" >&2
+            return 1
+            ;;
+    esac
+    
+    # 调用清理函数（确保在所有操作路径中都执行）
+    echo ""
+    echo "=========================================="
+    echo "开始清理目标文件内容..."
+    echo "------------------------------------------"
+    
+    if _clean_file_content "$target_path"; then
+        echo "✅ 目标文件内容清理完成"
+        
+        # 显示最终文件信息
+        if [[ -f "$target_path" ]]; then
+            local final_size=$(wc -c < "$target_path")
+            local final_lines=$(wc -l < "$target_path")
+            echo ""
+            echo "最终文件信息:"
+            echo "✓ 文件路径: $target_path"
+            echo "✓ 文件大小: $final_size 字节"
+            echo "✓ 文件行数: $final_lines 行"
         fi
+        
+        return 0
+    else
+        echo "⚠️ 警告: 目标文件内容清理过程中出现警告" >&2
+        return 1
     fi
 }
+
 
 
 # 3. 文件 -> 数组
