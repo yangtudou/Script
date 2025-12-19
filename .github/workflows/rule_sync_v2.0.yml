@@ -161,9 +161,10 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/google.list"
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
-          TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
-          merge_rules $FILES_TO_MERGE $TARGET_FILE
+          merge_rules $FILES_TO_MERGE y3_proxy_rules@surge.list
+
+          mv y3_proxy_rules@surge.list rule_sync_temp/Surge/y3_proxy_rules@surge.list
 
       # - name: 统一添加时间戳
       #   run: |
