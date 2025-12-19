@@ -227,6 +227,19 @@ _handle_file_to_directory() {
             fi
         fi
     fi
+    
+    if [[ -f "$output" ]] && [[ -s "$output" ]]; then
+        _clean_file_content "$output"
+        local clean_result=$?
+            if [[ $clean_result -eq 0 ]]; then
+                echo "✅ 文件内容清理完成"
+            else
+                echo "⚠️ 文件内容清理过程中出现警告"
+            fi
+    else
+        echo "! 输出文件为空或不存在，跳过清理步骤"
+	fi
+    
 }
 
 # 3. 文件 -> 数组
