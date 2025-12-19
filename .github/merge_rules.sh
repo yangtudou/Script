@@ -9,9 +9,18 @@ merge_rules() {
         echo "错误: 输入和输出参数不能为空" >&2
         return 1
     fi
-	# 添加调试信息
-    echo "调试: 输入参数 = '$input'"
-    echo "调试: 输出参数 = '$output'"
+
+	# 显示输入参数的类型信息
+    echo "调试: 输入参数类型检查:"
+    echo "  -f 检查: $([[ -f "$input" ]] && echo "是文件" || echo "不是文件")"
+    echo "  -d 检查: $([[ -d "$input" ]] && echo "是目录" || echo "不是目录")"
+    echo "  数组检查: $(_is_array "$input" && echo "是数组" || echo "不是数组")"
+
+	# 显示输出参数的类型信息
+    echo "调试: 输出参数类型检查:"
+    echo "  -f 检查: $([[ -f "$output" ]] && echo "是文件" || echo "不是文件")"
+    echo "  -d 检查: $([[ -d "$output" ]] && echo "是目录" || echo "不是目录")"
+    echo "  数组检查: $(_is_array "$output" && echo "是数组" || echo "不是数组")"
 	
 	# 判断输入类型 → 判断输出类型
 	# 一共为 9 种可能性, 目前只能实现以下 5 种
