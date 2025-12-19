@@ -79,19 +79,19 @@ jobs:
             geo/geoip/classical/telegram.list
           sparse-checkout-cone-mode: false
 
-      - name: 检出 AWAvenue 仓库 main 分支
-        uses: actions/checkout@v6
-        with:
-          repository: TG-Twilight/AWAvenue-Ads-Rule
-          ref: main
-          fetch-depth: 1
-          path: AWAvenue-Ads-Rule
-          sparse-checkout: |
-            # ClashMeta
-            Filters/AWAvenue-Ads-Rule-Clash.yaml
-            # Surge
-            Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
-          sparse-checkout-cone-mode: false
+      # - name: 检出 AWAvenue 仓库 main 分支
+      #   uses: actions/checkout@v6
+      #   with:
+      #     repository: TG-Twilight/AWAvenue-Ads-Rule
+      #     ref: main
+      #     fetch-depth: 1
+      #     path: AWAvenue-Ads-Rule
+      #     sparse-checkout: |
+      #       # ClashMeta
+      #       Filters/AWAvenue-Ads-Rule-Clash.yaml
+      #       # Surge
+      #       Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+      #     sparse-checkout-cone-mode: false
 
       # - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
       #   uses: actions/checkout@v6
@@ -133,8 +133,8 @@ jobs:
           rm -rf rule_sync_temp/Surge
           mkdir -p rule_sync_temp/Surge
 
-          echo "AWAvenue-Ads-Rule 规则到目标目录"
-          cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+          # echo "AWAvenue-Ads-Rule 规则到目标目录"
+          # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
 
           # =================== 函数部分 START =================== #
@@ -162,7 +162,7 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
 
-          merge_rules "FILES_TO_MERGE" "y3_proxy_rules@surge.list"
+          merge_rules "$FILES_TO_MERGE" "y3_proxy_rules@surge.list"
 
           mv "y3_proxy_rules@surge.list" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
