@@ -424,7 +424,7 @@ _handle_directory_to_array() {
 
 #######################################################################
 #============================ 数组 -> 文件 ============================#
-# 数组 → 文件：将数组中的文件内容合并到输出文件（完整版，包含清理步骤）
+# 数组 → 文件：将数组中的文件内容合并到输出文件
 _handle_array_to_file() {
     local input_var="$1"    # 数组变量名
     local output="$2"       # 输出文件路径
@@ -443,7 +443,7 @@ _handle_array_to_file() {
     local -i array_length=0
     
     # ========== 1. 展开数组 ==========
-    echo "[步骤1/4] 展开数组..."
+    echo "[步骤1/3] 展开数组..."
     echo "------------------------------------------"
     
     # 验证输入是否为数组变量
@@ -488,7 +488,7 @@ _handle_array_to_file() {
     echo ""
     
     # ========== 2. 准备输出文件 ==========
-    echo "[步骤2/4] 准备输出文件..."
+    echo "[步骤2/3] 准备输出文件..."
     echo "------------------------------------------"
     
     # 确保输出目录存在
@@ -517,22 +517,21 @@ _handle_array_to_file() {
             return 1
         fi
     else
-        echo "✓ 输出文件不存在，将创建新文件"
+        echo "✗ 输出文件不存在，将创建新文件"
     fi
     
-    # 创建临时文件用于合并
-    local temp_output=$(mktemp) || {
-        echo "✗ 错误: 无法创建临时文件" >&2
+    # 清空或创建输出文件
+    echo "✓ 准备输出文件内容..."
+    if > "$output"; then
+        echo "✓ 输出文件准备完成"
+    else
+        echo "✗ 错误: 无法准备输出文件" >&2
         return 1
-    }
-    
-    # 清空临时文件
-    > "$temp_output"
-    echo "✓ 临时文件准备完成: $temp_output"
+    fi
     echo ""
     
-    # ========== 3. 合并文件内容（使用echo方法） ==========
-    echo "[步骤3/4] 开始合并文件内容（使用echo方法）..."
+    # ========== 3. 合并文件内容 ==========
+    echo "[步骤3/3] 开始合并文件内容..."
     echo "------------------------------------------"
     
     # 遍历数组中的每个文件路径
@@ -582,40 +581,25 @@ _handle_array_to_file() {
             continue
         fi
         
-        # 开始追加内容 - 使用echo方法确保正确的换行符
-        echo "  ├─ 开始追加文件内容（使用echo方法）..."
+        # 开始追加内容
+        echo "  ├─ 开始追加文件内容到输出文件..."
+        echo "  ├─ 执行命令: cat \"$file_path\" >> \"$output\""
+        
+        # 使用time命令计时
         local start_time=$(date +%s.%N)
         
-        # 方法1：使用echo确保每个文件之间有正确的分隔
-        # 检查临时文件是否已有内容
-        if [[ -s "$temp_output" ]]; then
-            # 如果临时文件已有内容，先添加一个空行作为分隔
-            echo "" >> "$temp_output"
-        fi
-        
-        # 读取文件内容并追加到临时文件
-        if [[ -r "$file_path" ]]; then
-            # 逐行读取文件内容，确保正确处理换行符
-            while IFS= read -r line || [[ -n "$line" ]]; do
-                echo "$line" >> "$temp_output"
-            done < "$file_path"
-            
-            # 检查文件末尾是否有换行符，如果没有则添加
-            local last_char=$(tail -c 1 "$file_path" 2>/dev/null | od -An -tx1 | tr -d ' \n')
-            if [[ "$last_char" != "0a" ]]; then
-                # 文件末尾没有换行符（0a 是换行符的十六进制），添加一个
-                echo "" >> "$temp_output"
-            fi
-            
+        # 尝试追加内容
+        if cat "$file_path" >> "$output" 2>&1; then
             local end_time=$(date +%s.%N)
             local duration=$(echo "$end_time - $start_time" | bc)
             echo "  ├─ ✓ 追加成功 (耗时: ${duration}秒)"
-            ((success_count++))
+            # 使用安全的整数递增
+            success_count=$((success_count + 1))
         else
             local end_time=$(date +%s.%N)
             local duration=$(echo "$end_time - $start_time" | bc)
-            echo "  ├─ ✗ 追加失败: 文件不可读 (耗时: ${duration}秒)" >&2
-            ((error_count++))
+            echo "  ├─ ✗ 追加失败 (耗时: ${duration}秒)" >&2
+            error_count=$((error_count + 1))
         fi
         
         echo "  └─ [文件 $current_file/$array_length 处理完成]"
@@ -625,29 +609,7 @@ _handle_array_to_file() {
         sleep 0.1
     done
     
-    # 将临时文件内容移动到输出文件
-    echo "✓ 将合并后的内容移动到输出文件..."
-    if mv "$temp_output" "$output"; then
-        echo "✓ 文件合并完成"
-    else
-        echo "✗ 错误: 无法移动临时文件到输出位置" >&2
-        rm -f "$temp_output"
-        return 1
-    fi
-    
-    # ========== 4. 清理文件内容 ==========
-    echo "[步骤4/4] 清理文件内容..."
-    echo "------------------------------------------"
-    
-    # 调用清理函数处理输出文件
-    echo "✓ 开始清理和优化输出文件内容..."
-    if _clean_file_content "$output"; then
-        echo "✓ 文件内容清理完成"
-    else
-        echo "⚠️ 文件内容清理过程中出现警告" >&2
-    fi
-    
-    # ========== 5. 结果统计 ==========
+    # ========== 4. 结果统计 ==========
     echo "=========================================="
     echo "合并完成总结:"
     echo "------------------------------------------"
@@ -658,8 +620,8 @@ _handle_array_to_file() {
     
     # 显示输出文件信息
     if [[ -f "$output" ]]; then
-        local output_size=$(wc -c < "$output")
-        local output_lines=$(wc -l < "$output")
+        local output_size=$(wc -c < "$output" 2>/dev/null || echo 0)
+        local output_lines=$(wc -l < "$output" 2>/dev/null || echo 0)
         echo ""
         echo "输出文件信息:"
         echo "✓ 文件路径: $output"
@@ -668,7 +630,28 @@ _handle_array_to_file() {
     fi
     
     echo ""
+
+	# ========== 5. 文件内容清理 ==========
+	echo "[步骤4/4] 开始文件内容清理..."
+	echo "------------------------------------------"
     
+	if [[ -f "$output" ]] && [[ -s "$output" ]]; then
+	    _clean_file_content "$output"
+	    local clean_result=$?
+        
+	    if [[ $clean_result -eq 0 ]]; then
+            echo "✅ 文件内容清理完成"
+	    else
+            echo "⚠️ 文件内容清理过程中出现警告"
+	    fi
+	else
+        echo "! 输出文件为空或不存在，跳过清理步骤"
+	fi
+    
+    echo ""
+
+
+	
     # 返回结果
     if [[ $success_count -gt 0 ]]; then
         echo "✅ 数组合并操作成功完成"
@@ -684,7 +667,6 @@ _handle_array_to_file() {
         return 0
     fi
 }
-
 
 # 文件内容清理函数（修复版）
 _clean_file_content() {
