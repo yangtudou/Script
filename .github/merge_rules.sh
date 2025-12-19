@@ -26,6 +26,7 @@ merge_rules() {
 	
 	# 判断输入类型 → 判断输出类型
 	# 一共为 9 种可能性, 目前只能实现以下 5 种
+    # 2025-12-19 已经验证的是数组到文件
 	#    输入 → 输出
 	# 1. 文件 → 文件（追加内容）
 	# 2. 文件 → 目录（复制/合并）
@@ -516,7 +517,7 @@ _handle_array_to_file() {
             return 1
         fi
     else
-        echo "✓ 输出文件不存在，将创建新文件"
+        echo "✗ 输出文件不存在，将创建新文件"
     fi
     
     # 清空或创建输出文件
@@ -667,7 +668,7 @@ _handle_array_to_file() {
     fi
 }
 
-# 文件内容清理函数
+# 文件内容清理函数（修复版）
 _clean_file_content() {
     local file="$1"
     local temp_file=$(mktemp) || {
@@ -685,7 +686,6 @@ _clean_file_content() {
     
     # 统计变量
     local -i removed_empty=0
-    local -i removed_whitespace=0
     local -i removed_comments=0
     local -i removed_domain_regex=0
     local -i modified_ip_cidr=0
@@ -720,62 +720,80 @@ _clean_file_content() {
     removed_domain_regex=$((before_domain_regex - after_domain_regex))
     echo "  → 删除了 $removed_domain_regex 个 DOMAIN-REGEX 规则"
     
-    # 第五步：处理 IP-CIDR 和 IP-CIDR6 规则
+    # 第五步：处理 IP-CIDR 和 IP-CIDR6 规则（修复版本）
     echo "✓ 步骤5: 处理 IP-CIDR 和 IP-CIDR6 规则..."
     local before_ip_cidr=$after_domain_regex
     
     # 使用 awk 处理 IP-CIDR 规则
     awk '
     {
-        # 检查是否是 IP-CIDR 规则且包含 IPv6 地址
-        if ($1 == "IP-CIDR," && $2 ~ /:/) {
-            # 替换为 IP-CIDR6
-            gsub("IP-CIDR,", "IP-CIDR6,", $1)
-            modified_ip_cidr6++
-        }
-        
-        # 检查是否是 IP-CIDR 或 IP-CIDR6 规则
-        if ($1 == "IP-CIDR," || $1 == "IP-CIDR6,") {
-            # 检查行尾是否已经有 ",no-resolve"
-            if ($NF != "no-resolve") {
-                # 在行尾添加 ",no-resolve"
+        # 检查是否是 IP-CIDR 规则
+        if ($0 ~ /^IP-CIDR,/) {
+            # 检查是否是 IPv6 地址（包含冒号）
+            if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
+                # 替换为 IP-CIDR6
+                sub(/^IP-CIDR,/, "IP-CIDR6,", $0)
+                ipv6_converted++
+            }
+            
+            # 检查是否已经有 no-resolve
+            if ($0 !~ /,no-resolve$/) {
                 $0 = $0 ",no-resolve"
-                modified_ip_cidr++
+                no_resolve_added++
             }
         }
         
         print $0
     }
-    ' "${temp_file}.step4" > "${temp_file}.step5"
+    END {
+        # 输出统计信息
+        print "AWK_STATS: " no_resolve_added " " ipv6_converted > "/dev/stderr"
+    }
+    ' "${temp_file}.step4" > "${temp_file}.step5" 2> "${temp_file}.awk_stats"
+    
+    # 从 awk 输出中提取统计信息
+    if [[ -f "${temp_file}.awk_stats" ]]; then
+        local awk_stats=$(grep "AWK_STATS:" "${temp_file}.awk_stats" | cut -d' ' -f2-)
+        local no_resolve_added=$(echo "$awk_stats" | cut -d' ' -f1)
+        local ipv6_converted=$(echo "$awk_stats" | cut -d' ' -f2)
+        
+        no_resolve_added=${no_resolve_added:-0}
+        ipv6_converted=${ipv6_converted:-0}
+        
+        modified_ip_cidr=$no_resolve_added
+        modified_ip_cidr6=$ipv6_converted
+        
+        rm -f "${temp_file}.awk_stats"
+    fi
     
     local after_ip_cidr=$(wc -l < "${temp_file}.step5" 2>/dev/null || echo 0)
     echo "  → 修改了 $modified_ip_cidr 个 IP-CIDR 规则（添加 ,no-resolve）"
     echo "  → 转换了 $modified_ip_cidr6 个 IPv6 规则为 IP-CIDR6"
     
-    # 第六步：使用 awk 进行排序（按新优先级）
+    # 第六步：使用 awk 进行排序（按优先级）
     echo "✓ 步骤6: 使用 awk 进行排序..."
     awk '
     {
         # 为每行添加排序键（按指定优先级）
-        if ($1 == "DOMAIN,") {
+        if ($0 ~ /^DOMAIN,/) {
             # DOMAIN 规则 - 最高优先级
-            sort_key = "1_" $2
+            sort_key = "1_" $0
         }
-        else if ($1 == "DOMAIN-SUFFIX,") {
+        else if ($0 ~ /^DOMAIN-SUFFIX,/) {
             # DOMAIN-SUFFIX 规则 - 第二优先级
-            sort_key = "2_" $2
+            sort_key = "2_" $0
         }
-        else if ($1 == "DOMAIN-KEYWORD,") {
+        else if ($0 ~ /^DOMAIN-KEYWORD,/) {
             # DOMAIN-KEYWORD 规则 - 第三优先级
-            sort_key = "3_" $2
+            sort_key = "3_" $0
         }
-        else if ($1 == "IP-CIDR,") {
+        else if ($0 ~ /^IP-CIDR,/) {
             # IP-CIDR 规则 - 第四优先级
-            sort_key = "4_" $2
+            sort_key = "4_" $0
         }
-        else if ($1 == "IP-CIDR6,") {
+        else if ($0 ~ /^IP-CIDR6,/) {
             # IP-CIDR6 规则 - 第五优先级
-            sort_key = "5_" $2
+            sort_key = "5_" $0
         }
         else {
             # 其他规则 - 最低优先级
@@ -794,7 +812,7 @@ _clean_file_content() {
     }
     ' "${temp_file}.step5" > "${temp_file}.step6"
     
-    echo "  → 已完成规则分类排序（按新优先级）"
+    echo "  → 已完成规则分类排序（按优先级）"
     
     # 第七步：去重（保留顺序）
     echo "✓ 步骤7: 去重处理..."
