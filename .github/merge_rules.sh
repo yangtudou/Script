@@ -604,6 +604,86 @@ _handle_array_to_file() {
             local last_char=$(tail -c 1 "$file_path" 2>/dev/null | od -An -tx1 | tr -d ' \n')
             if [[ "$last_char" != "0a" ]]; then
                 # 文件末尾没有换行符（0a 是换行符的十六进制），添加一个
+                echo "" >> "$temp_output"
+            fi
+            
+            local end_time=$(date +%s.%N)
+            local duration=$(echo "$end_time - $start_time" | bc)
+            echo "  ├─ ✓ 追加成功 (耗时: ${duration}秒)"
+            ((success_count++))
+        else
+            local end_time=$(date +%s.%N)
+            local duration=$(echo "$end_time - $start_time" | bc)
+            echo "  ├─ ✗ 追加失败: 文件不可读 (耗时: ${duration}秒)" >&2
+            ((error_count++))
+        fi
+        
+        echo "  └─ [文件 $current_file/$array_length 处理完成]"
+        echo ""
+        
+        # 添加小延迟，避免过快处理
+        sleep 0.1
+    done
+    
+    # 将临时文件内容移动到输出文件
+    echo "✓ 将合并后的内容移动到输出文件..."
+    if mv "$temp_output" "$output"; then
+        echo "✓ 文件合并完成"
+    else
+        echo "✗ 错误: 无法移动临时文件到输出位置" >&2
+        rm -f "$temp_output"
+        return 1
+    fi
+    
+    # ========== 4. 清理文件内容 ==========
+    echo "[步骤4/4] 清理文件内容..."
+    echo "------------------------------------------"
+    
+    # 调用清理函数处理输出文件
+    echo "✓ 开始清理和优化输出文件内容..."
+    if _clean_file_content "$output"; then
+        echo "✓ 文件内容清理完成"
+    else
+        echo "⚠️ 文件内容清理过程中出现警告" >&2
+    fi
+    
+    # ========== 5. 结果统计 ==========
+    echo "=========================================="
+    echo "合并完成总结:"
+    echo "------------------------------------------"
+    echo "✓ 数组文件总数: $array_length"
+    echo "✓ 成功合并: $success_count"
+    echo "! 跳过文件: $skip_count"
+    echo "✗ 合并失败: $error_count"
+    
+    # 显示输出文件信息
+    if [[ -f "$output" ]]; then
+        local output_size=$(wc -c < "$output")
+        local output_lines=$(wc -l < "$output")
+        echo ""
+        echo "输出文件信息:"
+        echo "✓ 文件路径: $output"
+        echo "✓ 文件大小: $output_size 字节"
+        echo "✓ 文件行数: $output_lines 行"
+    fi
+    
+    echo ""
+    
+    # 返回结果
+    if [[ $success_count -gt 0 ]]; then
+        echo "✅ 数组合并操作成功完成"
+        return 0
+    elif [[ $skip_count -eq $array_length ]] && [[ $array_length -gt 0 ]]; then
+        echo "⚠️ 警告: 所有文件都被跳过，但操作完成"
+        return 0
+    elif [[ $error_count -gt 0 ]]; then
+        echo "❌ 错误: 合并过程中发生错误" >&2
+        return 1
+    else
+        echo "✅ 操作完成"
+        return 0
+    fi
+}
 
 
 # 文件内容清理函数（修复版）
