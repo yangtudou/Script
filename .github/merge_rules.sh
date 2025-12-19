@@ -629,7 +629,28 @@ _handle_array_to_file() {
     fi
     
     echo ""
+
+	# ========== 5. 文件内容清理 ==========
+	echo "[步骤4/4] 开始文件内容清理..."
+	echo "------------------------------------------"
     
+	if [[ -f "$output" ]] && [[ -s "$output" ]]; then
+	    _clean_file_content "$output"
+	    local clean_result=$?
+        
+	    if [[ $clean_result -eq 0 ]]; then
+            echo "✅ 文件内容清理完成"
+	    else
+            echo "⚠️ 文件内容清理过程中出现警告"
+	    fi
+	else
+        echo "! 输出文件为空或不存在，跳过清理步骤"
+	fi
+    
+    echo ""
+
+
+	
     # 返回结果
     if [[ $success_count -gt 0 ]]; then
         echo "✅ 数组合并操作成功完成"
