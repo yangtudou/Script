@@ -4,7 +4,9 @@ merge_rules() {
     local input="$1"
     local output="$2"
     
-    # 输入验证
+    set -e
+	trap 'echo "错误发生在: $BASH_COMMAND"; exit 1' ERR
+	# 输入验证
     if [[ -z "$input" || -z "$output" ]]; then
         echo "错误: 输入和输出参数不能为空" >&2
         return 1
@@ -416,6 +418,8 @@ _handle_directory_to_array() {
     return 1
 }
 
+
+
 #============================ 数组 -> 文件 ============================#
 # 数组 → 文件：将数组中的文件内容合并到输出文件
 _handle_array_to_file() {
@@ -456,10 +460,17 @@ _handle_array_to_file() {
         # 创建空输出文件（如果不存在）
         if [[ ! -f "$output" ]]; then
             echo "✓ 创建空输出文件..."
-            touch "$output"
-            echo "✓ 已创建空文件: $output"
+            if touch "$output"; then
+                echo "✓ 已创建空文件: $output"
+                return 0
+            else
+                echo "✗ 错误: 无法创建空文件" >&2
+                return 1
+            fi
+        else
+            echo "✓ 输出文件已存在，无需修改"
+            return 0
         fi
-        return 0
     fi
     
     # 显示数组内容
@@ -616,13 +627,23 @@ _handle_array_to_file() {
     
     echo ""
     
-    # 返回结果
+    # 返回结果 - 修复的逻辑
+    # 只要有成功合并的文件，就返回成功
     if [[ $success_count -gt 0 ]]; then
         echo "✅ 数组合并操作成功完成"
         return 0
-    else
-        echo "❌ 错误: 没有成功合并任何文件" >&2
+    # 如果所有文件都被跳过，但数组不为空，也返回成功（可能是预期行为）
+    elif [[ $skip_count -eq $array_length ]] && [[ $array_length -gt 0 ]]; then
+        echo "⚠️ 警告: 所有文件都被跳过，但操作完成"
+        return 0
+    # 如果有错误发生，返回失败
+    elif [[ $error_count -gt 0 ]]; then
+        echo "❌ 错误: 合并过程中发生错误" >&2
         return 1
+    # 其他情况（如空数组）也返回成功
+    else
+        echo "✅ 操作完成"
+        return 0
     fi
 }
 
