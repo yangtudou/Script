@@ -416,113 +416,131 @@ _handle_directory_to_array() {
     return 1
 }
 
-# 7. 数组 -> 文件
-# 5. 数组 → 文件：将数组中的文件内容合并
+#============================ 数组 -> 文件 ============================#
+# 将数组中的文件内容合并到输出文件
 _handle_array_to_file() {
-    local input_var="$1"
-    local output="$2"
+    local input_var="$1"    # 数组变量名
+    local output="$2"       # 输出文件路径
     
     echo "处理: 数组 → 文件"
-    echo "输入数组变量名: $input_var"
+    echo "输入数组: $input_var"
     echo "输出文件: $output"
     
-    # 获取数组内容
-    if ! declare -p "$input_var" &>/dev/null; then
-        echo "错误: 数组变量 '$input_var' 不存在" >&2
-        return 1
-    fi
+    # ========== 1. 展开数组 ==========
+    echo "步骤1: 展开数组..."
     
+    # 验证输入是否为数组变量
     if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
-        echo "错误: 变量 '$input_var' 不是数组" >&2
+        echo "错误: '$input_var' 不是有效的数组变量" >&2
         return 1
     fi
     
-    local files
-    eval "files=(\"\${$input_var[@]}\")"
-    
-    echo "调试: 数组包含 ${#files[@]} 个元素"
-    
-    # 检查输出文件是否已存在
-    if [[ -e "$output" ]]; then
-        # 文件已存在，检查是否可写
-        if [[ ! -w "$output" ]]; then
-            echo "错误: 输出文件不可写: $output" >&2
-            return 1
-        fi
-        echo "输出文件已存在，将追加内容"
-    else
-        # 文件不存在，需要创建目录和文件
-        local output_dir=$(dirname "$output")
-        if [[ ! -d "$output_dir" ]]; then
-            echo "创建目录: $output_dir"
-            if ! mkdir -p "$output_dir"; then
-                echo "错误: 无法创建目录: $output_dir" >&2
-                return 1
-            fi
-        elif [[ ! -w "$output_dir" ]]; then
-            echo "错误: 输出目录不可写: $output_dir" >&2
-            return 1
-        fi
-        echo "将创建新文件: $output"
-    fi
+    # 安全地获取数组内容
+    local array_files
+    eval "array_files=(\"\${$input_var[@]}\")"
     
     # 检查数组是否为空
-    if [[ ${#files[@]} -eq 0 ]]; then
+    if [[ ${#array_files[@]} -eq 0 ]]; then
         echo "警告: 输入数组为空" >&2
-        # 如果文件不存在，创建空文件；如果已存在，保持原样
-        if [[ ! -e "$output" ]]; then
+        # 创建空输出文件（如果不存在）
+        if [[ ! -f "$output" ]]; then
             touch "$output"
             echo "已创建空文件: $output"
         fi
         return 0
     fi
     
-    # 清空输出文件（如果已存在）或创建新文件
-    > "$output"
+    echo "数组包含 ${#array_files[@]} 个文件:"
+    for i in "${!array_files[@]}"; do
+        echo "  [$((i+1))] ${array_files[$i]}"
+    done
     
-    echo "开始将文件内容合并到输出文件..."
+    # ========== 2. 准备输出文件 ==========
+    echo "步骤2: 准备输出文件..."
+    
+    # 确保输出目录存在
+    local output_dir=$(dirname "$output")
+    if [[ ! -d "$output_dir" ]]; then
+        echo "创建输出目录: $output_dir"
+        mkdir -p "$output_dir" || {
+            echo "错误: 无法创建输出目录" >&2
+            return 1
+        }
+    fi
+    
+    # 检查输出文件是否可写（如果存在）
+    if [[ -f "$output" ]] && [[ ! -w "$output" ]]; then
+        echo "错误: 输出文件不可写" >&2
+        return 1
+    fi
+    
+    # 清空或创建输出文件
+    > "$output" || {
+        echo "错误: 无法准备输出文件" >&2
+        return 1
+    }
+    
+    # ========== 3. 合并文件内容 ==========
+    echo "步骤3: 开始合并文件内容..."
     
     local success_count=0
     local error_count=0
+    local skip_count=0
     
     # 遍历数组中的每个文件路径
-    for file_path in "${files[@]}"; do
-        echo "处理文件: $file_path"
+    for file_path in "${array_files[@]}"; do
+        echo "处理: $file_path"
         
         # 检查文件是否存在且可读
         if [[ ! -f "$file_path" ]]; then
-            echo "  × 文件不存在: $file_path" >&2
-            ((error_count++))
+            echo "  × 文件不存在，跳过" >&2
+            ((skip_count++))
             continue
         fi
         
         if [[ ! -r "$file_path" ]]; then
-            echo "  × 文件不可读: $file_path" >&2
-            ((error_count++))
+            echo "  × 文件不可读，跳过" >&2
+            ((skip_count++))
+            continue
+        fi
+        
+        # 检查文件是否为空
+        if [[ ! -s "$file_path" ]]; then
+            echo "  ! 文件为空，跳过"
+            ((skip_count++))
             continue
         fi
         
         # 将文件内容追加到输出文件
-        if cat "$file_path" >> "$output"; then
+        if cat "$file_path" >> "$output" 2>/dev/null; then
+            local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
             ((success_count++))
-            echo "  √ 合并成功"
+            echo "  √ 追加成功 ($file_size 字节)"
         else
-            echo "  × 合并失败: $file_path" >&2
+            echo "  × 追加失败" >&2
             ((error_count++))
         fi
     done
     
-    # 显示合并结果
+    # ========== 4. 结果统计 ==========
     echo ""
     echo "合并完成:"
-    echo "  - 处理文件总数: ${#files[@]}"
-    echo "  - 成功合并数: $success_count"
-    echo "  - 合并失败数: $error_count"
+    echo "  - 数组文件总数: ${#array_files[@]}"
+    echo "  - 成功合并: $success_count"
+    echo "  - 跳过文件: $skip_count"
+    echo "  - 合并失败: $error_count"
     
-    if [[ $success_count -gt 0 ]]; then
+    # 显示输出文件信息
+    if [[ -f "$output" ]]; then
         local output_size=$(wc -c < "$output" 2>/dev/null || echo 0)
+        local output_lines=$(wc -l < "$output" 2>/dev/null || echo 0)
         echo "  - 输出文件大小: $output_size 字节"
-        echo "文件内容合并操作完成"
+        echo "  - 输出文件行数: $output_lines 行"
+    fi
+    
+    # 返回结果
+    if [[ $success_count -gt 0 ]]; then
+        echo "数组合并操作成功完成"
         return 0
     else
         echo "错误: 没有成功合并任何文件" >&2
