@@ -590,6 +590,7 @@ _handle_array_to_file() {
         
         # 尝试追加内容
         if cat "$file_path" >> "$output" 2>&1; then
+            echo "" >> "$output"
             local end_time=$(date +%s.%N)
             local duration=$(echo "$end_time - $start_time" | bc)
             echo "  ├─ ✓ 追加成功 (耗时: ${duration}秒)"
