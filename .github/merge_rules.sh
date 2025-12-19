@@ -687,6 +687,9 @@ _clean_file_content() {
     local -i removed_empty=0
     local -i removed_whitespace=0
     local -i removed_comments=0
+    local -i removed_domain_regex=0
+    local -i modified_ip_cidr=0
+    local -i modified_ip_cidr6=0
     local -i removed_duplicates=0
     
     # 第一步：删除空行和仅含空格的行
@@ -709,20 +712,104 @@ _clean_file_content() {
     removed_comments=$((before_comments - after_comments))
     echo "  → 删除了 $removed_comments 个注释行"
     
-    # 第四步：去重（保留顺序）
-    echo "✓ 步骤4: 去重处理..."
-    local before_duplicates=$after_comments
-    awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
-    local after_duplicates=$(wc -l < "${temp_file}.step4" 2>/dev/null || echo 0)
+    # 第四步：删除所有以 DOMAIN-REGEX 开头的行
+    echo "✓ 步骤4: 删除所有以 DOMAIN-REGEX 开头的行..."
+    local before_domain_regex=$after_comments
+    grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
+    local after_domain_regex=$(wc -l < "${temp_file}.step4" 2>/dev/null || echo 0)
+    removed_domain_regex=$((before_domain_regex - after_domain_regex))
+    echo "  → 删除了 $removed_domain_regex 个 DOMAIN-REGEX 规则"
+    
+    # 第五步：处理 IP-CIDR 和 IP-CIDR6 规则
+    echo "✓ 步骤5: 处理 IP-CIDR 和 IP-CIDR6 规则..."
+    local before_ip_cidr=$after_domain_regex
+    
+    # 使用 awk 处理 IP-CIDR 规则
+    awk '
+    {
+        # 检查是否是 IP-CIDR 规则且包含 IPv6 地址
+        if ($1 == "IP-CIDR," && $2 ~ /:/) {
+            # 替换为 IP-CIDR6
+            gsub("IP-CIDR,", "IP-CIDR6,", $1)
+            modified_ip_cidr6++
+        }
+        
+        # 检查是否是 IP-CIDR 或 IP-CIDR6 规则
+        if ($1 == "IP-CIDR," || $1 == "IP-CIDR6,") {
+            # 检查行尾是否已经有 ",no-resolve"
+            if ($NF != "no-resolve") {
+                # 在行尾添加 ",no-resolve"
+                $0 = $0 ",no-resolve"
+                modified_ip_cidr++
+            }
+        }
+        
+        print $0
+    }
+    ' "${temp_file}.step4" > "${temp_file}.step5"
+    
+    local after_ip_cidr=$(wc -l < "${temp_file}.step5" 2>/dev/null || echo 0)
+    echo "  → 修改了 $modified_ip_cidr 个 IP-CIDR 规则（添加 ,no-resolve）"
+    echo "  → 转换了 $modified_ip_cidr6 个 IPv6 规则为 IP-CIDR6"
+    
+    # 第六步：使用 awk 进行排序（按新优先级）
+    echo "✓ 步骤6: 使用 awk 进行排序..."
+    awk '
+    {
+        # 为每行添加排序键（按指定优先级）
+        if ($1 == "DOMAIN,") {
+            # DOMAIN 规则 - 最高优先级
+            sort_key = "1_" $2
+        }
+        else if ($1 == "DOMAIN-SUFFIX,") {
+            # DOMAIN-SUFFIX 规则 - 第二优先级
+            sort_key = "2_" $2
+        }
+        else if ($1 == "DOMAIN-KEYWORD,") {
+            # DOMAIN-KEYWORD 规则 - 第三优先级
+            sort_key = "3_" $2
+        }
+        else if ($1 == "IP-CIDR,") {
+            # IP-CIDR 规则 - 第四优先级
+            sort_key = "4_" $2
+        }
+        else if ($1 == "IP-CIDR6,") {
+            # IP-CIDR6 规则 - 第五优先级
+            sort_key = "5_" $2
+        }
+        else {
+            # 其他规则 - 最低优先级
+            sort_key = "6_" $0
+        }
+        
+        # 存储行和排序键
+        lines[sort_key] = $0
+    }
+    END {
+        # 按排序键排序并输出
+        n = asorti(lines, sorted)
+        for (i = 1; i <= n; i++) {
+            print lines[sorted[i]]
+        }
+    }
+    ' "${temp_file}.step5" > "${temp_file}.step6"
+    
+    echo "  → 已完成规则分类排序（按新优先级）"
+    
+    # 第七步：去重（保留顺序）
+    echo "✓ 步骤7: 去重处理..."
+    local before_duplicates=$after_ip_cidr
+    awk '!seen[$0]++' "${temp_file}.step6" > "${temp_file}.step7"
+    local after_duplicates=$(wc -l < "${temp_file}.step7" 2>/dev/null || echo 0)
     removed_duplicates=$((before_duplicates - after_duplicates))
     echo "  → 删除了 $removed_duplicates 个重复行"
     
     # 检查清理后的文件是否为空
-    if [[ ! -s "${temp_file}.step4" ]]; then
+    if [[ ! -s "${temp_file}.step7" ]]; then
         echo "⚠️ 警告: 清理后文件为空，保留原始内容"
         cp "$file" "$temp_file"
     else
-        cp "${temp_file}.step4" "$temp_file"
+        cp "${temp_file}.step7" "$temp_file"
     fi
     
     # 替换原文件
@@ -740,17 +827,23 @@ _clean_file_content() {
         echo "📊 清理统计:"
         echo "  - 空行: $removed_empty 行"
         echo "  - 注释: $removed_comments 行"
+        echo "  - DOMAIN-REGEX: $removed_domain_regex 行"
+        echo "  - IP-CIDR 修改: $modified_ip_cidr 个规则添加了 ,no-resolve"
+        echo "  - IP-CIDR6 转换: $modified_ip_cidr6 个 IPv6 规则转换为 IP-CIDR6"
+        echo "  - 排序: 已按优先级排序 (DOMAIN > DOMAIN-SUFFIX > DOMAIN-KEYWORD > IP-CIDR > IP-CIDR6 > 其他)"
         echo "  - 重复: $removed_duplicates 行"
         echo "  - 空格: 已清理所有行首行尾空格"
         
         # 清理临时文件
-        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4"
+        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" 
+        rm -f "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6" "${temp_file}.step7"
         
         return 0
     else
         echo "✗ 错误: 无法替换原文件" >&2
         # 清理临时文件
-        rm -f "$temp_file" "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4"
+        rm -f "$temp_file" "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
+        rm -f "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6" "${temp_file}.step7"
         return 1
     fi
 }
