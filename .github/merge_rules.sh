@@ -79,18 +79,21 @@ merge_rules() {
 # ========== 辅助函数 ==========
 
 # 判断是否为数组
+# 判断是否为数组（改进版）
 _is_array() {
     local var_name="$1"
-    if declare -p "$var_name" 2>/dev/null | grep -q '^declare -a'; then
-        return 0  # 是数组
-    fi
-	
-	# 额外的检查：尝试将变量作为数组引用
-    if [[ "$(declare -p "$var_name" 2>/dev/null)" =~ "declare -a" ]]; then
-        return 0
+    
+    # 检查是否是有效的变量名
+    if [[ ! "$var_name" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+        return 1
     fi
     
-    return 1  # 不是数组
+    # 检查变量是否存在且是数组
+    if declare -p "$var_name" 2>/dev/null | grep -q '^declare -a'; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 # ========== 具体处理函数 ==========
@@ -414,46 +417,81 @@ _handle_directory_to_array() {
 
 # 7. 数组 -> 文件
 _handle_array_to_file() {
-    local input_var="$1"  # 数组变量名
-    local output="$2"     # 输出文件路径
+    local input_var="$1"
+    local output="$2"
     
-    echo "处理: 数组 -> 文件"
-    echo "输入数组: $input_var"
+    echo "处理: 数组 → 文件"
+    echo "输入数组变量名: $input_var"
     echo "输出文件: $output"
     
-    # 检查输出文件的目录是否可写
-    local output_dir=$(dirname "$output")
-    if [[ ! -w "$output_dir" ]] && [[ ! -w "$output_dir/." ]]; then
-        echo "错误: 输出文件所在目录不可写" >&2
+    # 调试信息：检查输入参数
+    echo "调试: 输入参数 input_var='$input_var', output='$output'"
+    
+    # 获取数组内容（文件路径列表）
+    echo "调试: 尝试获取数组内容..."
+    
+    # 方法1：使用间接引用（可能有问题）
+    local array_ref="${input_var}[@]"
+    echo "调试: 数组引用名: $array_ref"
+    
+    # 检查变量是否存在
+    if ! declare -p "$input_var" &>/dev/null; then
+        echo "错误: 数组变量 '$input_var' 不存在" >&2
         return 1
     fi
     
-    # 使用间接引用获取数组元素（文件路径列表）
-    local array_name="${input_var}[@]"
-    local file_paths=("${!array_name}")
-    
-    # 检查数组是否为空
-    if [[ ${#file_paths[@]} -eq 0 ]]; then
-        echo "警告: 输入数组为空，将创建/清空输出文件" >&2
-        > "$output"  # 创建或清空文件
-        echo "已创建/清空文件: $output"
-        return 0
+    # 检查是否是数组
+    if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
+        echo "错误: 变量 '$input_var' 不是数组" >&2
+        return 1
     fi
     
-    echo "数组包含 ${#file_paths[@]} 个文件路径"
-    echo "开始将文件内容合并到输出文件..."
+    # 安全地获取数组内容
+    echo "调试: 安全获取数组内容..."
+    local files
+    eval "files=(\"\${$input_var[@]}\")"
+    
+    # 调试：显示数组内容
+    echo "调试: 数组包含 ${#files[@]} 个元素"
+    for i in "${!files[@]}"; do
+        echo "调试: 文件[$i] = '${files[$i]}'"
+    done
+    
+    # 检查数组是否为空
+    if [[ ${#files[@]} -eq 0 ]]; then
+        echo "警告: 输入数组为空" >&2
+        # 创建空文件
+        if touch "$output"; then
+            echo "已创建空文件: $output"
+            return 0
+        else
+            echo "错误: 无法创建输出文件" >&2
+            return 1
+        fi
+    fi
+    
+    # 确保输出目录存在
+    echo "调试: 确保输出目录存在..."
+    if ! _ensure_directory "$(dirname "$output")"; then
+        echo "错误: 无法创建输出目录" >&2
+        return 1
+    fi
     
     # 创建或清空输出文件
-    > "$output"
+    echo "调试: 准备输出文件..."
+    if ! > "$output"; then
+        echo "错误: 无法创建/清空输出文件" >&2
+        return 1
+    fi
     
-    # 统计变量
-    local processed_count=0
+    echo "开始将文件内容合并到输出文件..."
+    
     local success_count=0
     local error_count=0
     
-    # 遍历数组中的每个文件路径，将其内容追加到输出文件
-    for file_path in "${file_paths[@]}"; do
-        ((processed_count++))
+    # 遍历数组中的每个文件路径
+    for file_path in "${files[@]}"; do
+        echo "调试: 处理文件: '$file_path'"
         
         # 检查文件是否存在且可读
         if [[ ! -f "$file_path" ]]; then
@@ -484,7 +522,7 @@ _handle_array_to_file() {
     # 显示合并结果
     echo ""
     echo "合并完成:"
-    echo "  - 处理文件总数: ${#file_paths[@]}"
+    echo "  - 处理文件总数: ${#files[@]}"
     echo "  - 成功合并数: $success_count"
     echo "  - 合并失败数: $error_count"
     
