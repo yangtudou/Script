@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# ========== 主函数 ==========
 merge_rules() {
     local input="$1"
     local output="$2"
@@ -10,87 +9,69 @@ merge_rules() {
         echo "错误: 输入和输出参数不能为空" >&2
         return 1
     fi
-    
-    # 主判断逻辑：输入类型 → 输出类型
+
+	# 显示输入参数的类型信息
+    echo "调试: 输入参数类型检查:"
+    echo "  -f 检查: $([[ -f "$input" ]] && echo "是文件" || echo "不是文件")"
+    echo "  -d 检查: $([[ -d "$input" ]] && echo "是目录" || echo "不是目录")"
+    echo "  数组检查: $(_is_array "$input" && echo "是数组" || echo "不是数组")"
+
+	# 显示输出参数的类型信息
+    echo "调试: 输出参数类型检查:"
+    echo "  -f 检查: $([[ -f "$output" ]] && echo "是文件" || echo "不是文件")"
+    echo "  -d 检查: $([[ -d "$output" ]] && echo "是目录" || echo "不是目录")"
+    echo "  数组检查: $(_is_array "$output" && echo "是数组" || echo "不是数组")"
+	
+	# 判断输入类型 → 判断输出类型
+	# 一共为 9 种可能性, 目前只能实现以下 5 种
+	#    输入 → 输出
+	# 1. 文件 → 文件（追加内容）
+	# 2. 文件 → 目录（复制/合并）
+	# 3. 目录 → 文件（合并内容）
+	# 4. 目录 → 目录（合并同名文件）
+	# 5. 数组 → 文件（写入内容）
+	
     if [[ -f "$input" ]]; then
-        # 输入：文件
-        _handle_file_input "$input" "$output"
+	    echo "输入类型: 文件"
+        if [[ -f "$output" ]]; then
+            _handle_file_to_file "$input" "$output"
+        elif [[ -d "$output" ]]; then
+            _handle_file_to_directory "$input" "$output"
+        elif _is_array "$output"; then
+            _handle_file_to_array "$input" "$output"         
+        else
+            echo "错误: 不支持的输出类型" >&2
+            return 1
+        fi
+
     elif [[ -d "$input" ]]; then
-        # 输入：目录
-        _handle_directory_input "$input" "$output"
+	    echo "输入类型: 文件"
+        if [[ -f "$output" ]]; then
+            _handle_directory_to_file "$input" "$output"
+        elif [[ -d "$output" ]]; then
+            _handle_directory_to_directory "$input" "$output"
+        elif _is_array "$output"; then
+            echo "输出类型: 数组"
+            _handle_directory_to_array "$input" "$output"
+        else
+            echo "错误: 不支持的输出类型" >&2
+            return 1
+        fi
+
     elif _is_array "$input"; then
-        # 输入：数组
-        _handle_array_input "$input" "$output"
+        if [[ -f "$output" ]]; then
+            _handle_array_to_file "$input" "$output"
+        elif [[ -d "$output" ]]; then
+            _handle_array_to_directory "$input" "$output"
+        elif _is_array "$output"; then
+            _handle_array_to_array "$input" "$output"     
+        else
+            echo "错误: 不支持的输出类型" >&2
+            return 1
+        fi
+
     else
         echo "错误: 输入类型不被支持 - $input" >&2
-        return 1
-    fi
-}
-
-# ========== 输入类型处理函数 ==========
-
-# 处理文件输入
-_handle_file_input() {
-    local input="$1"
-    local output="$2"
-    
-    echo "输入类型: 文件"
-    
-    if [[ -f "$output" ]]; then
-        # 文件 → 文件
-        _handle_file_to_file "$input" "$output"
-    elif [[ -d "$output" ]]; then
-        # 文件 → 目录
-        _handle_file_to_directory "$input" "$output"
-    elif _is_array "$output"; then
-        # 文件 → 数组（不支持）
-        _handle_file_to_array "$input" "$output"
-    else
-        echo "错误: 不支持的输出类型" >&2
-        return 1
-    fi
-}
-
-# 处理目录输入
-_handle_directory_input() {
-    local input="$1"
-    local output="$2"
-    
-    echo "输入类型: 目录"
-    
-    if [[ -f "$output" ]]; then
-        # 目录 → 文件
-        _handle_directory_to_file "$input" "$output"
-    elif [[ -d "$output" ]]; then
-        # 目录 → 目录
-        _handle_directory_to_directory "$input" "$output"
-    elif _is_array "$output"; then
-        # 目录 → 数组（不支持）
-        _handle_directory_to_array "$input" "$output"
-    else
-        echo "错误: 不支持的输出类型" >&2
-        return 1
-    fi
-}
-
-# 处理数组输入
-_handle_array_input() {
-    local input="$1"
-    local output="$2"
-    
-    echo "输入类型: 数组"
-    
-    if [[ -f "$output" ]]; then
-        # 数组 → 文件
-        _handle_array_to_file "$input" "$output"
-    elif [[ -d "$output" ]]; then
-        # 数组 → 目录（不支持）
-        _handle_array_to_directory "$input" "$output"
-    elif _is_array "$output"; then
-        # 数组 → 数组（不支持）
-        _handle_array_to_array "$input" "$output"
-    else
-        echo "错误: 不支持的输出类型" >&2
         return 1
     fi
 }
@@ -101,315 +82,443 @@ _handle_array_input() {
 _is_array() {
     local var_name="$1"
     if declare -p "$var_name" 2>/dev/null | grep -q '^declare -a'; then
+        return 0  # 是数组
+    fi
+	
+	# 额外的检查：尝试将变量作为数组引用
+    if [[ "$(declare -p "$var_name" 2>/dev/null)" =~ "declare -a" ]]; then
         return 0
-    else
-        return 1
     fi
+    
+    return 1  # 不是数组
 }
 
-# 确保目录存在
-_ensure_directory() {
-    local dir="$1"
-    if [[ ! -d "$dir" ]]; then
-        mkdir -p "$dir" || {
-            echo "错误: 无法创建目录 $dir" >&2
-            return 1
-        }
-    fi
-    return 0
-}
+# ========== 具体处理函数 ==========
 
-# 检查文件是否可读
-_check_file_readable() {
-    local file="$1"
-    if [[ ! -f "$file" ]]; then
-        echo "错误: 文件不存在 - $file" >&2
-        return 1
-    fi
-    if [[ ! -r "$file" ]]; then
-        echo "错误: 文件不可读 - $file" >&2
-        return 1
-    fi
-    return 0
-}
-
-# 检查目录是否可写
-_check_directory_writable() {
-    local dir="$1"
-    if [[ ! -w "$dir" ]] && [[ ! -w "$dir/." ]]; then
-        echo "错误: 目录不可写 - $dir" >&2
-        return 1
-    fi
-    return 0
-}
-
-# ========== 具体处理函数（支持的5种组合） ==========
-
-# 1. 文件 → 文件：追加内容（需同名）
+# 1. 文件 -> 文件：追加内容（需同名）
 _handle_file_to_file() {
     local input="$1"
     local output="$2"
+    local input_basename=$(basename "$input")
+    local output_basename=$(basename "$output")
     
-    echo "处理: 文件 → 文件"
-    echo "输入: $input"
-    echo "输出: $output"
+    echo "处理: 文件 -> 文件"
+    echo "输入文件: $input"
+    echo "输出文件: $output"
     
-    # 输入验证
-    _check_file_readable "$input" || return 1
-    _ensure_directory "$(dirname "$output")" || return 1
-    
-    # 检查文件名是否相同
-    local input_name=$(basename "$input")
-    local output_name=$(basename "$output")
-    
-    if [[ "$input_name" != "$output_name" ]]; then
-        echo "错误: 输入输出文件不同名" >&2
-        echo "输入文件: $input_name"
-        echo "输出文件: $output_name"
+    # 安全检查：确保输入文件存在且可读
+    if [[ ! -r "$input" ]]; then
+        echo "错误: 输入文件不存在或不可读" >&2
         return 1
     fi
     
-    # 执行内容追加
-    echo "执行内容追加操作"
-    if cat "$input" >> "$output"; then
-        local input_size=$(wc -c < "$input")
-        local output_size=$(wc -c < "$output")
-        echo "追加成功"
-        echo "输入文件: $input_size 字节"
-        echo "输出文件: $output_size 字节"
-        return 0
+    # 判断是否同名文件
+    if [[ "$input_basename" == "$output_basename" ]]; then
+        echo "文件同名，执行内容追加操作"
+        
+        # 检查是否为同一个文件（相同路径）
+        if [[ "$(realpath "$input")" == "$(realpath "$output")" ]]; then
+            echo "警告: 输入和输出是同一个文件，将导致内容重复" >&2
+        fi
+        
+        # 执行内容追加
+        if cat "$input" >> "$output"; then
+            local input_size=$(wc -c < "$input")
+            local output_size=$(wc -c < "$output")
+            echo "内容追加成功"
+            echo "输入文件大小: $input_size 字节"
+            echo "输出文件大小: $output_size 字节"
+            return 0
+        else
+            echo "错误: 内容追加失败" >&2
+            return 1
+        fi
+        
     else
-        echo "错误: 内容追加失败" >&2
+        echo "错误: 输入输出文件不同名，不支持此操作" >&2
+        echo "输入文件名: $input_basename"
+        echo "输出文件名: $output_basename"
         return 1
     fi
 }
 
-# 2. 文件 → 目录：复制或合并
+# 2. 文件 -> 目录
 _handle_file_to_directory() {
     local input="$1"
     local output="$2"
+    local input_basename=$(basename "$input")
+    local target_path="$output/$input_basename"
     
-    echo "处理: 文件 → 目录"
-    echo "输入: $input"
-    echo "输出: $output"
+    echo "处理: 文件 -> 目录"
+    echo "输入文件: $input"
+    echo "目标目录: $output"
     
-    # 输入验证
-    _check_file_readable "$input" || return 1
-    _check_directory_writable "$output" || return 1
+    # 安全检查：确保输入文件存在且可读
+    if [[ ! -r "$input" ]]; then
+        echo "错误: 输入文件不存在或不可读" >&2
+        return 1
+    fi
     
-    local filename=$(basename "$input")
-    local target="$output/$filename"
+    # 检查目标目录是否可写（主函数已确保是目录，但可能不可写）
+    if [[ ! -w "$output" ]]; then
+        echo "错误: 目标目录不可写" >&2
+        return 1
+    fi
     
-    # 检查目标文件是否存在
-    if [[ -f "$target" ]]; then
-        echo "存在同名文件，执行内容合并"
-        if cat "$input" >> "$target"; then
-            echo "内容合并成功: $filename"
-            return 0
-        else
-            echo "错误: 内容合并失败" >&2
-            return 1
-        fi
-    else
-        echo "复制文件到目录"
-        if cp "$input" "$target"; then
-            echo "复制成功: $filename → $output"
+    # 检查目标目录是否为空
+    if [[ -z "$(ls -A "$output" 2>/dev/null)" ]]; then
+        echo "目标目录为空，执行复制操作"
+        
+        if cp "$input" "$target_path"; then
+            echo "复制成功: 已将 $input_basename 复制到 $output"
             return 0
         else
             echo "错误: 文件复制失败" >&2
             return 1
         fi
+    else
+        echo "目标目录非空"
+        echo "检查是否存在同名文件: $input_basename"
+        
+        # 检查目标目录是否存在同名文件
+        if [[ -e "$target_path" ]]; then
+            if [[ -f "$target_path" ]]; then
+                echo "存在同名文件，执行内容合并"
+                
+                # 检查是否为同一个文件（相同路径）
+                if [[ "$(realpath "$input")" == "$(realpath "$target_path")" ]]; then
+                    echo "警告: 输入文件和目标文件是同一个文件，将导致内容重复" >&2
+                fi
+                
+                # 执行内容合并
+                if cat "$input" >> "$target_path"; then
+                    local input_size=$(wc -c < "$input")
+                    local target_size=$(wc -c < "$target_path")
+                    echo "内容合并成功"
+                    echo "输入文件大小: $input_size 字节"
+                    echo "目标文件大小: $target_size 字节"
+                    return 0
+                else
+                    echo "错误: 内容合并失败" >&2
+                    return 1
+                fi
+            else
+                echo "错误: 目标路径已存在但不是文件（可能是目录或其他类型）" >&2
+                return 1
+            fi
+        else
+            echo "不存在同名文件，执行复制操作"
+            
+            if cp "$input" "$target_path"; then
+                echo "复制成功: 已将 $input_basename 复制到 $output"
+                return 0
+            else
+                echo "错误: 文件复制失败" >&2
+                return 1
+            fi
+        fi
     fi
 }
 
-# 3. 目录 → 文件：合并目录内容到文件
+# 3. 文件 -> 数组
+_handle_file_to_array() {
+    local input="$1"
+    local output="$2"
+    echo "错误: 文件不能合并到数组，此功能暂不支持" >&2
+    return 1
+}
+
+# 4. 目录 -> 文件
 _handle_directory_to_file() {
     local input="$1"
     local output="$2"
     
-    echo "处理: 目录 → 文件"
-    echo "输入: $input"
-    echo "输出: $output"
+    echo "处理: 目录 -> 文件"
+    echo "输入目录: $input"
+    echo "输出文件: $output"
     
-    # 输入验证
-    if [[ ! -d "$input" ]]; then
-        echo "错误: 输入目录不存在" >&2
+    # 检查输入目录是否为空
+    if [[ -z "$(ls -A "$input" 2>/dev/null)" ]]; then
+        echo "警告: 输入目录为空，没有内容可合并" >&2
+        # 创建空文件或保持原文件不变
+        if [[ ! -f "$output" ]]; then
+            touch "$output"
+            echo "已创建空文件: $output"
+        fi
+        return 0
+    fi
+    
+    # 检查输出文件的目录是否可写
+    local output_dir=$(dirname "$output")
+    if [[ ! -w "$output_dir" ]]; then
+        echo "错误: 输出文件所在目录不可写" >&2
         return 1
     fi
-    _ensure_directory "$(dirname "$output")" || return 1
     
-    # 检查目录是否为空
-    if [[ -z "$(ls -A "$input" 2>/dev/null)" ]]; then
-        echo "警告: 输入目录为空" >&2
-        touch "$output"
-        echo "已创建空文件: $output"
-        return 0
-    fi
-    
-    # 创建/清空输出文件
+    # 创建或清空输出文件
     > "$output"
-    echo "开始合并目录内容..."
+    echo "已准备输出文件: $output"
     
-    local success_count=0
+    # 统计变量
+    local file_count=0
+    local merged_count=0
     local error_count=0
     
-    # 合并所有文件内容
+    echo "开始合并目录内容到文件..."
+    
+    # 使用 find 命令递归查找所有文件
     while IFS= read -r -d '' file; do
-        if [[ -f "$file" ]]; then
-            if cat "$file" >> "$output" 2>/dev/null; then
-                ((success_count++))
-                echo "  √ $(basename "$file")"
-            else
-                ((error_count++))
-                echo "  × $(basename "$file")" >&2
-            fi
+        ((file_count++))
+        
+        # 跳过目录本身和特殊文件
+        if [[ ! -f "$file" ]]; then
+            continue
         fi
+        
+        echo "处理文件: $(basename "$file")"
+        
+        # 将文件内容追加到输出文件
+        if cat "$file" >> "$output" 2>/dev/null; then
+            ((merged_count++))
+            echo "  √ 合并成功"
+        else
+            ((error_count++))
+            echo "  × 合并失败: $file"
+        fi
+        
     done < <(find "$input" -type f -print0 2>/dev/null)
     
-    echo "合并完成: 成功 $success_count 个文件, 失败 $error_count 个文件"
+    # 显示合并结果
+    echo ""
+    echo "合并完成:"
+    echo "  - 找到文件总数: $file_count"
+    echo "  - 成功合并数: $merged_count"
+    echo "  - 合并失败数: $error_count"
     
-    if [[ $success_count -gt 0 ]]; then
+    if [[ $merged_count -gt 0 ]]; then
+        local output_size=$(wc -c < "$output" 2>/dev/null || echo 0)
+        echo "  - 输出文件大小: $output_size 字节"
+        echo "合并操作完成"
         return 0
     else
+        echo "警告: 没有成功合并任何文件" >&2
         return 1
     fi
 }
 
-# 4. 目录 → 目录：合并同名文件
+# 5. 目录 -> 目录
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
-    echo "处理: 目录 → 目录"
-    echo "输入: $input"
-    echo "输出: $output"
-    
-    # 输入验证
-    if [[ ! -d "$input" ]]; then
-        echo "错误: 输入目录不存在" >&2
-        return 1
-    fi
-    _check_directory_writable "$output" || return 1
+    echo "处理: 目录 -> 目录"
+    echo "输入目录: $input"
+    echo "输出目录: $output"
     
     # 检查输入目录是否为空
     if [[ -z "$(ls -A "$input" 2>/dev/null)" ]]; then
-        echo "警告: 输入目录为空" >&2
+        echo "警告: 输入目录为空，没有内容可处理" >&2
         return 0
     fi
     
-    local processed=0
-    local moved=0
-    local merged=0
-    local errors=0
+    # 检查输出目录是否可写
+    if [[ ! -w "$output" ]]; then
+        echo "错误: 输出目录不可写" >&2
+        return 1
+    fi
+    
+    # 统计变量
+    local processed_count=0
+    local moved_count=0
+    local merged_count=0
+    local error_count=0
     
     echo "开始处理目录内容..."
     
-    # 处理所有文件
+    # 使用 find 命令递归查找输入目录中的所有文件
     while IFS= read -r -d '' file; do
-        ((processed++))
+        ((processed_count++))
         
+        # 获取相对于输入目录的相对路径
         local rel_path="${file#$input/}"
-        local target="$output/$rel_path"
-        local target_dir=$(dirname "$target")
+        local target_file="$output/$rel_path"
+        local target_dir=$(dirname "$target_file")
         
-        _ensure_directory "$target_dir" || {
-            ((errors++))
-            continue
-        }
+        echo "处理文件: $rel_path"
         
-        if [[ -f "$target" ]]; then
-            # 合并内容
-            if cat "$file" >> "$target"; then
-                ((merged++))
-                echo "  √ 合并: $rel_path"
+        # 确保目标目录存在
+        if [[ ! -d "$target_dir" ]]; then
+            mkdir -p "$target_dir" || {
+                echo "  × 创建目录失败: $target_dir" >&2
+                ((error_count++))
+                continue
+            }
+        fi
+        
+        # 检查目标文件是否已存在
+        if [[ -f "$target_file" ]]; then
+            # 目标文件已存在，追加内容
+            echo "  存在同名文件，追加内容"
+            if cat "$file" >> "$target_file" 2>/dev/null; then
+                ((merged_count++))
+                echo "  √ 内容追加成功"
+                # 删除原文件（因为已经合并）
                 rm -f "$file"
             else
-                ((errors++))
-                echo "  × 合并失败: $rel_path" >&2
+                echo "  × 内容追加失败" >&2
+                ((error_count++))
             fi
         else
-            # 移动文件
-            if mv "$file" "$target" 2>/dev/null; then
-                ((moved++))
-                echo "  √ 移动: $rel_path"
+            # 目标文件不存在，直接移动
+            echo "  不存在同名文件，移动文件"
+            if mv "$file" "$target_file" 2>/dev/null; then
+                ((moved_count++))
+                echo "  √ 文件移动成功"
             else
-                ((errors++))
-                echo "  × 移动失败: $rel_path" >&2
+                echo "  × 文件移动失败" >&2
+                ((error_count++))
             fi
         fi
+        
     done < <(find "$input" -type f -print0 2>/dev/null)
     
-    # 清理空目录
-    find "$input" -type d -empty -delete 2>/dev/null
+    # 尝试删除空的输入目录（如果所有文件都已处理）
+    if [[ -d "$input" ]] && [[ -z "$(ls -A "$input" 2>/dev/null)" ]]; then
+        rmdir "$input" 2>/dev/null && echo "已删除空输入目录: $input"
+    fi
     
-    echo "处理完成: 移动 $moved, 合并 $merged, 错误 $errors"
-    return $((errors > 0 ? 1 : 0))
+    # 显示处理结果
+    echo ""
+    echo "处理完成:"
+    echo "  - 处理文件总数: $processed_count"
+    echo "  - 移动文件数: $moved_count"
+    echo "  - 合并文件数: $merged_count"
+    echo "  - 错误数: $error_count"
+    
+    if [[ $error_count -eq 0 ]]; then
+        echo "目录处理操作完成"
+        return 0
+    else
+        echo "警告: 处理过程中发生了 $error_count 个错误" >&2
+        return 1
+    fi
 }
 
-# 5. 数组 → 文件：将数组中的文件内容合并
-_handle_array_to_file() {
-    local input_var="$1"
+# 6. 目录 -> 数组
+_handle_directory_to_array() {
+    local input="$1"
     local output="$2"
+    echo "错误: 目录不能合并到数组，此功能暂不支持" >&2
+    return 1
+}
+
+# 7. 数组 -> 文件
+_handle_array_to_file() {
+    local input_var="$1"  # 数组变量名
+    local output="$2"     # 输出文件路径
     
-    echo "处理: 数组 → 文件"
+    echo "处理: 数组 -> 文件"
     echo "输入数组: $input_var"
-    echo "输出: $output"
+    echo "输出文件: $output"
     
-    # 获取数组内容（文件路径列表）
-    local array_ref="${input_var}[@]"
-    local files=("${!array_ref}")
+    # 检查输出文件的目录是否可写
+    local output_dir=$(dirname "$output")
+    if [[ ! -w "$output_dir" ]] && [[ ! -w "$output_dir/." ]]; then
+        echo "错误: 输出文件所在目录不可写" >&2
+        return 1
+    fi
     
-    if [[ ${#files[@]} -eq 0 ]]; then
-        echo "警告: 输入数组为空" >&2
-        touch "$output"
-        echo "已创建空文件: $output"
+    # 使用间接引用获取数组元素（文件路径列表）
+    local array_name="${input_var}[@]"
+    local file_paths=("${!array_name}")
+    
+    # 检查数组是否为空
+    if [[ ${#file_paths[@]} -eq 0 ]]; then
+        echo "警告: 输入数组为空，将创建/清空输出文件" >&2
+        > "$output"  # 创建或清空文件
+        echo "已创建/清空文件: $output"
         return 0
     fi
     
-    _ensure_directory "$(dirname "$output")" || return 1
-    > "$output"  # 清空输出文件
+    echo "数组包含 ${#file_paths[@]} 个文件路径"
+    echo "开始将文件内容合并到输出文件..."
     
-    local success=0
-    local errors=0
+    # 创建或清空输出文件
+    > "$output"
     
-    echo "开始合并数组中的文件内容..."
+    # 统计变量
+    local processed_count=0
+    local success_count=0
+    local error_count=0
     
-    for file in "${files[@]}"; do
-        if _check_file_readable "$file"; then
-            if cat "$file" >> "$output"; then
-                ((success++))
-                echo "  √ $(basename "$file")"
-            else
-                ((errors++))
-                echo "  × 追加失败: $file" >&2
-            fi
+    # 遍历数组中的每个文件路径，将其内容追加到输出文件
+    for file_path in "${file_paths[@]}"; do
+        ((processed_count++))
+        
+        # 检查文件是否存在且可读
+        if [[ ! -f "$file_path" ]]; then
+            echo "  × 文件不存在: $file_path" >&2
+            ((error_count++))
+            continue
+        fi
+        
+        if [[ ! -r "$file_path" ]]; then
+            echo "  × 文件不可读: $file_path" >&2
+            ((error_count++))
+            continue
+        fi
+        
+        echo "  √ 合并文件: $file_path"
+        
+        # 将文件内容追加到输出文件
+        if cat "$file_path" >> "$output" 2>/dev/null; then
+            ((success_count++))
+            local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
+            echo "    成功追加 ($file_size 字节)"
         else
-            ((errors++))
+            echo "  × 追加失败: $file_path" >&2
+            ((error_count++))
         fi
     done
     
-    echo "合并完成: 成功 $success 个文件, 失败 $errors 个文件"
-    return $((errors > 0 ? 1 : 0))
+    # 显示合并结果
+    echo ""
+    echo "合并完成:"
+    echo "  - 处理文件总数: ${#file_paths[@]}"
+    echo "  - 成功合并数: $success_count"
+    echo "  - 合并失败数: $error_count"
+    
+    if [[ $success_count -gt 0 ]]; then
+        local output_size=$(wc -c < "$output" 2>/dev/null || echo 0)
+        local output_lines=$(wc -l < "$output" 2>/dev/null || echo 0)
+        echo "  - 输出文件大小: $output_size 字节"
+        echo "  - 输出文件行数: $output_lines 行"
+        echo "文件内容合并操作完成"
+        
+        if [[ $error_count -eq 0 ]]; then
+            return 0
+        else
+            echo "警告: 部分文件合并失败" >&2
+            return 1
+        fi
+    else
+        echo "错误: 没有成功合并任何文件" >&2
+        return 1
+    fi
 }
 
-# ========== 不支持的处理函数 ==========
-
-_handle_file_to_array() {
-    echo "错误: 文件 → 数组 不支持" >&2
-    return 1
-}
-
-_handle_directory_to_array() {
-    echo "错误: 目录 → 数组 不支持" >&2
-    return 1
-}
-
+# 8. 数组 -> 目录
 _handle_array_to_directory() {
-    echo "错误: 数组 → 目录 不支持" >&2
+    local input="$1"
+    local output="$2"
+    echo "错误: 数组不能合并到目录，此功能暂不支持" >&2
     return 1
 }
 
+# 9. 数组 -> 数组
 _handle_array_to_array() {
-    echo "错误: 数组 → 数组 不支持" >&2
+    local input="$1"
+    local output="$2"
+    echo "错误: 数组不能合并到数组，此功能暂不支持" >&2
     return 1
 }
