@@ -129,9 +129,9 @@ jobs:
         run: |
           set -e
 
-          echo "开始整理 Surge 规则..."
-          rm -rf rule_sync_temp/Surge
-          mkdir -p rule_sync_temp/Surge
+          # echo "开始整理 Surge 规则..."
+          # rm -rf rule_sync_temp/Surge
+          # mkdir -p rule_sync_temp/Surge
 
           # echo "AWAvenue-Ads-Rule 规则到目标目录"
           # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
