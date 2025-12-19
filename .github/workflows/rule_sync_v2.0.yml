@@ -12,8 +12,8 @@
 name: 自动化规则下载 v2.1_beta
 
 on:
-  schedule:
-    - cron: '0 22 * * *'
+  # schedule:
+  #   - cron: '0 22 * * *'
   workflow_dispatch:
 
 permissions:
