@@ -99,6 +99,94 @@ _is_array() {
 }
 
 
+# 文件内容清理函数
+_clean_file_content() {
+    local file="$1"
+    local temp_file=$(mktemp) || {
+        echo "✗ 错误: 无法创建临时文件" >&2
+        return 1
+    }
+    
+    echo "✓ 开始清理文件内容: $file"
+    
+    # 备份原始文件信息
+    local original_size=$(wc -c < "$file")
+    local original_lines=$(wc -l < "$file")
+    
+    echo "✓ 原始文件: $original_lines 行, $original_size 字节"
+    
+    # 统计变量
+    local -i removed_empty=0
+    local -i removed_whitespace=0
+    local -i removed_comments=0
+    local -i removed_duplicates=0
+    
+    # 第一步：删除空行和仅含空格的行
+    echo "✓ 步骤1: 删除空行和仅含空格的行..."
+    local before_empty=$original_lines
+    grep -v '^[[:space:]]*$' "$file" > "${temp_file}.step1"
+    local after_empty=$(wc -l < "${temp_file}.step1" 2>/dev/null || echo 0)
+    removed_empty=$((before_empty - after_empty))
+    echo "  → 删除了 $removed_empty 个空行"
+    
+    # 第二步：删除行首行尾空格
+    echo "✓ 步骤2: 删除行首行尾空格..."
+    sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
+    
+    # 第三步：删除注释行（以#开头的行）
+    echo "✓ 步骤3: 删除注释行..."
+    local before_comments=$after_empty
+    grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
+    local after_comments=$(wc -l < "${temp_file}.step3" 2>/dev/null || echo 0)
+    removed_comments=$((before_comments - after_comments))
+    echo "  → 删除了 $removed_comments 个注释行"
+    
+    # 第四步：去重（保留顺序）
+    echo "✓ 步骤4: 去重处理..."
+    local before_duplicates=$after_comments
+    awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
+    local after_duplicates=$(wc -l < "${temp_file}.step4" 2>/dev/null || echo 0)
+    removed_duplicates=$((before_duplicates - after_duplicates))
+    echo "  → 删除了 $removed_duplicates 个重复行"
+    
+    # 检查清理后的文件是否为空
+    if [[ ! -s "${temp_file}.step4" ]]; then
+        echo "⚠️ 警告: 清理后文件为空，保留原始内容"
+        cp "$file" "$temp_file"
+    else
+        cp "${temp_file}.step4" "$temp_file"
+    fi
+    
+    # 替换原文件
+    if mv "$temp_file" "$file"; then
+        local final_size=$(wc -c < "$file")
+        local final_lines=$(wc -l < "$file")
+        local total_removed=$((original_lines - final_lines))
+        
+        echo ""
+        echo "✅ 文件清理完成:"
+        echo "  → 原始: $original_lines 行, $original_size 字节"
+        echo "  → 最终: $final_lines 行, $final_size 字节"
+        echo "  → 总共删除了 $total_removed 行"
+        echo ""
+        echo "📊 清理统计:"
+        echo "  - 空行: $removed_empty 行"
+        echo "  - 注释: $removed_comments 行"
+        echo "  - 重复: $removed_duplicates 行"
+        echo "  - 空格: 已清理所有行首行尾空格"
+        
+        # 清理临时文件
+        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4"
+        
+        return 0
+    else
+        echo "✗ 错误: 无法替换原文件" >&2
+        # 清理临时文件
+        rm -f "$temp_file" "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4"
+        return 1
+    fi
+}
+
 # ========== 具体处理函数 ==========
 
 # 1. 文件 -> 文件：追加内容（需同名）
@@ -642,6 +730,39 @@ _handle_array_to_file() {
         echo "❌ 错误: 合并过程中发生错误" >&2
         return 1
     # 其他情况（如空数组）也返回成功
+    else
+        echo "✅ 操作完成"
+        return 0
+    fi
+	# ========== 5. 文件内容清理 ==========
+    echo "[步骤4/4] 开始文件内容清理..."
+    echo "------------------------------------------"
+    
+    if [[ -f "$output" ]] && [[ -s "$output" ]]; then
+        _clean_file_content "$output"
+        local clean_result=$?
+        
+        if [[ $clean_result -eq 0 ]]; then
+            echo "✅ 文件内容清理完成"
+        else
+            echo "⚠️ 文件内容清理过程中出现警告"
+        fi
+    else
+        echo "! 输出文件为空或不存在，跳过清理步骤"
+    fi
+    
+    echo ""
+    
+    # 返回结果
+    if [[ $success_count -gt 0 ]]; then
+        echo "✅ 数组合并操作成功完成"
+        return 0
+    elif [[ $skip_count -eq $array_length ]] && [[ $array_length -gt 0 ]]; then
+        echo "⚠️ 警告: 所有文件都被跳过，但操作完成"
+        return 0
+    elif [[ $error_count -gt 0 ]]; then
+        echo "❌ 错误: 合并过程中发生错误" >&2
+        return 1
     else
         echo "✅ 操作完成"
         return 0
