@@ -74,9 +74,14 @@ _is_array() {
     local var_name="$1"
     if declare -p "$var_name" 2>/dev/null | grep -q '^declare -a'; then
         return 0  # 是数组
-    else
-        return 1  # 不是数组
     fi
+	
+	# 额外的检查：尝试将变量作为数组引用
+    if [[ "$(declare -p "$var_name" 2>/dev/null)" =~ "declare -a" ]]; then
+        return 0
+    fi
+    
+    return 1  # 不是数组
 }
 
 # ========== 具体处理函数 ==========
