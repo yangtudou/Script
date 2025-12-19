@@ -9,7 +9,10 @@ merge_rules() {
         echo "错误: 输入和输出参数不能为空" >&2
         return 1
     fi
-    
+	# 添加调试信息
+    echo "调试: 输入参数 = '$input'"
+    echo "调试: 输出参数 = '$output'"
+	
 	# 判断输入类型 → 判断输出类型
 	# 一共为 9 种可能性, 目前只能实现以下 5 种
 	#    输入 → 输出
@@ -20,6 +23,7 @@ merge_rules() {
 	# 5. 数组 → 文件（写入内容）
 	
     if [[ -f "$input" ]]; then
+	    echo "输入类型: 文件"
         if [[ -f "$output" ]]; then
             _handle_file_to_file "$input" "$output"
         elif [[ -d "$output" ]]; then
@@ -32,6 +36,7 @@ merge_rules() {
         fi
 
     elif [[ -d "$input" ]]; then
+	    echo "输入类型: 文件"
         if [[ -f "$output" ]]; then
             _handle_directory_to_file "$input" "$output"
         elif [[ -d "$output" ]]; then
