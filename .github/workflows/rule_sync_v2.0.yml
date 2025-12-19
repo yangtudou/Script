@@ -127,7 +127,7 @@ jobs:
           
       - name: 整理 Surge 规则
         run: |
-          set -x
+          set -e
 
           # echo "开始整理 Surge 规则..."
           # rm -rf rule_sync_temp/Surge
