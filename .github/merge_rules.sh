@@ -96,6 +96,31 @@ _is_array() {
     fi
 }
 
+# 确保目录存在
+_ensure_directory() {
+    local dir="$1"
+    
+    # 如果目录已经存在，检查是否可写
+    if [[ -d "$dir" ]]; then
+        if [[ ! -w "$dir" ]]; then
+            echo "错误: 目录不可写: $dir" >&2
+            return 1
+        fi
+        echo "目录已存在: $dir"
+        return 0
+    fi
+    
+    # 创建目录（包括父目录）
+    echo "创建目录: $dir"
+    if mkdir -p "$dir"; then
+        echo "目录创建成功: $dir"
+        return 0
+    else
+        echo "错误: 无法创建目录: $dir" >&2
+        return 1
+    fi
+}
+
 # ========== 具体处理函数 ==========
 
 # 1. 文件 -> 文件：追加内容（需同名）
