@@ -39,23 +39,23 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
-            # ClashMeta yaml
-            ## domain
-            geo/geosite/geolocation-!cn.yaml
-            geo/geosite/cn.yaml
-            geo/geosite/google.yaml
-            geo/geosite/telegram.yaml
-            geo/geosite/github.yaml
-            geo/geosite/apple.yaml
-            geo/geosite/meta.yaml
-            geo/geosite/private.yaml
-            geo/geosite/cloudflare.yaml
-            ## ip
-            geo/geoip/cloudflare.yaml
-            geo/geoip/cn.yaml
-            geo/geoip/google.yaml
-            geo/geoip/private.yaml
-            geo/geoip/telegram.yaml
+            # # ClashMeta yaml
+            # ## domain
+            # geo/geosite/geolocation-!cn.yaml
+            # geo/geosite/cn.yaml
+            # geo/geosite/google.yaml
+            # geo/geosite/telegram.yaml
+            # geo/geosite/github.yaml
+            # geo/geosite/apple.yaml
+            # geo/geosite/meta.yaml
+            # geo/geosite/private.yaml
+            # geo/geosite/cloudflare.yaml
+            # ## ip
+            # geo/geoip/cloudflare.yaml
+            # geo/geoip/cn.yaml
+            # geo/geoip/google.yaml
+            # geo/geoip/private.yaml
+            # geo/geoip/telegram.yaml
             # Surge list
             ## domain
             # geo/geosite/classical/category-porn.list
@@ -94,36 +94,36 @@ jobs:
           sparse-checkout-cone-mode: false
 
       # - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
-        # uses: actions/checkout@v6
-        # with:
-          # repository: Loyalsoldier/surge-rules
-          # ref: release
-          # fetch-depth: 1
-          # path: Loyalsoldier_surge-rules
-          # sparse-checkout: |
-            # # Surge domain
-            # ruleset/apple.txt
-          # sparse-checkout-cone-mode: false
+      #   uses: actions/checkout@v6
+      #   with:
+      #     repository: Loyalsoldier/surge-rules
+      #     ref: release
+      #     fetch-depth: 1
+      #     path: Loyalsoldier_surge-rules
+      #     sparse-checkout: |
+      #       # Surge domain
+      #       ruleset/apple.txt
+      #     sparse-checkout-cone-mode: false
  
-      - name: 整理 ClashMeta 规则
-        run: |
-          set -e
+      # - name: 整理 ClashMeta 规则
+      #   run: |
+      #     set -e
           
-          echo "开始整理 ClashMeta 规则..."
-          # 定义常量
-          CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"
+      #     echo "开始整理 ClashMeta 规则..."
+      #     # 定义常量
+      #     CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"
 
-          echo "清空 & 重建 ClashMeta 目录..."
-          rm -rf $CLASHMETA_RULE_DIR
-          mkdir -p $CLASHMETA_RULE_DIR/{domain,ip}
-          echo "复制文件到目标目录..."
-          find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/domain/ \;
-          find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/ip/ \;
+      #     echo "清空 & 重建 ClashMeta 目录..."
+      #     rm -rf $CLASHMETA_RULE_DIR
+      #     mkdir -p $CLASHMETA_RULE_DIR/{domain,ip}
+      #     echo "复制文件到目标目录..."
+      #     find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/domain/ \;
+      #     find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/ip/ \;
 
-          # 秋风去广告
-          # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
+      #     # 秋风去广告
+      #     # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
           
-          echo "✅ ClashMeta 规则整理完成"
+      #     echo "✅ ClashMeta 规则整理完成"
           
       - name: 整理 Surge 规则
         run: |
@@ -138,98 +138,11 @@ jobs:
 
 
           # =================== 函数部分 START =================== #
-          arrange_rules() {
-            # 函数功能：整理规则内容
-            # 参数：
-            #   $1 = 目标文件
-            #   $2 = 源文件
-          
-            local target_file="$1"
-            local source_file="$2"
-            local tmpdir=$(mktemp) || { echo "创建临时目录失败！" >&2; exit 1; }
-            trap 'rm -f "$tmpdir"' EXIT # 退出函数时，自动删除临时文件
-
-            # 删除所有的 DOMAIN-REGEX
-            sed -i '/DOMAIN-REGEX/d' "$source_file"
-
-            # 把 ipv6 改成 IP-CIDR6
-            sed -i '/^IP-CIDR,.*:.*$/s/^IP-CIDR,/IP-CIDR6,/' "$source_file"
 
 
-          # 开始匹配规则类型
-            awk '{
-              if (/^DOMAIN,/) print > "'"$tmpdir/domain.tmp"'"
-              else if (/^DOMAIN-SUFFIX,/) print > "'"$tmpdir/domain-suffix.tmp"'"
-              else if (/^IP-CIDR,/) print > "'"$tmpdir/ipv4.tmp"'"
-              else if (/^IP-CIDR6,/) print > "'"$tmpdir/ipv6.tmp"'"
-              else print > "'"$tmpdir/others.tmp"'"
-            }' "$tmpdir"
-
-            # 按顺序合并
-            {
-              [ -s "$tmpdir/domain.tmp" ] && cat "$tmpdir/domain.tmp"
-              [ -s "$tmpdir/domain-suffix.tmp" ] && cat "$tmpdir/domain-suffix.tmp"
-              [ -s "$tmpdir/ipv4.tmp" ] && cat "$tmpdir/ipv4.tmp"
-              [ -s "$tmpdir/ipv6.tmp" ] && cat "$tmpdir/ipv6.tmp"
-              [ -s "$tmpdir/others.tmp" ] && cat "$tmpdir/others.tmp"
-            } > "$tmpdir/combined.tmp"
-
-            # 给所有 IP-CIDR 加上 no-resolve
-            # sed -i '/^IP-CIDR/s/$/,no-resolve/' "$tmpdir/combined.tmp"
-
-
-            # 去重、去注释、去空行、排序
-            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpdir/combined.tmp" > "$target_file"
-
-
-
-            # 结束合并
-            # mv "$target_file.tmp" "$target_file"
-          }
-
-
-          # 定义合并规则文件的函数
-          merge_rules() {
-            # 函数功能：安全合并规则文件（自动处理新建/合并去重，无临时文件残留）
-            # 参数：
-            #   $1 = 目标文件路径
-            #   $2 = 源文件路径
-            #
-            # 安全设计：
-            #   1. 用 mktemp 创建安全临时文件（避免冲突）
-            #   2. 用 trap 确保退出时自动清理
-            #   3. 保留所有原有逻辑（去重/空行/注释处理）
-          
-            local target_file="$1"
-            local source_file="$2"
-            local tmpfile=$(mktemp) || { echo "创建临时文件失败!" >&2; exit 1; }
-            trap 'rm -f "$tmpfile"' EXIT
-
-
-
-            # === 步骤1：目标文件不存在 → 直接创建（安全复制） ===
-            if [ ! -f "$target_file" ]; then
-              echo "创建新文件: $target_file (内容来自 $source_file)"
-              cat "$source_file" > "$target_file"  # 安全覆盖创建
-              return 0
-            fi
-
-            echo "合并 & 去重: $source_file → $target_file"
-            
-          
-            # 2.3 添加空行（避免规则粘连，安全处理空文件）
-            sed -i -e '$a\\' "$target_file" 2>/dev/null || true
-            sed -i -e '$a\\' "$source_file" 2>/dev/null || true
-          
-            # 2.4 合并内容到安全临时文件
-            cat "$target_file" > "$tmpfile"    # 写入目标文件内容
-            cat "$source_file" >> "$tmpfile"   # 追加源文件内容
-          
-            # 2.5 去重处理（保留顺序，跳过注释/空行）
-            awk '!/^#/ && NF { if (!seen[$0]++) print $0 }' "$tmpfile" > "$target_file"
-          }
-
-
+          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules.sh
+          chmod +x merge_rules.sh
+          source ./merge_rules.sh
           
           # =================== 函数部分 END =================== #
           
@@ -249,16 +162,13 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
           TARGET_FILE="rule_sync_temp/Surge/y3_proxy_rules@surge.list"
-          
-          for file in "${FILES_TO_MERGE[@]}"; do
-            # echo "合并文件 > y3_proxy_rule@surge.list"
-            merge_rules "$TARGET_FILE" "$file"
-          done
+
+          merge_rules $FILES_TO_MERGE $TARGET_FILE
 
       # - name: 统一添加时间戳
-        # run: |
-          # beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-          # find rule_sync_temp -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: 北京时间 $beijing_time" {} \;
+      #   run: |
+      #     beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
+      #     find rule_sync_temp -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: 北京时间 $beijing_time" {} \;
       
       - name: 提交变更
         working-directory: rule_sync_temp
