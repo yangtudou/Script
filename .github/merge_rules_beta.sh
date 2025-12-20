@@ -521,53 +521,151 @@ _handle_directory_to_directory() {
     fi
 }
 
-# 5. 数组 -> 文件
+# 5. 数组 -> 文件（调试版）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
     
-    _log_step_start "1" "数组展开" "3"
+    echo "=========================================="
+    echo "开始处理: 数组 → 文件"
+    echo "输入数组变量: $input_var"
+    echo "输出文件路径: $output"
+    echo "=========================================="
+    echo ""
     
-    # 获取数组内容
+    # 明确声明整数变量
+    local -i success_count=0
+    local -i error_count=0
+    local -i skip_count=0
+    local -i array_length=0
+    
+    # ========== 1. 展开数组 ==========
+    echo "[步骤1/4] 展开数组..."
+    echo "------------------------------------------"
+    
+    # 验证输入是否为数组变量
+    echo "✓ 检查输入变量 '$input_var' 是否为数组..."
+    if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
+        echo "错误: '$input_var' 不是有效的数组变量" >&2
+        return 1
+    fi
+    echo "✓ 输入变量是有效的数组"
+    
+    # 安全地获取数组内容
+    echo "✓ 获取数组内容..."
     local array_files
-    mapfile -t array_files < <(_get_array_contents "$input_var")
-    local array_length=${#array_files[@]}
+    eval "array_files=(\"\${$input_var[@]}\")"
+    array_length=${#array_files[@]}
+    echo "✓ 数组包含 $array_length 个元素"
     
+    # 检查数组是否为空
     if [[ $array_length -eq 0 ]]; then
         echo "警告: 输入数组为空"
-        touch "$output"
-        echo "已创建空文件"
-        return 0
-    fi
-    
-    echo "数组包含 $array_length 个文件"
-    
-    _log_step_start "2" "准备输出文件" "3"
-    _ensure_directory "$(dirname "$output")" || return 1
-    _clear_file "$output" || return 1
-    
-    _log_step_start "3" "合并文件内容" "3"
-    local start_time=$(_start_timer)
-    local success_count=0
-    
-    for file_path in "${array_files[@]}"; do
-        if _safe_append "$file_path" "$output" 2>/dev/null; then
-            ((success_count++))
+        # 创建空输出文件（如果不存在）
+        if [[ ! -f "$output" ]]; then
+            echo "✓ 创建空输出文件..."
+            if touch "$output"; then
+                echo "✓ 已创建空文件: $output"
+                return 0
+            else
+                echo "错误: 无法创建空文件" >&2
+                return 1
+            fi
+        else
+            echo "✓ 输出文件已存在，无需修改"
+            return 0
         fi
-    done
-    
-    local duration=$(_calculate_duration "$start_time")
-    _log_step_end "文件合并" "$((success_count > 0 ? 0 : 1))" "$duration"
-    
-    # 清理输出文件
-    if [[ $success_count -gt 0 ]]; then
-        _clean_file_content "$output"
     fi
     
-    _log_summary "数组合并" \
-        "数组文件总数: $array_length" \
-        "成功合并: $success_count" \
-        "失败: $((array_length - success_count))"
+    # 显示数组内容
+    echo "✓ 数组内容预览:"
+    for i in "${!array_files[@]}"; do
+        echo "  [$((i+1))/$array_length] ${array_files[$i]}"
+    done
+    echo ""
     
-    return $((success_count > 0 ? 0 : 1))
-}
+    # ========== 2. 准备输出文件 ==========
+    echo "[步骤2/4] 准备输出文件..."
+    echo "------------------------------------------"
+    
+    # 确保输出目录存在
+    local output_dir=$(dirname "$output")
+    echo "✓ 检查输出目录: $output_dir"
+    
+    if [[ ! -d "$output_dir" ]]; then
+        echo "✓ 创建输出目录..."
+        if mkdir -p "$output_dir"; then
+            echo "✓ 目录创建成功: $output_dir"
+        else
+            echo "错误: 无法创建输出目录" >&2
+            return 1
+        fi
+    else
+        echo "✓ 输出目录已存在"
+    fi
+    
+    # 检查输出文件权限
+    echo "✓ 检查输出文件权限..."
+    if [[ -f "$output" ]]; then
+        if [[ -w "$output" ]]; then
+            echo "✓ 输出文件存在且可写"
+        else
+            echo "错误: 输出文件存在但不可写" >&2
+            return 1
+        fi
+    else
+        echo "✓ 输出文件不存在，将创建新文件"
+    fi
+    
+    # 清空或创建输出文件
+    echo "✓ 准备输出文件内容..."
+    if > "$output"; then
+        echo "✓ 输出文件准备完成"
+    else
+        echo "错误: 无法准备输出文件" >&2
+        return 1
+    fi
+    echo ""
+    
+    # ========== 3. 合并文件内容 ==========
+    echo "[步骤3/4] 开始合并文件内容..."
+    echo "------------------------------------------"
+    
+    # 遍历数组中的每个文件路径
+    for i in "${!array_files[@]}"; do
+        local file_path="${array_files[$i]}"
+        local current_file=$((i+1))
+        
+        echo "✓ 处理文件 [$current_file/$array_length]: $file_path"
+        
+        # 详细检查文件状态
+        echo "  ├─ 检查文件是否存在..."
+        if [[ ! -e "$file_path" ]]; then
+            echo "  ├─ ✗ 文件路径不存在，跳过"
+            ((skip_count++))
+            echo "  └─ [跳过]"
+            echo ""
+            continue
+        fi
+        
+        echo "  ├─ 检查是否为普通文件..."
+        if [[ ! -f "$file_path" ]]; then
+            echo "  ├─ ✗ 不是普通文件（可能是目录），跳过"
+            ((skip_count++))
+            echo "  └─ [跳过]"
+            echo ""
+            continue
+        fi
+        
+        echo "  ├─ 检查文件可读性..."
+        if [[ ! -r "$file_path" ]]; then
+            echo "  ├─ ✗ 文件不可读，跳过"
+            ((skip_count++))
+            echo "  └─ [跳过]"
+            echo ""
+            continue
+        fi
+        
+        echo "  ├─ 检查文件大小..."
+        local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
+        echo "  ├─ 文件大小: $file_size
