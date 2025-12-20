@@ -631,13 +631,6 @@ _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
     
-    echo "=========================================="
-    echo "开始处理: 数组 → 文件"
-    echo "输入数组名称: $input_var"
-    echo "输出文件名称: $output"
-    echo "=========================================="
-    echo ""
-    
     # 获取数组内容
     local array_files
     array_files=($(_get_array_contents "$input_var")) || {
@@ -658,7 +651,7 @@ _handle_array_to_file() {
     # 遍历数组中的每个文件
     for i in "${!array_files[@]}"; do
         # 追加内容
-        cat "$file_path" >> "$output"
+        cat "${array_files[$i]}" >> "$output"
     done
     
     if _clean_file_content "$output"; then
