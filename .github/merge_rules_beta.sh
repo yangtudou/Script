@@ -66,7 +66,7 @@ merge_rules() {
             _handle_array_to_array "$input" "$output"     
         else
             echo ""
-            echo "输出类型：未知" >&2
+            echo "输出类型：未知"
             echo "输出内容：$output"
             echo "⚠️ 当前函数已停止运行"
             return 1
