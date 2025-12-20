@@ -445,12 +445,12 @@ _handle_array_to_file() {
     local -i skip_count=0
     local -i array_length=0
     
-    # 安全地获取数组内容
-    echo "✓ 获取数组内容..."
+    # 获取数组内容
+    echo "获取数组内容"
     local array_files
     eval "array_files=(\"\${$input_var[@]}\")"
     array_length=${#array_files[@]}
-    echo "✓ 数组包含 $array_length 个元素"
+    echo "数组包含 $array_length 个元素"
     
     # 检查数组是否为空
     if [[ $array_length -eq 0 ]]; then
@@ -497,7 +497,8 @@ _handle_array_to_file() {
     else
         echo "✓ 输出目录已存在"
     fi
-    
+    touch "$output"
+    > "$output
     # 检查输出文件权限
     echo "✓ 检查输出文件权限..."
     if [[ -f "$output" ]]; then
