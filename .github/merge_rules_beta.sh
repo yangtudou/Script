@@ -650,8 +650,9 @@ _handle_array_to_file() {
     
     # 遍历数组中的每个文件
     for i in "${!array_files[@]}"; do
+        local file_path="${array_files[$i]}"
         # 追加内容
-        cat "${array_files[$i]}" >> "$output"
+        cat "$file_path" >> "$output"
     done
     
     if _clean_file_content "$output"; then
