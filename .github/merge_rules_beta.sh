@@ -521,7 +521,7 @@ _handle_directory_to_directory() {
     fi
 }
 
-# 5. 数组 -> 文件（调试版）
+# 5. 数组 -> 文件（修复版）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
@@ -668,5 +668,99 @@ _handle_array_to_file() {
         
         echo "  ├─ 检查文件大小..."
         local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
-        echo "  ├─ 文件大小: $file_size
+        echo "  ├─ 文件大小: $file_size 字节"
+        
+        if [[ $file_size -eq 0 ]]; then
+            echo "  ├─ ! 文件为空，跳过"
+            ((skip_count++))
+            echo "  └─ [跳过]"
+            echo ""
+            continue
+        fi
+        
+        # 开始追加内容
+        echo "  ├─ 开始追加文件内容到输出文件..."
+        local start_time=$(date +%s.%N)
+        
+        # 尝试追加内容
+        if cat "$file_path" >> "$output"; then
+            local end_time=$(date +%s.%N)
+            local duration=$(echo "$end_time - $start_time" | bc)
+            echo "  ├─ ✓ 追加成功 (耗时: ${duration}秒)"
+            success_count=$((success_count + 1))
+        else
+            local end_time=$(date +%s.%N)
+            local duration=$(echo "$end_time - $start_time" | bc)
+            echo "  ├─ ✗ 追加失败 (耗时: ${duration}秒)" >&2
+            error_count=$((error_count + 1))
+        fi
+        
+        echo "  └─ [文件 $current_file/$array_length 处理完成]"
+        echo ""
+        
+        # 添加小延迟，避免过快处理
+        sleep 0.1
+    done
+    
+    # ========== 4. 文件内容清理 ==========
+    echo "[步骤4/4] 开始文件内容清理..."
+    echo "------------------------------------------"
+    
+    # 检查是否有成功合并的文件
+    if [[ $success_count -gt 0 ]]; then
+        echo "✓ 有 $success_count 个文件成功合并，开始清理..."
+        
+        # 检查输出文件是否存在且非空
+        if [[ -f "$output" ]] && [[ -s "$output" ]]; then
+            echo "✓ 输出文件存在且非空，开始清理内容..."
+            
+            # 调用清理函数
+            if _clean_file_content "$output"; then
+                echo "✓ 文件内容清理完成"
+            else
+                echo "警告: 文件内容清理过程中出现问题" >&2
+            fi
+        else
+            echo "! 输出文件为空或不存在，跳过清理"
+        fi
+    else
+        echo "! 没有成功合并任何文件，跳过清理步骤"
+    fi
+    
+    # ========== 5. 结果统计 ==========
+    echo "=========================================="
+    echo "合并完成总结:"
+    echo "------------------------------------------"
+    echo "✓ 数组文件总数: $array_length"
+    echo "✓ 成功合并: $success_count"
+    echo "! 跳过文件: $skip_count"
+    echo "✗ 合并失败: $error_count"
+    
+    # 显示输出文件信息
+    if [[ -f "$output" ]]; then
+        local output_size=$(wc -c < "$output" 2>/dev/null || echo 0)
+        local output_lines=$(wc -l < "$output" 2>/dev/null || echo 0)
+        echo ""
+        echo "输出文件信息:"
+        echo "✓ 文件路径: $output"
+        echo "✓ 文件大小: $output_size 字节"
+        echo "✓ 文件行数: $output_lines 行"
+    fi
+    
+    echo ""
+    
+    # 返回结果
+    if [[ $success_count -gt 0 ]]; then
+        echo "✅ 数组合并操作成功完成"
+        return 0
+    elif [[ $skip_count -eq $array_length ]] && [[ $array_length -gt 0 ]]; then
+        echo "⚠️ 警告: 所有文件都被跳过，但操作完成"
+        return 0
+    elif [[ $error_count -gt 0 ]]; then
+        echo "❌ 错误: 合并过程中发生错误" >&2
+        return 1
+    else
+        echo "✅ 操作完成"
+        return 0
+    fi
 }
