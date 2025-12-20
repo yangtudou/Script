@@ -151,7 +151,7 @@ _is_array() {
     fi
 }
 
-# 安全获取数组内容
+# 获取数组内容
 _get_array_contents() {
     local array_name="$1"
     
@@ -162,7 +162,6 @@ _get_array_contents() {
     
     local array_contents
     eval "array_contents=(\"\${$array_name[@]}\")"
-    printf '%s\n' "${array_contents[@]}"
 }
 
 # 获取数组长度
@@ -634,8 +633,8 @@ _handle_array_to_file() {
     
     echo "=========================================="
     echo "开始处理: 数组 → 文件"
-    echo "输入数组变量: $input_var"
-    echo "输出文件路径: $output"
+    echo "输入数组名称: $input_var"
+    echo "输出文件名称: $output"
     echo "=========================================="
     echo ""
     
@@ -645,43 +644,12 @@ _handle_array_to_file() {
     local -i skip_count=0
     local -i array_length=0
     
-    # ========== 1. 展开数组 ==========
-    echo "[步骤1/4] 展开数组..."
-    echo "------------------------------------------"
-    
-    # 验证输入是否为数组变量
-    echo "✓ 检查输入变量 '$input_var' 是否为数组..."
-    if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
-        echo "错误: '$input_var' 不是有效的数组变量" >&2
-        return 1
-    fi
-    echo "✓ 输入变量是有效的数组"
-    
     # 安全地获取数组内容
-    echo "✓ 获取数组内容..."
     local array_files
-    eval "array_files=(\"\${$input_var[@]}\")"
-    array_length=${#array_files[@]}
-    echo "✓ 数组包含 $array_length 个元素"
-    
-    # 检查数组是否为空
-    if [[ $array_length -eq 0 ]]; then
-        echo "警告: 输入数组为空"
-        # 创建空输出文件（如果不存在）
-        if [[ ! -f "$output" ]]; then
-            echo "✓ 创建空输出文件..."
-            if touch "$output"; then
-                echo "✓ 已创建空文件: $output"
-                return 0
-            else
-                echo "错误: 无法创建空文件" >&2
-                return 1
-            fi
-        else
-            echo "✓ 输出文件已存在，无需修改"
-            return 0
-        fi
-    fi
+    array_files=($(_get_array_contents "$input_var")) || {
+        echo "ERROR: 无法获取数组内容"
+        return 1
+    }
     
     # 显示数组内容
     echo "✓ 数组内容预览:"
