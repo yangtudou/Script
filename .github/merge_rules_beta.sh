@@ -628,6 +628,7 @@ _handle_directory_to_directory() {
 
 
 # 5. 数组 -> 文件
+# 5. 数组 -> 文件（修复版）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
@@ -642,10 +643,7 @@ _handle_array_to_file() {
     
     # 获取数组内容
     local array_files
-    array_files=($(_get_array_contents "$input_var")) || {
-        echo "错误: 无法获取数组内容" >&2
-        return 1
-    }
+    eval "array_files=(\"\${$input_var[@]}\")"
     local array_length=${#array_files[@]}
     
     if [[ $array_length -eq 0 ]]; then
@@ -660,25 +658,77 @@ _handle_array_to_file() {
     _ensure_directory "$(dirname "$output")" || return 1
     _clear_file "$output" || return 1
     
-    # 使用 _safe_append 合并文件（简化版）
+    # 合并文件 - 添加详细调试
     local -i success_count=0
+    local -i error_count=0
+    local -i skip_count=0
+    
+    echo "开始处理文件列表:"
+    for i in "${!array_files[@]}"; do
+        echo "  [$((i+1))] ${array_files[$i]}"
+    done
+    echo ""
+    
     for file_path in "${array_files[@]}"; do
+        echo "处理文件: $file_path"
+        
+        if [[ ! -f "$file_path" ]]; then
+            echo "  ✗ 文件不存在，跳过"
+            ((skip_count++))
+            continue
+        fi
+        
+        if [[ ! -r "$file_path" ]]; then
+            echo "  ✗ 文件不可读，跳过"
+            ((skip_count++))
+            continue
+        fi
+        
+        if [[ ! -s "$file_path" ]]; then
+            echo "  ! 文件为空，跳过"
+            ((skip_count++))
+            continue
+        fi
+        
+        # 使用 _safe_append
         if _safe_append "$file_path" "$output"; then
+            echo "  ✓ 追加成功"
             ((success_count++))
+        else
+            echo "  ✗ 追加失败"
+            ((error_count++))
+            # 不立即返回，继续处理其他文件
         fi
     done
     
-    # 清理文件内容
+    echo ""
+    echo "处理完成: 成功 $success_count, 失败 $error_count, 跳过 $skip_count"
+    
+    # 只在有成功合并的文件时才进行清理
     if [[ $success_count -gt 0 ]]; then
-        _clean_file_content "$output"
+        echo "开始清理文件内容..."
+        if _clean_file_content "$output"; then
+            echo "文件清理完成"
+        else
+            echo "警告: 文件清理过程中出现问题" >&2
+            # 清理失败不视为整体失败
+        fi
+    else
+        echo "没有成功合并的文件，跳过清理"
     fi
     
     # 返回结果
     if [[ $success_count -gt 0 ]]; then
         echo "完成: $success_count 个文件合并成功"
         return 0
+    elif [[ $error_count -gt 0 ]]; then
+        echo "错误: 所有文件处理失败" >&2
+        return 1
+    elif [[ $skip_count -eq $array_length ]]; then
+        echo "警告: 所有文件被跳过" >&2
+        return 0
     else
-        echo "错误: 没有文件合并成功" >&2
+        echo "错误: 未知状态" >&2
         return 1
     fi
 }
