@@ -626,246 +626,113 @@ _handle_directory_to_directory() {
     fi
 }
 
-# 5. 数组 -> 文件（修复版）
+# 5. 数组 -> 文件（生产环境简化版）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
     
-    echo "=========================================="
     echo "开始处理: 数组 → 文件"
-    echo "输入数组变量: $input_var"
-    echo "输出文件路径: $output"
-    echo "=========================================="
+    echo "输入数组: $input_var"
+    echo "输出文件: $output"
     echo ""
     
-    # 明确声明整数变量
+    # 声明统计变量
     local -i success_count=0
     local -i error_count=0
     local -i skip_count=0
     local -i array_length=0
     
-    # ========== 1. 展开数组 ==========
-    echo "[步骤1/4] 展开数组..."
-    echo "------------------------------------------"
+    # 1. 展开数组
+    echo "[步骤1/3] 展开数组..."
     
-    # 验证输入是否为数组变量
-    echo "✓ 检查输入变量 '$input_var' 是否为数组..."
-    if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
+    # 快速验证数组
+    if ! _is_array "$input_var"; then
         echo "错误: '$input_var' 不是有效的数组变量" >&2
         return 1
     fi
-    echo "✓ 输入变量是有效的数组"
     
-    # 安全地获取数组内容
-    echo "✓ 获取数组内容..."
+    # 获取数组内容
     local array_files
     eval "array_files=(\"\${$input_var[@]}\")"
     array_length=${#array_files[@]}
-    echo "✓ 数组包含 $array_length 个元素"
     
-    # 检查数组是否为空
     if [[ $array_length -eq 0 ]]; then
         echo "警告: 输入数组为空"
-        # 创建空输出文件（如果不存在）
-        if [[ ! -f "$output" ]]; then
-            echo "✓ 创建空输出文件..."
-            if touch "$output"; then
-                echo "✓ 已创建空文件: $output"
-                return 0
-            else
-                echo "错误: 无法创建空文件" >&2
-                return 1
-            fi
-        else
-            echo "✓ 输出文件已存在，无需修改"
-            return 0
-        fi
+        # 创建空输出文件
+        touch "$output"
+        echo "已创建空文件"
+        return 0
     fi
     
-    # 显示数组内容
-    echo "✓ 数组内容预览:"
-    for i in "${!array_files[@]}"; do
-        echo "  [$((i+1))/$array_length] ${array_files[$i]}"
-    done
+    echo "数组包含 $array_length 个文件"
     echo ""
     
-    # ========== 2. 准备输出文件 ==========
-    echo "[步骤2/4] 准备输出文件..."
-    echo "------------------------------------------"
+    # 2. 准备输出文件
+    echo "[步骤2/3] 准备输出文件..."
     
     # 确保输出目录存在
     local output_dir=$(dirname "$output")
-    echo "✓ 检查输出目录: $output_dir"
+    _ensure_directory "$output_dir" || return 1
     
-    if [[ ! -d "$output_dir" ]]; then
-        echo "✓ 创建输出目录..."
-        if mkdir -p "$output_dir"; then
-            echo "✓ 目录创建成功: $output_dir"
-        else
-            echo "错误: 无法创建输出目录" >&2
-            return 1
-        fi
-    else
-        echo "✓ 输出目录已存在"
-    fi
-    
-    # 检查输出文件权限
-    echo "✓ 检查输出文件权限..."
-    if [[ -f "$output" ]]; then
-        if [[ -w "$output" ]]; then
-            echo "✓ 输出文件存在且可写"
-        else
-            echo "错误: 输出文件存在但不可写" >&2
-            return 1
-        fi
-    else
-        echo "✓ 输出文件不存在，将创建新文件"
-    fi
-    
-    # 清空或创建输出文件
-    echo "✓ 准备输出文件内容..."
-    if > "$output"; then
-        echo "✓ 输出文件准备完成"
-    else
-        echo "错误: 无法准备输出文件" >&2
-        return 1
-    fi
+    # 清空输出文件
+    _clear_file "$output" || return 1
+    echo "输出文件准备完成"
     echo ""
     
-    # ========== 3. 合并文件内容 ==========
-    echo "[步骤3/4] 开始合并文件内容..."
-    echo "------------------------------------------"
+    # 3. 合并文件内容
+    echo "[步骤3/3] 合并文件内容..."
+    local start_time=$(_start_timer)
     
-    # 遍历数组中的每个文件路径
-    for i in "${!array_files[@]}"; do
-        local file_path="${array_files[$i]}"
-        local current_file=$((i+1))
-        
-        echo "✓ 处理文件 [$current_file/$array_length]: $file_path"
-        
-        # 详细检查文件状态
-        echo "  ├─ 检查文件是否存在..."
-        if [[ ! -e "$file_path" ]]; then
-            echo "  ├─ ✗ 文件路径不存在，跳过"
-            ((skip_count++))
-            echo "  └─ [跳过]"
-            echo ""
-            continue
-        fi
-        
-        echo "  ├─ 检查是否为普通文件..."
-        if [[ ! -f "$file_path" ]]; then
-            echo "  ├─ ✗ 不是普通文件（可能是目录），跳过"
-            ((skip_count++))
-            echo "  └─ [跳过]"
-            echo ""
-            continue
-        fi
-        
-        echo "  ├─ 检查文件可读性..."
-        if [[ ! -r "$file_path" ]]; then
-            echo "  ├─ ✗ 文件不可读，跳过"
-            ((skip_count++))
-            echo "  └─ [跳过]"
-            echo ""
-            continue
-        fi
-        
-        echo "  ├─ 检查文件大小..."
-        local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
-        echo "  ├─ 文件大小: $file_size 字节"
-        
-        if [[ $file_size -eq 0 ]]; then
-            echo "  ├─ ! 文件为空，跳过"
-            ((skip_count++))
-            echo "  └─ [跳过]"
-            echo ""
-            continue
-        fi
-        
-        # 开始追加内容
-        echo "  ├─ 开始追加文件内容到输出文件..."
-        local start_time=$(date +%s.%N)
-        
-        # 尝试追加内容
-        if cat "$file_path" >> "$output"; then
-            local end_time=$(date +%s.%N)
-            local duration=$(echo "$end_time - $start_time" | bc)
-            echo "  ├─ ✓ 追加成功 (耗时: ${duration}秒)"
-            success_count=$((success_count + 1))
-        else
-            local end_time=$(date +%s.%N)
-            local duration=$(echo "$end_time - $start_time" | bc)
-            echo "  ├─ ✗ 追加失败 (耗时: ${duration}秒)" >&2
-            error_count=$((error_count + 1))
-        fi
-        
-        echo "  └─ [文件 $current_file/$array_length 处理完成]"
-        echo ""
-        
-        # 添加小延迟，避免过快处理
-        sleep 0.1
-    done
-    
-    # ========== 4. 文件内容清理 ==========
-    echo "[步骤4/4] 开始文件内容清理..."
-    echo "------------------------------------------"
-    
-    # 检查是否有成功合并的文件
-    if [[ $success_count -gt 0 ]]; then
-        echo "✓ 有 $success_count 个文件成功合并，开始清理..."
-        
-        # 检查输出文件是否存在且非空
-        if [[ -f "$output" ]] && [[ -s "$output" ]]; then
-            echo "✓ 输出文件存在且非空，开始清理内容..."
-            
-            # 调用清理函数
-            if _clean_file_content "$output"; then
-                echo "✓ 文件内容清理完成"
+    # 遍历并合并文件
+    for file_path in "${array_files[@]}"; do
+        # 简化文件检查
+        if [[ -f "$file_path" ]] && [[ -r "$file_path" ]] && [[ -s "$file_path" ]]; then
+            if _safe_append "$file_path" "$output"; then
+                ((success_count++))
             else
-                echo "警告: 文件内容清理过程中出现问题" >&2
+                ((error_count++))
             fi
         else
-            echo "! 输出文件为空或不存在，跳过清理"
+            ((skip_count++))
         fi
-    else
-        echo "! 没有成功合并任何文件，跳过清理步骤"
+    done
+    
+    local duration=$(_calculate_duration "$start_time")
+    echo "文件合并完成"
+    echo ""
+    
+    # 4. 清理文件内容（仅在成功合并时执行）
+    if [[ $success_count -gt 0 ]]; then
+        echo "开始清理文件内容..."
+        _clean_file_content "$output"
+        echo "文件清理完成"
+        echo ""
     fi
     
-    # ========== 5. 结果统计 ==========
-    echo "=========================================="
-    echo "合并完成总结:"
-    echo "------------------------------------------"
-    echo "✓ 数组文件总数: $array_length"
-    echo "✓ 成功合并: $success_count"
-    echo "! 跳过文件: $skip_count"
-    echo "✗ 合并失败: $error_count"
+    # 5. 显示最终结果
+    echo "合并完成:"
+    echo "  - 文件总数: $array_length"
+    echo "  - 成功合并: $success_count"
+    echo "  - 跳过文件: $skip_count"
+    echo "  - 合并失败: $error_count"
+    printf "  - 处理耗时: %.2f秒\n" "$duration"
     
     # 显示输出文件信息
     if [[ -f "$output" ]]; then
-        local output_size=$(wc -c < "$output" 2>/dev/null || echo 0)
-        local output_lines=$(wc -l < "$output" 2>/dev/null || echo 0)
-        echo ""
-        echo "输出文件信息:"
-        echo "✓ 文件路径: $output"
-        echo "✓ 文件大小: $output_size 字节"
-        echo "✓ 文件行数: $output_lines 行"
+        local file_info=($(_get_file_info "$output"))
+        echo "  - 输出文件: ${file_info[0]}字节, ${file_info[1]}行"
     fi
     
     echo ""
     
     # 返回结果
     if [[ $success_count -gt 0 ]]; then
-        echo "✅ 数组合并操作成功完成"
         return 0
     elif [[ $skip_count -eq $array_length ]] && [[ $array_length -gt 0 ]]; then
-        echo "⚠️ 警告: 所有文件都被跳过，但操作完成"
+        echo "警告: 所有文件都被跳过" >&2
         return 0
-    elif [[ $error_count -gt 0 ]]; then
-        echo "❌ 错误: 合并过程中发生错误" >&2
-        return 1
     else
-        echo "✅ 操作完成"
-        return 0
+        echo "错误: 没有成功合并任何文件" >&2
+        return 1
     fi
 }
