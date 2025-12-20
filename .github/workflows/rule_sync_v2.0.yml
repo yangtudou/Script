@@ -1,13 +1,14 @@
 # version: v2.1_beta
-# updated at: 2025-12-14
+# updated at: 2025-12-20
 # 主要改用了 checkout sparse-checkout 方法
 # 改用 rules 分支管理
+# 使用外部 shell 脚本处理规则文件
 # 简化了整个 Github Action 流程
+#
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
 #
 # 支持 ClashMeta 规则
 # 支持 Surge 规则
-
 
 name: 自动化规则下载 v2.1_beta
 
@@ -136,18 +137,13 @@ jobs:
           # echo "AWAvenue-Ads-Rule 规则到目标目录"
           # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
-
-          # =================== 函数部分 START =================== #
-
-
-          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules.sh
+          # 引入外部 shell 脚本
+          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
           chmod +x merge_rules.sh
           source ./merge_rules.sh
           
-          # =================== 函数部分 END =================== #
-          
-          # 筛选需要合并到 y3_proxy_rules@surge 的文件
-          declare -a FILES_TO_MERGE=(
+          # 合并到 y3_proxy_rules@surge 的文件( 数组 )
+          declare -a PROXY_RULES_MERGE=(
             "meta-rules-dat/geo/geosite/classical/google.list"
             "meta-rules-dat/geo/geosite/classical/meta.list"
             "meta-rules-dat/geo/geosite/classical/pinterest.list"
@@ -162,7 +158,7 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
 
-          merge_rules "FILES_TO_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           merge_rules "meta-rules-dat/geo/geosite/classical/private.list" "rule_sync_temp/Surge"
           merge_rules "meta-rules-dat/geo/geoip/classical/private.list" "rule_sync_temp/Surge"
