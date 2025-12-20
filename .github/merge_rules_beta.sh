@@ -628,51 +628,84 @@ _handle_directory_to_directory() {
 
 
 # 5. 数组 -> 文件
-# 5. 数组 -> 文件（调试版）
+# 5. 数组 -> 文件（修复版）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
     
-    echo "DEBUG: 开始处理数组到文件"
-    echo "DEBUG: 输入: $input_var, 输出: $output"
+    echo "合并数组到文件: $input_var → $output"
     
-    # 基本验证
+    # 验证数组
     if ! _is_array "$input_var"; then
-        echo "DEBUG: 输入不是数组"
+        echo "错误: 输入不是有效的数组" >&2
         return 1
     fi
     
-    # 获取数组
-    eval "local array_files=(\"\${$input_var[@]}\")"
+    # 获取数组内容
+    local array_files
+    eval "array_files=(\"\${$input_var[@]}\")" || {
+        echo "错误: 无法获取数组内容" >&2
+        return 1
+    }
     local array_length=${#array_files[@]}
-    echo "DEBUG: 数组长度: $array_length"
     
-    [[ $array_length -eq 0 ]] && touch "$output" && return 0
+    echo "数组包含 $array_length 个文件"
     
-    # 准备输出
-    mkdir -p "$(dirname "$output")" || return 1
-    > "$output" || return 1
+    if [[ $array_length -eq 0 ]]; then
+        echo "警告: 输入数组为空，创建空文件"
+        touch "$output" || {
+            echo "错误: 无法创建空文件" >&2
+            return 1
+        }
+        return 0
+    fi
     
-    # 逐个处理文件
-    local -i count=0
-    for file in "${array_files[@]}"; do
-        ((count++))
-        echo "DEBUG: 处理文件 $count/$array_length: $file"
-        
-        if [[ -f "$file" && -r "$file" && -s "$file" ]]; then
-            echo "DEBUG: 文件检查通过，开始追加"
-            if cat "$file" >> "$output"; then
-                echo "DEBUG: 文件追加成功"
-                # 确保文件间有分隔
+    # 准备输出目录
+    local output_dir=$(dirname "$output")
+    if [[ ! -d "$output_dir" ]]; then
+        echo "创建输出目录: $output_dir"
+        mkdir -p "$output_dir" || {
+            echo "错误: 无法创建输出目录" >&2
+            return 1
+        }
+    fi
+    
+    # 检查目录权限
+    if [[ ! -w "$output_dir" ]]; then
+        echo "错误: 输出目录不可写" >&2
+        return 1
+    fi
+    
+    # 准备输出文件
+    > "$output" || {
+        echo "错误: 无法准备输出文件" >&2
+        return 1
+    }
+    
+    # 合并文件
+    local -i success_count=0
+    for file_path in "${array_files[@]}"; do
+        if [[ -f "$file_path" ]] && [[ -r "$file_path" ]] && [[ -s "$file_path" ]]; then
+            if cat "$file_path" >> "$output"; then
+                # 添加分隔符
                 echo "" >> "$output"
-            else
-                echo "DEBUG: 文件追加失败"
+                ((success_count++))
             fi
-        else
-            echo "DEBUG: 文件检查失败"
         fi
     done
     
-    echo "DEBUG: 所有文件处理完成"
-    return 0
+    echo "成功合并 $success_count 个文件"
+    
+    # 清理文件内容
+    if [[ $success_count -gt 0 ]]; then
+        _clean_file_content "$output"
+    fi
+    
+    # 返回结果
+    if [[ $success_count -gt 0 ]]; then
+        return 0
+    else
+        echo "错误: 没有文件合并成功" >&2
+        return 1
+    fi
 }
