@@ -73,6 +73,7 @@ jobs:
             geo/geosite/classical/private.list
             geo/geosite/classical/icloud@cn.list
             geo/geosite/classical/apple@cn.list
+            geo/geosite/classical/cn.yaml
             ## ip
             geo/geoip/classical/cloudflare.list
             geo/geoip/classical/google.list
@@ -161,11 +162,11 @@ jobs:
           declare -a DIRECT_RULES_MERGE=(
             "meta-rules-dat/geo/geosite/classical/icloud@cn.list"
             "meta-rules-dat/geo/geosite/classical/apple@cn.list"
+            "meta-rules-dat/geo/geosite/classical/cn.list"
           )
 
           merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
-          merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_test_rules@surge.list"
 
           merge_rules "meta-rules-dat/geo/geosite/classical/private.list" "rule_sync_temp/Surge"
           merge_rules "meta-rules-dat/geo/geoip/classical/private.list" "rule_sync_temp/Surge"
