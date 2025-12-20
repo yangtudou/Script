@@ -642,13 +642,13 @@ _handle_array_to_file() {
     fi
     
     # 获取数组内容
+    echo "获取数组内容..."
     local array_files
     eval "array_files=(\"\${$input_var[@]}\")" || {
         echo "错误: 无法获取数组内容" >&2
         return 1
     }
     local array_length=${#array_files[@]}
-    
     echo "数组包含 $array_length 个文件"
     
     if [[ $array_length -eq 0 ]]; then
@@ -661,7 +661,10 @@ _handle_array_to_file() {
     fi
     
     # 准备输出目录
+    echo "准备输出目录..."
     local output_dir=$(dirname "$output")
+    echo "输出目录: $output_dir"
+    
     if [[ ! -d "$output_dir" ]]; then
         echo "创建输出目录: $output_dir"
         mkdir -p "$output_dir" || {
@@ -677,12 +680,16 @@ _handle_array_to_file() {
     fi
     
     # 准备输出文件
-    > "$output" || {
+    echo "准备输出文件..."
+    if > "$output"; then
+        echo "输出文件准备完成"
+    else
         echo "错误: 无法准备输出文件" >&2
         return 1
-    }
+    fi
     
     # 合并文件
+    echo "开始合并文件内容..."
     local -i success_count=0
     for file_path in "${array_files[@]}"; do
         if [[ -f "$file_path" ]] && [[ -r "$file_path" ]] && [[ -s "$file_path" ]]; then
@@ -698,6 +705,7 @@ _handle_array_to_file() {
     
     # 清理文件内容
     if [[ $success_count -gt 0 ]]; then
+        echo "开始清理文件内容..."
         _clean_file_content "$output"
     fi
     
