@@ -34,9 +34,9 @@ merge_rules() {
             echo "错误: 不支持的输出类型" >&2
             return 1
         fi
-
+    # 输入类型：目录
     elif [[ -d "$input" ]]; then
-	    echo "输入类型: 文件"
+	    echo "输入类型: 目录"
         if [[ -f "$output" ]]; then
             _handle_directory_to_file "$input" "$output"
         elif [[ -d "$output" ]]; then
@@ -49,15 +49,26 @@ merge_rules() {
             return 1
         fi
 
+    # 输入类型：数组
     elif _is_array "$input"; then
+        echo "输入类型：数组"
         if [[ -f "$output" ]]; then
+            echo ""
+            echo "输出类型：文件"
             _handle_array_to_file "$input" "$output"
         elif [[ -d "$output" ]]; then
+            echo ""
+            echo "输出类型：目录"
             _handle_array_to_directory "$input" "$output"
         elif _is_array "$output"; then
+            echo ""
+            echo "输出类型：数组"
             _handle_array_to_array "$input" "$output"     
         else
-            echo "错误: 不支持的输出类型" >&2
+            echo ""
+            echo "输出类型：未知" >&2
+            echo "输出内容：$output"
+            echo "⚠️ 当前函数已停止运行"
             return 1
         fi
 
@@ -483,7 +494,6 @@ _handle_array_to_file() {
     echo "------------------------------------------"
     
     # 清空或创建输出文件
-    echo "✓ 准备输出文件内容..."
     if echo "" > "$output"; then
         echo "✓ 输出文件准备完成"
     else
