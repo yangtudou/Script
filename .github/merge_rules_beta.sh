@@ -482,40 +482,9 @@ _handle_array_to_file() {
     echo "[步骤2/3] 准备输出文件..."
     echo "------------------------------------------"
     
-    # 确保输出目录存在
-    local output_dir=$(dirname "$output")
-    echo "✓ 检查输出目录: $output_dir"
-    
-    if [[ ! -d "$output_dir" ]]; then
-        echo "✓ 创建输出目录..."
-        if mkdir -p "$output_dir"; then
-            echo "✓ 目录创建成功: $output_dir"
-        else
-            echo "✗ 错误: 无法创建输出目录" >&2
-            return 1
-        fi
-    else
-        echo "✓ 输出目录已存在"
-    fi
-    touch "$output"
-    > "$output"
-    # 检查输出文件权限
-    echo "✓ 检查输出文件权限..."
-    if [[ -f "$output" ]]; then
-        if [[ -w "$output" ]]; then
-            echo "✓ 输出文件存在且可写"
-            touch "$output"
-        else
-            echo "✗ 错误: 输出文件存在但不可写" >&2
-            return 1
-        fi
-    else
-        echo "✗ 输出文件不存在，将创建新文件"
-    fi
-    
     # 清空或创建输出文件
     echo "✓ 准备输出文件内容..."
-    if > "$output"; then
+    if echo "" > "$output"; then
         echo "✓ 输出文件准备完成"
     else
         echo "✗ 错误: 无法准备输出文件" >&2
