@@ -503,6 +503,7 @@ _handle_array_to_file() {
     if [[ -f "$output" ]]; then
         if [[ -w "$output" ]]; then
             echo "✓ 输出文件存在且可写"
+            touch "$output"
         else
             echo "✗ 错误: 输出文件存在但不可写" >&2
             return 1
