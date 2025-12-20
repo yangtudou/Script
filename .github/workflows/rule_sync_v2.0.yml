@@ -73,7 +73,7 @@ jobs:
             geo/geosite/classical/private.list
             geo/geosite/classical/icloud@cn.list
             geo/geosite/classical/apple@cn.list
-            geo/geosite/classical/cn.yaml
+            geo/geosite/classical/cn.list
             ## ip
             geo/geoip/classical/cloudflare.list
             geo/geoip/classical/google.list
