@@ -644,7 +644,7 @@ _handle_array_to_file() {
     local -i skip_count=0
     local -i array_length=0
     
-    # 安全地获取数组内容
+    # 获取数组内容
     local array_files
     array_files=($(_get_array_contents "$input_var")) || {
         echo "ERROR: 无法获取数组内容"
@@ -652,58 +652,17 @@ _handle_array_to_file() {
     }
     
     # 显示数组内容
-    echo "✓ 数组内容预览:"
     for i in "${!array_files[@]}"; do
         echo "  [$((i+1))/$array_length] ${array_files[$i]}"
     done
-    echo ""
     
-    # ========== 2. 准备输出文件 ==========
-    echo "[步骤2/4] 准备输出文件..."
-    echo "------------------------------------------"
-    
-    # 确保输出目录存在
-    local output_dir=$(dirname "$output")
-    echo "✓ 检查输出目录: $output_dir"
-    
-    if [[ ! -d "$output_dir" ]]; then
-        echo "✓ 创建输出目录..."
-        if mkdir -p "$output_dir"; then
-            echo "✓ 目录创建成功: $output_dir"
-        else
-            echo "错误: 无法创建输出目录" >&2
-            return 1
-        fi
-    else
-        echo "✓ 输出目录已存在"
-    fi
-    
-    # 检查输出文件权限
-    echo "✓ 检查输出文件权限..."
-    if [[ -f "$output" ]]; then
-        if [[ -w "$output" ]]; then
-            echo "✓ 输出文件存在且可写"
-        else
-            echo "错误: 输出文件存在但不可写" >&2
-            return 1
-        fi
-    else
-        echo "✓ 输出文件不存在，将创建新文件"
-    fi
-    
-    # 清空或创建输出文件
-    echo "✓ 准备输出文件内容..."
+    # 清空输出文件
     if > "$output"; then
-        echo "✓ 输出文件准备完成"
+        echo "✓ 输出文件清空完成"
     else
-        echo "错误: 无法准备输出文件" >&2
+        echo "ERROR: 无法准备输出文件" >&2
         return 1
     fi
-    echo ""
-    
-    # ========== 3. 合并文件内容 ==========
-    echo "[步骤3/4] 开始合并文件内容..."
-    echo "------------------------------------------"
     
     # 遍历数组中的每个文件路径
     for i in "${!array_files[@]}"; do
@@ -713,7 +672,6 @@ _handle_array_to_file() {
         echo "✓ 处理文件 [$current_file/$array_length]: $file_path"
         
         # 详细检查文件状态
-        echo "  ├─ 检查文件是否存在..."
         if [[ ! -e "$file_path" ]]; then
             echo "  ├─ ✗ 文件路径不存在，跳过"
             ((skip_count++))
@@ -734,18 +692,6 @@ _handle_array_to_file() {
         echo "  ├─ 检查文件可读性..."
         if [[ ! -r "$file_path" ]]; then
             echo "  ├─ ✗ 文件不可读，跳过"
-            ((skip_count++))
-            echo "  └─ [跳过]"
-            echo ""
-            continue
-        fi
-        
-        echo "  ├─ 检查文件大小..."
-        local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
-        echo "  ├─ 文件大小: $file_size 字节"
-        
-        if [[ $file_size -eq 0 ]]; then
-            echo "  ├─ ! 文件为空，跳过"
             ((skip_count++))
             echo "  └─ [跳过]"
             echo ""
@@ -776,7 +722,6 @@ _handle_array_to_file() {
         sleep 0.1
     done
     
-    # ========== 4. 文件内容清理 ==========
     echo "[步骤4/4] 开始文件内容清理..."
     echo "------------------------------------------"
     
