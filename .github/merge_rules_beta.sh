@@ -71,20 +71,14 @@ merge_rules() {
 
 # 判断是否为数组
 _is_array() {
-    local var_name="$1"
-    
-    # 检查是否是有效的变量名
-    if [[ ! "$var_name" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-        return 1
-    fi
-    
-    # 检查变量是否存在且是数组
-    if declare -p "$var_name" 2>/dev/null | grep -q '^declare -a'; then
-        return 0
-    else
-        return 1
-    fi
+    local input="$1"
+	
+    if ! declare -p "$input" 2>/dev/null | grep -q '^declare -a'; then
+	    echo "✗ 错误: '$input' 不是有效的数组变量" >&2
+	    return 1
+	fi
 }
+
 
 
 
@@ -139,7 +133,6 @@ _handle_file_to_file() {
 }
 
 # 2. 文件 -> 目录
-# 2. 文件 -> 目录：复制或合并（完整修复版）
 _handle_file_to_directory() {
     local input="$1"
     local output="$2"
@@ -435,10 +428,9 @@ _handle_directory_to_array() {
 
 #######################################################################
 #============================ 数组 -> 文件 ============================#
-# 数组 → 文件：将数组中的文件内容合并到输出文件
 _handle_array_to_file() {
-    local input_var="$1"    # 数组变量名
-    local output="$2"       # 输出文件路径
+    local input_var="$1"    # 输入数组
+    local output="$2"       # 输出文件
     
     echo "=========================================="
     echo "开始处理: 数组 → 文件"
@@ -452,18 +444,6 @@ _handle_array_to_file() {
     local -i error_count=0
     local -i skip_count=0
     local -i array_length=0
-    
-    # ========== 1. 展开数组 ==========
-    echo "[步骤1/3] 展开数组..."
-    echo "------------------------------------------"
-    
-    # 验证输入是否为数组变量
-    echo "✓ 检查输入变量 '$input_var' 是否为数组..."
-    if ! declare -p "$input_var" 2>/dev/null | grep -q '^declare -a'; then
-        echo "✗ 错误: '$input_var' 不是有效的数组变量" >&2
-        return 1
-    fi
-    echo "✓ 输入变量是有效的数组"
     
     # 安全地获取数组内容
     echo "✓ 获取数组内容..."
