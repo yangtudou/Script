@@ -498,7 +498,7 @@ _handle_array_to_file() {
         echo "✓ 输出目录已存在"
     fi
     touch "$output"
-    > "$output
+    > "$output"
     # 检查输出文件权限
     echo "✓ 检查输出文件权限..."
     if [[ -f "$output" ]]; then
