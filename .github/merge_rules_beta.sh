@@ -46,25 +46,6 @@ _ensure_directory() {
     return 0
 }
 
-# 安全创建临时文件
-_create_temp_file() {
-    local temp_file=$(mktemp) || {
-        echo "错误: 无法创建临时文件" >&2
-        return 1
-    }
-    echo "$temp_file"
-}
-
-# 检查文件是否为空
-_is_file_empty() {
-    local file="$1"
-    if [[ ! -s "$file" ]]; then
-        return 0
-    else
-        return 1
-    fi
-}
-
 # 获取文件信息
 _get_file_info() {
     local file="$1"
@@ -102,11 +83,6 @@ _safe_append() {
     local target="$2"
     
     if _check_file_readable "$source"; then
-        # 确保目标文件以换行符结束
-        if [[ -s "$target" ]] && [[ $(tail -c 1 "$target") != $'\n' ]]; then
-            echo "" >> "$target"
-        fi
-        
         if cat "$source" >> "$target"; then
             local source_info=($(_get_file_info "$source"))
             local target_info=($(_get_file_info "$target"))
@@ -235,7 +211,10 @@ _log_summary() {
 
 _clean_file_content() {
     local file="$1"
-    local temp_file=$(_create_temp_file) || return 1
+    local temp_file=$(mktemp) || {
+        echo "错误: 无法创建临时文件" >&2
+        return 1
+    }
     
     echo "开始清理文件内容: $file"
     
@@ -305,7 +284,7 @@ _clean_file_content() {
         echo "📊 清理统计:"
         echo "  - 空行和注释: $removed_empty 行"
         echo "  - DOMAIN-REGEX: $removed_domain_regex 行"
-        echo "  - IP-CIDR处理: $modified_ip_cidr 个规则"
+        echo "  - IP-CIDR处理: $modified_ip_cidr 个规则添加了 ,no-resolve"
         echo "  - 重复行: $removed_duplicates 行"
         
         # 清理临时文件
@@ -313,12 +292,13 @@ _clean_file_content() {
         return 0
     else
         echo "错误: 无法更新文件" >&2
+        # 清理临时文件
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4"
         return 1
     fi
 }
 
-# ================ 主处理函数（简化版） ================
+# ================ 主处理函数 ================
 
 # 主入口函数
 merge_rules() {
@@ -453,12 +433,12 @@ _handle_directory_to_file() {
     echo "输入目录: $input"
     echo "输出文件: $output"
     
-    # 验证输入目录
-    _check_directory_writable "$(dirname "$output")" || return 1
+    # 验证输出目录
+    _ensure_directory "$(dirname "$output")" || return 1
     
     # 检查目录是否为空
-    if _is_file_empty "$input" || [[ -z "$(find "$input" -name "*.list" -o -name "*.txt" | head -1)" ]]; then
-        echo "警告: 输入目录为空或没有规则文件"
+    if [[ -z "$(find "$input" -type f 2>/dev/null | head -1)" ]]; then
+        echo "警告: 输入目录为空"
         touch "$output"
         echo "已创建空文件"
         return 0
@@ -475,7 +455,7 @@ _handle_directory_to_file() {
         if _safe_append "$file" "$output"; then
             ((success_count++))
         fi
-    done < <(find "$input" -type f -name "*.list" -o -type f -name "*.txt" -print0 2>/dev/null)
+    done < <(find "$input" -type f -print0 2>/dev/null)
     
     local duration=$(_calculate_duration "$start_time")
     
