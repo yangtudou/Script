@@ -628,107 +628,51 @@ _handle_directory_to_directory() {
 
 
 # 5. 数组 -> 文件
-# 5. 数组 -> 文件（修复版）
+# 5. 数组 -> 文件（调试版）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
     
-    echo "合并数组到文件: $input_var → $output"
+    echo "DEBUG: 开始处理数组到文件"
+    echo "DEBUG: 输入: $input_var, 输出: $output"
     
-    # 验证数组
+    # 基本验证
     if ! _is_array "$input_var"; then
-        echo "错误: 输入不是有效的数组" >&2
+        echo "DEBUG: 输入不是数组"
         return 1
     fi
     
-    # 获取数组内容
-    local array_files
-    eval "array_files=(\"\${$input_var[@]}\")"
+    # 获取数组
+    eval "local array_files=(\"\${$input_var[@]}\")"
     local array_length=${#array_files[@]}
+    echo "DEBUG: 数组长度: $array_length"
     
-    if [[ $array_length -eq 0 ]]; then
-        echo "警告: 输入数组为空，创建空文件"
-        touch "$output"
-        return 0
-    fi
+    [[ $array_length -eq 0 ]] && touch "$output" && return 0
     
-    echo "处理 $array_length 个文件"
+    # 准备输出
+    mkdir -p "$(dirname "$output")" || return 1
+    > "$output" || return 1
     
-    # 准备输出文件
-    _ensure_directory "$(dirname "$output")" || return 1
-    _clear_file "$output" || return 1
-    
-    # 合并文件 - 添加详细调试
-    local -i success_count=0
-    local -i error_count=0
-    local -i skip_count=0
-    
-    echo "开始处理文件列表:"
-    for i in "${!array_files[@]}"; do
-        echo "  [$((i+1))] ${array_files[$i]}"
-    done
-    echo ""
-    
-    for file_path in "${array_files[@]}"; do
-        echo "处理文件: $file_path"
+    # 逐个处理文件
+    local -i count=0
+    for file in "${array_files[@]}"; do
+        ((count++))
+        echo "DEBUG: 处理文件 $count/$array_length: $file"
         
-        if [[ ! -f "$file_path" ]]; then
-            echo "  ✗ 文件不存在，跳过"
-            ((skip_count++))
-            continue
-        fi
-        
-        if [[ ! -r "$file_path" ]]; then
-            echo "  ✗ 文件不可读，跳过"
-            ((skip_count++))
-            continue
-        fi
-        
-        if [[ ! -s "$file_path" ]]; then
-            echo "  ! 文件为空，跳过"
-            ((skip_count++))
-            continue
-        fi
-        
-        # 使用 _safe_append
-        if _safe_append "$file_path" "$output"; then
-            echo "  ✓ 追加成功"
-            ((success_count++))
+        if [[ -f "$file" && -r "$file" && -s "$file" ]]; then
+            echo "DEBUG: 文件检查通过，开始追加"
+            if cat "$file" >> "$output"; then
+                echo "DEBUG: 文件追加成功"
+                # 确保文件间有分隔
+                echo "" >> "$output"
+            else
+                echo "DEBUG: 文件追加失败"
+            fi
         else
-            echo "  ✗ 追加失败"
-            ((error_count++))
-            # 不立即返回，继续处理其他文件
+            echo "DEBUG: 文件检查失败"
         fi
     done
     
-    echo ""
-    echo "处理完成: 成功 $success_count, 失败 $error_count, 跳过 $skip_count"
-    
-    # 只在有成功合并的文件时才进行清理
-    if [[ $success_count -gt 0 ]]; then
-        echo "开始清理文件内容..."
-        if _clean_file_content "$output"; then
-            echo "文件清理完成"
-        else
-            echo "警告: 文件清理过程中出现问题" >&2
-            # 清理失败不视为整体失败
-        fi
-    else
-        echo "没有成功合并的文件，跳过清理"
-    fi
-    
-    # 返回结果
-    if [[ $success_count -gt 0 ]]; then
-        echo "完成: $success_count 个文件合并成功"
-        return 0
-    elif [[ $error_count -gt 0 ]]; then
-        echo "错误: 所有文件处理失败" >&2
-        return 1
-    elif [[ $skip_count -eq $array_length ]]; then
-        echo "警告: 所有文件被跳过" >&2
-        return 0
-    else
-        echo "错误: 未知状态" >&2
-        return 1
-    fi
+    echo "DEBUG: 所有文件处理完成"
+    return 0
 }
