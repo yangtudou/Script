@@ -82,34 +82,50 @@ _safe_append() {
     local source="$1"
     local target="$2"
     
-    if _check_file_readable "$source"; then
-        # 检查目标文件是否为空
-        if [[ ! -s "$target" ]]; then
-            # 目标文件为空，直接复制内容
-            if cat "$source" >> "$target"; then
-                # ... 成功处理
-            fi
+    if ! _check_file_readable "$source"; then
+        return 1
+    fi
+    
+    # 检查目标文件是否为空
+    if [[ ! -s "$target" ]]; then
+        # 目标文件为空，直接复制内容
+        if cat "$source" >> "$target"; then
+            local source_info=($(_get_file_info "$source"))
+            local target_info=($(_get_file_info "$target"))
+            echo "✓ 内容追加成功: ${source_info[0]}字节 → ${target_info[0]}字节"
+            return 0
         else
-            # 目标文件不为空，需要添加分隔符
-            # 检查目标文件最后一行是否以换行符结束
-            if [[ $(tail -c 1 "$target") != $'\n' ]]; then
-                echo "" >> "$target"  # 添加换行符
-            fi
-            
-            # 检查源文件是否为空
-            if [[ -s "$source" ]]; then
-                # 追加源文件内容
-                if cat "$source" >> "$target"; then
-                    # ... 成功处理
-                fi
-            else
-                echo "! 源文件为空，跳过追加"
-                return 0
-            fi
+            echo "错误: 内容追加失败" >&2
+            return 1
+        fi
+    else
+        # 目标文件不为空，需要添加分隔符
+        # 检查目标文件最后一行是否以换行符结束
+        local last_char=$(tail -c 1 "$target" 2>/dev/null | od -An -tx1 | tr -d ' \n')
+        if [[ "$last_char" != "0a" ]]; then
+            # 目标文件末尾没有换行符，添加一个
+            echo "" >> "$target"
+        fi
+        
+        # 检查源文件是否为空
+        if [[ ! -s "$source" ]]; then
+            echo "! 源文件为空，跳过追加"
+            return 0
+        fi
+        
+        # 追加源文件内容
+        if cat "$source" >> "$target"; then
+            local source_info=($(_get_file_info "$source"))
+            local target_info=($(_get_file_info "$target"))
+            echo "✓ 内容追加成功: ${source_info[0]}字节 → ${target_info[0]}字节"
+            return 0
+        else
+            echo "错误: 内容追加失败" >&2
+            return 1
         fi
     fi
-    return 1
 }
+
 
 # 清空文件内容
 _clear_file() {
