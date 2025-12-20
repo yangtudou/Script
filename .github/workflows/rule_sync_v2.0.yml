@@ -165,6 +165,7 @@ jobs:
 
           merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
+          merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_test_rules@surge.list"
 
           merge_rules "meta-rules-dat/geo/geosite/classical/private.list" "rule_sync_temp/Surge"
           merge_rules "meta-rules-dat/geo/geoip/classical/private.list" "rule_sync_temp/Surge"
