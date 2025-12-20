@@ -240,6 +240,7 @@ _log_summary() {
 
 # ================ 文件内容清理函数 ================
 
+# 文件内容清理函数（修复统计问题版）
 _clean_file_content() {
     local file="$1"
     local temp_file=$(mktemp) || {
@@ -261,6 +262,7 @@ _clean_file_content() {
     local -i removed_comments=0
     local -i removed_domain_regex=0
     local -i modified_ip_cidr=0
+    local -i modified_ip_cidr6=0
     local -i removed_duplicates=0
     
     # 处理步骤
@@ -268,38 +270,106 @@ _clean_file_content() {
     step_files[0]="$file"
     
     # 步骤1: 删除空行和注释
+    echo "✓ 步骤1: 删除空行和注释行..."
+    local before_empty=$original_lines
     grep -v -e '^[[:space:]]*$' -e '^#' "${step_files[0]}" > "${temp_file}.step1"
-    removed_empty=$((original_lines - $(wc -l < "${temp_file}.step1" 2>/dev/null || echo 0)))
+    local after_empty=$(wc -l < "${temp_file}.step1" 2>/dev/null || echo 0)
+    removed_empty=$((before_empty - after_empty))
+    echo "  → 删除了 $removed_empty 个空行和注释行"
     step_files[1]="${temp_file}.step1"
     
     # 步骤2: 删除DOMAIN-REGEX规则
+    echo "✓ 步骤2: 删除DOMAIN-REGEX规则..."
+    local before_domain_regex=$after_empty
     grep -v '^DOMAIN-REGEX' "${step_files[1]}" > "${temp_file}.step2"
-    removed_domain_regex=$(( $(wc -l < "${step_files[1]}") - $(wc -l < "${temp_file}.step2") ))
+    local after_domain_regex=$(wc -l < "${temp_file}.step2" 2>/dev/null || echo 0)
+    removed_domain_regex=$((before_domain_regex - after_domain_regex))
+    echo "  → 删除了 $removed_domain_regex 个DOMAIN-REGEX规则"
     step_files[2]="${temp_file}.step2"
     
-    # 步骤3: 处理IP-CIDR规则
+    # 步骤3: 处理IP-CIDR规则（修复统计问题）
+    echo "✓ 步骤3: 处理IP-CIDR规则..."
+    local before_ip_cidr=$after_domain_regex
+    
+    # 使用临时文件存储统计信息
+    local stats_temp=$(mktemp)
+    
+    # 处理IP-CIDR规则并统计修改次数
     awk '
+    BEGIN {
+        no_resolve_added = 0
+        ipv6_converted = 0
+    }
     {
-        if (/^IP-CIDR,/) {
-            # 处理IPv6
-            if (/^IP-CIDR,[^,]*(:[^,]*)/) {
-                sub(/^IP-CIDR,/, "IP-CIDR6,")
-                ipv6_count++
+        original_line = $0
+        line_modified = 0
+        ipv6_converted = 0
+        
+        # 检查是否是IP-CIDR规则
+        if ($0 ~ /^IP-CIDR,/) {
+            # 检查是否是IPv6地址（包含冒号）
+            if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
+                # 替换为IP-CIDR6
+                gsub(/^IP-CIDR,/, "IP-CIDR6,", $0)
+                ipv6_converted++
+                ipv6_converted_flag = 1
+                line_modified = 1
             }
-            # 添加no-resolve
-            if (!/,no-resolve$/) {
+            
+            # 检查是否已经有no-resolve
+            if ($0 !~ /,no-resolve$/) {
                 $0 = $0 ",no-resolve"
-                noresolve_count++
+                no_resolve_added++
+                line_modified = 1
             }
         }
-        print
+        
+        print $0
+        
+        # 如果行被修改，输出统计信息
+        if (line_modified) {
+            if (ipv6_converted_flag) {
+                print "IPV6_CONVERTED" >> "/dev/stderr"
+            } else {
+                print "NO_RESOLVE_ADDED" >> "/dev/stderr"
+            }
+        }
     }
-    ' "${step_files[2]}" > "${temp_file}.step3"
+    END {
+        # 输出总统计信息
+        print "TOTAL_NO_RESOLVE:" no_resolve_added >> "/dev/stderr"
+        print "TOTAL_IPV6_CONVERTED:" ipv6_converted >> "/dev/stderr"
+    }
+    ' "${step_files[2]}" > "${temp_file}.step3" 2> "$stats_temp"
+    
+    # 读取统计信息
+    if [[ -f "$stats_temp" ]]; then
+        modified_ip_cidr=$(grep -c "NO_RESOLVE_ADDED" "$stats_temp" 2>/dev/null || echo 0)
+        modified_ip_cidr6=$(grep -c "IPV6_CONVERTED" "$stats_temp" 2>/dev/null || echo 0)
+        
+        # 也读取总数（从END块）
+        local total_no_resolve=$(grep "TOTAL_NO_RESOLVE:" "$stats_temp" | cut -d: -f2)
+        local total_ipv6_converted=$(grep "TOTAL_IPV6_CONVERTED:" "$stats_temp" | cut -d: -f2)
+        
+        # 使用总数（更准确）
+        modified_ip_cidr=${total_no_resolve:-0}
+        modified_ip_cidr6=${total_ipv6_converted:-0}
+        
+        rm -f "$stats_temp"
+    fi
+    
+    local after_ip_cidr=$(wc -l < "${temp_file}.step3" 2>/dev/null || echo 0)
+    echo "  → 修改了 $modified_ip_cidr 个IP-CIDR规则（添加了,no-resolve）"
+    echo "  → 转换了 $modified_ip_cidr6 个IPv6规则为IP-CIDR6"
     step_files[3]="${temp_file}.step3"
     
     # 步骤4: 排序和去重
+    echo "✓ 步骤4: 排序和去重..."
+    local before_duplicates=$after_ip_cidr
     awk '!seen[$0]++' "${step_files[3]}" | sort > "${temp_file}.step4"
-    removed_duplicates=$(( $(wc -l < "${step_files[3]}") - $(wc -l < "${temp_file}.step4") ))
+    local after_duplicates=$(wc -l < "${temp_file}.step4" 2>/dev/null || echo 0)
+    removed_duplicates=$((before_duplicates - after_duplicates))
+    echo "  → 删除了 $removed_duplicates 个重复行"
     step_files[4]="${temp_file}.step4"
     
     # 替换原文件
@@ -307,15 +377,19 @@ _clean_file_content() {
         local final_info=($(_get_file_info "$file"))
         local final_size="${final_info[0]}"
         local final_lines="${final_info[1]}"
+        local total_removed=$((original_lines - final_lines))
         
+        echo ""
         echo "✅ 文件清理完成:"
         echo "  → 原始: ${original_lines}行, ${original_size}字节"
         echo "  → 最终: ${final_lines}行, ${final_size}字节"
+        echo "  → 总共删除了 $total_removed 行"
         echo ""
         echo "📊 清理统计:"
         echo "  - 空行和注释: $removed_empty 行"
         echo "  - DOMAIN-REGEX: $removed_domain_regex 行"
-        echo "  - IP-CIDR处理: $modified_ip_cidr 个规则添加了 ,no-resolve"
+        echo "  - IP-CIDR修改: $modified_ip_cidr 个规则添加了,no-resolve"
+        echo "  - IP-CIDR6转换: $modified_ip_cidr6 个IPv6规则转换为IP-CIDR6"
         echo "  - 重复行: $removed_duplicates 行"
         
         # 清理临时文件
