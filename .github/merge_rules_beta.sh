@@ -626,7 +626,7 @@ _handle_directory_to_directory() {
     fi
 }
 
-# 5. 数组 -> 文件（生产环境简化版）
+# 5. 数组 -> 文件（修复退出码问题）
 _handle_array_to_file() {
     local input_var="$1"
     local output="$2"
@@ -659,9 +659,13 @@ _handle_array_to_file() {
     if [[ $array_length -eq 0 ]]; then
         echo "警告: 输入数组为空"
         # 创建空输出文件
-        touch "$output"
-        echo "已创建空文件"
-        return 0
+        if touch "$output"; then
+            echo "已创建空文件"
+            return 0
+        else
+            echo "错误: 无法创建空文件" >&2
+            return 1
+        fi
     fi
     
     echo "数组包含 $array_length 个文件"
@@ -672,10 +676,17 @@ _handle_array_to_file() {
     
     # 确保输出目录存在
     local output_dir=$(dirname "$output")
-    _ensure_directory "$output_dir" || return 1
+    if ! _ensure_directory "$output_dir"; then
+        echo "错误: 无法创建输出目录" >&2
+        return 1
+    fi
     
     # 清空输出文件
-    _clear_file "$output" || return 1
+    if ! _clear_file "$output"; then
+        echo "错误: 无法准备输出文件" >&2
+        return 1
+    fi
+    
     echo "输出文件准备完成"
     echo ""
     
@@ -702,10 +713,18 @@ _handle_array_to_file() {
     echo ""
     
     # 4. 清理文件内容（仅在成功合并时执行）
+    local cleanup_result=0
     if [[ $success_count -gt 0 ]]; then
         echo "开始清理文件内容..."
-        _clean_file_content "$output"
-        echo "文件清理完成"
+        if _clean_file_content "$output"; then
+            echo "文件清理完成"
+        else
+            echo "警告: 文件清理过程中出现问题" >&2
+            cleanup_result=1
+        fi
+        echo ""
+    else
+        echo "没有成功合并的文件，跳过清理步骤"
         echo ""
     fi
     
@@ -725,14 +744,16 @@ _handle_array_to_file() {
     
     echo ""
     
-    # 返回结果
+    # 6. 返回结果（修复返回逻辑）
     if [[ $success_count -gt 0 ]]; then
+        echo "✅ 数组合并操作成功完成"
+        # 即使清理有警告，只要合并成功就返回0
         return 0
     elif [[ $skip_count -eq $array_length ]] && [[ $array_length -gt 0 ]]; then
-        echo "警告: 所有文件都被跳过" >&2
+        echo "⚠️ 警告: 所有文件都被跳过" >&2
         return 0
     else
-        echo "错误: 没有成功合并任何文件" >&2
+        echo "❌ 错误: 没有成功合并任何文件" >&2
         return 1
     fi
 }
