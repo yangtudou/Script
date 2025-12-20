@@ -61,6 +61,8 @@ merge_rules() {
             echo "识别到没有创建输出文件"
             if touch "$output"; then
                 echo "已经创建输出文件：$output"
+                echo "开始合并文件"
+                _handle_array_to_file "$input" "$output"
             else
                 echo "ERROR：无法创建输出文件"
             fi
