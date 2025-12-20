@@ -669,3 +669,4 @@ _handle_array_to_file() {
         echo "  ├─ 检查文件大小..."
         local file_size=$(wc -c < "$file_path" 2>/dev/null || echo 0)
         echo "  ├─ 文件大小: $file_size
+}
