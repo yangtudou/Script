@@ -52,7 +52,8 @@ merge_rules() {
     # 输入类型：数组
     elif _is_array "$input"; then
         echo "输入类型：数组"
-        if [[ -f "$output" ]]; then
+        local output_file_name=$(basename "$output")
+        if [[ -f "$output_file_name" ]]; then
             echo ""
             echo "输出类型：文件"
             _handle_array_to_file "$input" "$output"
