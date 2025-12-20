@@ -50,27 +50,20 @@ merge_rules() {
         fi
 
     # 输入类型：数组
+    # 输出目前只定义了为文件
     elif _is_array "$input"; then
         echo "输入类型：数组"
-        local output_file_name=$(basename "$output")
-        if [[ -f "$output_file_name" ]]; then
+        if [[ -f "$output" ]]; then
             echo ""
             echo "输出类型：文件"
             _handle_array_to_file "$input" "$output"
-        elif [[ -d "$output" ]]; then
-            echo ""
-            echo "输出类型：目录"
-            _handle_array_to_directory "$input" "$output"
-        elif _is_array "$output"; then
-            echo ""
-            echo "输出类型：数组"
-            _handle_array_to_array "$input" "$output"     
         else
-            echo ""
-            echo "输出类型：未知"
-            echo "输出内容：$output"
-            echo "⚠️ 当前函数已停止运行"
-            return 1
+            echo "识别到没有创建输出文件"
+            if touch "$output"; then
+                echo "已经创建输出文件：$output"
+            else
+                echo "ERROR：无法创建输出文件"
+            fi
         fi
 
     else
