@@ -638,12 +638,6 @@ _handle_array_to_file() {
     echo "=========================================="
     echo ""
     
-    # 明确声明整数变量
-    local -i success_count=0
-    local -i error_count=0
-    local -i skip_count=0
-    local -i array_length=0
-    
     # 获取数组内容
     local array_files
     array_files=($(_get_array_contents "$input_var")) || {
@@ -663,11 +657,8 @@ _handle_array_to_file() {
     
     # 遍历数组中的每个文件
     for i in "${!array_files[@]}"; do
-        local file_path="${array_files[$i]}"
-        local current_file=$((i+1))
-        
         # 追加内容
-        cat "$file_path" >> "$output"; then
+        cat "$file_path" >> "$output"
     done
     
     if _clean_file_content "$output"; then
