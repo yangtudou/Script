@@ -660,13 +660,11 @@ _handle_array_to_file() {
     _ensure_directory "$(dirname "$output")" || return 1
     _clear_file "$output" || return 1
     
-    # 合并文件
+    # 使用 _safe_append 合并文件（简化版）
     local -i success_count=0
     for file_path in "${array_files[@]}"; do
-        if [[ -f "$file_path" ]] && [[ -r "$file_path" ]] && [[ -s "$file_path" ]]; then
-            if _safe_append "$file_path" "$output"; then
-                ((success_count++))
-            fi
+        if _safe_append "$file_path" "$output"; then
+            ((success_count++))
         fi
     done
     
