@@ -50,6 +50,7 @@ jobs:
         geo/geoip/classical/google.list
         geo/geoip/classical/private.list
         geo/geoip/classical/telegram.list
+        geo/geoip/classical/cn.list
 
       CUBEMETAX_CLASH_FILES: |
         geo/geosite/geolocation-!cn.yaml
@@ -155,15 +156,15 @@ jobs:
           declare -a PROXY_RULES_MERGE=(
             "$METACUBEX_DOMIAN_PATH/google.list"
             "$METACUBEX_IP_PATH/google.list"
+            "$METACUBEX_DOMIAN_PATH/cloudflare.list"
+            "$METACUBEX_IP_PATH/cloudflare.list"
+            "$METACUBEX_DOMIAN_PATH/telegram.list"
+            "$METACUBEX_IP_PATH/telegram.list"
             "$METACUBEX_DOMIAN_PATH/meta.list"
             "$METACUBEX_DOMIAN_PATH/pinterest.list"
             "$METACUBEX_DOMIAN_PATH/github.list"
-            "$METACUBEX_DOMIAN_PATH/cloudflare.list"
-            "$METACUBEX_IP_PATH/cloudflare.list"
             "$METACUBEX_DOMIAN_PATH/javbus.list"
             "$METACUBEX_DOMIAN_PATH/missav.list"
-            "$METACUBEX_DOMIAN_PATH/telegram.list"
-            "$METACUBEX_IP_PATH/telegram.list"
             "$METACUBEX_DOMIAN_PATH/gfw.list"
           )
 
@@ -175,16 +176,15 @@ jobs:
             "$METACUBEX_DOMIAN_PATH/tencent.list"
             "$METACUBEX_DOMIAN_PATH/xunlei.list"
             "$METACUBEX_DOMIAN_PATH/cn.list"
+            "$METACUBEX_IP_PATH/cn.list"
             "$METACUBEX_DOMIAN_PATH/tld-cn.list"
+            "$METACUBEX_DOMIAN_PATH/private.list"
+            "$METACUBEX_IP_PATH/private.list"
             "Loyalsoldier_surge-rules/ruleset/apple.txt"
           )
 
           merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
-
-          # private
-          merge_rules "$METACUBEX_DOMIAN_PATH/private.list" "rule_sync_temp/Surge"
-          merge_rules "$METACUBEX_IP_PATH/private.list" "rule_sync_temp/Surge"
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
