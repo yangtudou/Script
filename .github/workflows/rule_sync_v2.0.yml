@@ -136,6 +136,8 @@ jobs:
       #     echo "✅ ClashMeta 规则整理完成"
           
       - name: 整理 Surge 规则
+        env:
+          METACUBEX_BASE_PATH: "meta-rules-dat/geo/geosite/classical"
         run: |
           set -e
 
@@ -150,7 +152,7 @@ jobs:
           
           # proxy
           declare -a PROXY_RULES_MERGE=(
-            "meta-rules-dat/geo/geosite/classical/google.list"
+            "$METACUBEX_BASE_PATH/google.list"
             "meta-rules-dat/geo/geosite/classical/meta.list"
             "meta-rules-dat/geo/geosite/classical/pinterest.list"
             "meta-rules-dat/geo/geosite/classical/github.list"
