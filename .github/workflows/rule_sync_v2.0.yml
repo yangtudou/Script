@@ -24,6 +24,51 @@ permissions:
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
+    env:
+      METACUBEX_SURGE_FILES: |
+        geo/geosite/classical/missav.list
+        geo/geosite/classical/javbus.list
+        geo/geosite/classical/gfw.list
+        geo/geosite/classical/pinterest.list
+        geo/geosite/classical/cloudflare.list
+        geo/geosite/classical/github.list
+        geo/geosite/classical/google.list
+        geo/geosite/classical/meta.list
+        geo/geosite/classical/telegram.list
+        geo/geosite/classical/tld-!cn.list
+        # DIRECT
+        geo/geosite/classical/private.list
+        geo/geosite/classical/icloud@cn.list
+        geo/geosite/classical/apple@cn.list
+        geo/geosite/classical/tesla@cn.list
+        geo/geosite/classical/cn.list
+        geo/geosite/classical/tencent.list
+        geo/geosite/classical/xunlei.list
+        geo/geosite/classical/tld-cn.list
+        # ip
+        geo/geoip/classical/cloudflare.list
+        geo/geoip/classical/google.list
+        geo/geoip/classical/private.list
+        geo/geoip/classical/telegram.list
+
+      CUBEMETAX_CLASH_FILES: |
+        geo/geosite/geolocation-!cn.yaml
+        geo/geosite/cn.yaml
+        geo/geosite/google.yaml
+        geo/geosite/telegram.yaml
+        geo/geosite/github.yaml
+        geo/geosite/apple.yaml
+        geo/geosite/meta.yaml
+        geo/geosite/private.yaml
+        geo/geosite/cloudflare.yaml
+        # ip
+        geo/geoip/cloudflare.yaml
+        geo/geoip/cn.yaml
+        geo/geoip/google.yaml
+        geo/geoip/private.yaml
+        geo/geoip/telegram.yaml
+
+
     steps:
       - name: 检出当前仓库 rules 分支
         uses: actions/checkout@v6
@@ -40,50 +85,9 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
-            # # ClashMeta yaml
-            # ## domain
-            # geo/geosite/geolocation-!cn.yaml
-            # geo/geosite/cn.yaml
-            # geo/geosite/google.yaml
-            # geo/geosite/telegram.yaml
-            # geo/geosite/github.yaml
-            # geo/geosite/apple.yaml
-            # geo/geosite/meta.yaml
-            # geo/geosite/private.yaml
-            # geo/geosite/cloudflare.yaml
-            # ## ip
-            # geo/geoip/cloudflare.yaml
-            # geo/geoip/cn.yaml
-            # geo/geoip/google.yaml
-            # geo/geoip/private.yaml
-            # geo/geoip/telegram.yaml
-            # Surge list
-            ## domain
-            # geo/geosite/classical/category-porn.list
-            geo/geosite/classical/missav.list
-            geo/geosite/classical/javbus.list
-            geo/geosite/classical/gfw.list
-            geo/geosite/classical/pinterest.list
-            geo/geosite/classical/cloudflare.list
-            geo/geosite/classical/github.list
-            geo/geosite/classical/google.list
-            geo/geosite/classical/meta.list
-            geo/geosite/classical/telegram.list
-            geo/geosite/classical/tld-!cn.list
-            ## DIRECT
-            geo/geosite/classical/private.list
-            geo/geosite/classical/icloud@cn.list
-            geo/geosite/classical/apple@cn.list
-            geo/geosite/classical/tesla@cn.list
-            geo/geosite/classical/cn.list
-            geo/geosite/classical/tencent.list
-            geo/geosite/classical/xunlei.list
-            geo/geosite/classical/tld-cn.list
-            ## ip
-            geo/geoip/classical/cloudflare.list
-            geo/geoip/classical/google.list
-            geo/geoip/classical/private.list
-            geo/geoip/classical/telegram.list
+            ${{ env.METACUBEX_SURGE_FILES }}
+            ${{ env.METACUBEX_CLASH_FILES }}
+
           sparse-checkout-cone-mode: false
 
       - name: 检出 AWAvenue 仓库 main 分支
