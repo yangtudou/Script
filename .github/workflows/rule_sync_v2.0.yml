@@ -86,19 +86,19 @@ jobs:
             geo/geoip/classical/telegram.list
           sparse-checkout-cone-mode: false
 
-      # - name: 检出 AWAvenue 仓库 main 分支
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: TG-Twilight/AWAvenue-Ads-Rule
-      #     ref: main
-      #     fetch-depth: 1
-      #     path: AWAvenue-Ads-Rule
-      #     sparse-checkout: |
-      #       # ClashMeta
-      #       Filters/AWAvenue-Ads-Rule-Clash.yaml
-      #       # Surge
-      #       Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
-      #     sparse-checkout-cone-mode: false
+      - name: 检出 AWAvenue 仓库 main 分支
+        uses: actions/checkout@v6
+        with:
+          repository: TG-Twilight/AWAvenue-Ads-Rule
+          ref: main
+          fetch-depth: 1
+          path: AWAvenue-Ads-Rule
+          sparse-checkout: |
+            # ClashMeta
+            Filters/AWAvenue-Ads-Rule-Clash.yaml
+            # Surge
+            Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+          sparse-checkout-cone-mode: false
 
       # - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
       #   uses: actions/checkout@v6
@@ -148,7 +148,7 @@ jobs:
           chmod +x merge_rules.sh
           source ./merge_rules.sh
           
-          # 合并到 y3_proxy_rules@surge 的文件( 数组 )
+          # proxy
           declare -a PROXY_RULES_MERGE=(
             "meta-rules-dat/geo/geosite/classical/google.list"
             "meta-rules-dat/geo/geosite/classical/meta.list"
@@ -164,6 +164,7 @@ jobs:
             "meta-rules-dat/geo/geoip/classical/telegram.list"
           )
 
+          # direct
           declare -a DIRECT_RULES_MERGE=(
             "meta-rules-dat/geo/geosite/classical/icloud@cn.list"
             "meta-rules-dat/geo/geosite/classical/apple@cn.list"
@@ -177,8 +178,12 @@ jobs:
           merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
           merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
 
+          # private
           merge_rules "meta-rules-dat/geo/geosite/classical/private.list" "rule_sync_temp/Surge"
           merge_rules "meta-rules-dat/geo/geoip/classical/private.list" "rule_sync_temp/Surge"
+
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
 
 
 
