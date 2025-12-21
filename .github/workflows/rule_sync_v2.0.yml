@@ -69,11 +69,16 @@ jobs:
             geo/geosite/classical/google.list
             geo/geosite/classical/meta.list
             geo/geosite/classical/telegram.list
+            geo/geosite/classical/tld-!cn.list
             ## DIRECT
             geo/geosite/classical/private.list
             geo/geosite/classical/icloud@cn.list
             geo/geosite/classical/apple@cn.list
+            geo/geosite/classical/tesla@cn.list
             geo/geosite/classical/cn.list
+            geo/geosite/classical/tencent.list
+            geo/geosite/classical/xunlei.list
+            geo/geosite/classical/tld-cn.list
             ## ip
             geo/geoip/classical/cloudflare.list
             geo/geoip/classical/google.list
@@ -131,9 +136,9 @@ jobs:
         run: |
           set -e
 
-          # echo "开始整理 Surge 规则..."
-          # rm -rf rule_sync_temp/Surge
-          # mkdir -p rule_sync_temp/Surge
+          echo "开始整理 Surge 规则..."
+          rm -rf rule_sync_temp/Surge
+          mkdir -p rule_sync_temp/Surge
 
           # echo "AWAvenue-Ads-Rule 规则到目标目录"
           # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
@@ -162,7 +167,11 @@ jobs:
           declare -a DIRECT_RULES_MERGE=(
             "meta-rules-dat/geo/geosite/classical/icloud@cn.list"
             "meta-rules-dat/geo/geosite/classical/apple@cn.list"
+            "meta-rules-dat/geo/geosite/classical/tesla@cn.list"
+            "meta-rules-dat/geo/geosite/classical/tencent.list"
+            "meta-rules-dat/geo/geosite/classical/xunlei.list"
             "meta-rules-dat/geo/geosite/classical/cn.list"
+            "meta-rules-dat/geo/geosite/classical/tld-cn.list"
           )
 
           merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
