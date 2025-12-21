@@ -137,7 +137,8 @@ jobs:
           
       - name: 整理 Surge 规则
         env:
-          METACUBEX_BASE_PATH: "meta-rules-dat/geo/geosite/classical"
+          METACUBEX_DOMIAN_PATH: "meta-rules-dat/geo/geosite/classical"
+          METACUBEX_IP_PATH: "meta-rules-dat/geo/geoip/classical"
         run: |
           set -e
 
@@ -152,29 +153,29 @@ jobs:
           
           # proxy
           declare -a PROXY_RULES_MERGE=(
-            "$METACUBEX_BASE_PATH/google.list"
-            "meta-rules-dat/geo/geosite/classical/meta.list"
-            "meta-rules-dat/geo/geosite/classical/pinterest.list"
-            "meta-rules-dat/geo/geosite/classical/github.list"
-            "meta-rules-dat/geo/geosite/classical/cloudflare.list"
-            "meta-rules-dat/geo/geosite/classical/javbus.list"
-            "meta-rules-dat/geo/geosite/classical/missav.list"
-            "meta-rules-dat/geo/geosite/classical/telegram.list"
-            "meta-rules-dat/geo/geosite/classical/gfw.list"
-            "meta-rules-dat/geo/geoip/classical/cloudflare.list"
-            "meta-rules-dat/geo/geoip/classical/google.list"
-            "meta-rules-dat/geo/geoip/classical/telegram.list"
+            "$METACUBEX_DOMIAN_PATH/google.list"
+            "$METACUBEX_IP_PATH/google.list"
+            "$METACUBEX_DOMIAN_PATH/meta.list"
+            "$METACUBEX_DOMIAN_PATH/pinterest.list"
+            "$METACUBEX_DOMIAN_PATH/github.list"
+            "$METACUBEX_DOMIAN_PATH/cloudflare.list"
+            "$METACUBEX_IP_PATH/cloudflare.list"
+            "$METACUBEX_DOMIAN_PATH/javbus.list"
+            "$METACUBEX_DOMIAN_PATH/missav.list"
+            "$METACUBEX_DOMIAN_PATH/telegram.list"
+            "$METACUBEX_IP_PATH/telegram.list"
+            "$METACUBEX_DOMIAN_PATH/gfw.list"
           )
 
           # direct
           declare -a DIRECT_RULES_MERGE=(
-            "meta-rules-dat/geo/geosite/classical/icloud@cn.list"
-            "meta-rules-dat/geo/geosite/classical/apple@cn.list"
-            "meta-rules-dat/geo/geosite/classical/tesla@cn.list"
-            "meta-rules-dat/geo/geosite/classical/tencent.list"
-            "meta-rules-dat/geo/geosite/classical/xunlei.list"
-            "meta-rules-dat/geo/geosite/classical/cn.list"
-            "meta-rules-dat/geo/geosite/classical/tld-cn.list"
+            "$METACUBEX_DOMIAN_PATH/icloud@cn.list"
+            "$METACUBEX_DOMIAN_PATH/apple@cn.list"
+            "$METACUBEX_DOMIAN_PATH/tesla@cn.list"
+            "$METACUBEX_DOMIAN_PATH/tencent.list"
+            "$METACUBEX_DOMIAN_PATH/xunlei.list"
+            "$METACUBEX_DOMIAN_PATH/cn.list"
+            "$METACUBEX_DOMIAN_PATH/tld-cn.list"
             "Loyalsoldier_surge-rules/ruleset/apple.txt"
           )
 
@@ -182,8 +183,8 @@ jobs:
           merge_rules "DIRECT_RULES_MERGE" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
 
           # private
-          merge_rules "meta-rules-dat/geo/geosite/classical/private.list" "rule_sync_temp/Surge"
-          merge_rules "meta-rules-dat/geo/geoip/classical/private.list" "rule_sync_temp/Surge"
+          merge_rules "$METACUBEX_DOMIAN_PATH/private.list" "rule_sync_temp/Surge"
+          merge_rules "$METACUBEX_IP_PATH/private.list" "rule_sync_temp/Surge"
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
