@@ -95,22 +95,21 @@ jobs:
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
             # ClashMeta
-            Filters/AWAvenue-Ads-Rule-Clash.yaml
+            # Filters/AWAvenue-Ads-Rule-Clash.yaml
             # Surge
             Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
           sparse-checkout-cone-mode: false
 
-      # - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: Loyalsoldier/surge-rules
-      #     ref: release
-      #     fetch-depth: 1
-      #     path: Loyalsoldier_surge-rules
-      #     sparse-checkout: |
-      #       # Surge domain
-      #       ruleset/apple.txt
-      #     sparse-checkout-cone-mode: false
+      - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
+        uses: actions/checkout@v6
+        with:
+          repository: Loyalsoldier/surge-rules
+          ref: release
+          fetch-depth: 1
+          path: Loyalsoldier_surge-rules
+          sparse-checkout: |
+            ruleset/apple.txt
+          sparse-checkout-cone-mode: false
  
       # - name: 整理 ClashMeta 规则
       #   run: |
@@ -139,9 +138,6 @@ jobs:
           echo "开始整理 Surge 规则..."
           rm -rf rule_sync_temp/Surge
           mkdir -p rule_sync_temp/Surge
-
-          # echo "AWAvenue-Ads-Rule 规则到目标目录"
-          # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list rule_sync_temp/Surge/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
           # 引入外部 shell 脚本
           curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
@@ -173,6 +169,7 @@ jobs:
             "meta-rules-dat/geo/geosite/classical/xunlei.list"
             "meta-rules-dat/geo/geosite/classical/cn.list"
             "meta-rules-dat/geo/geosite/classical/tld-cn.list"
+            "Loyalsoldier_surge-rules/ruleset/apple.txt"
           )
 
           merge_rules "PROXY_RULES_MERGE" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
