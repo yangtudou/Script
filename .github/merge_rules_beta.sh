@@ -12,7 +12,8 @@
 
 # 目前主要使用了 MetaCubeX 项目下的 geosite & geoip
 DOMAIN_PATH="${DOMAIN_PATH:-geo/geosite/classical}"
-METACUBEX_SURGE_FILES="${METACUBEX_SURGE_FILES:-geo/*}"
+
+# METACUBEX_SURGE_FILES="${METACUBEX_SURGE_FILES:-geo/*}"
 
 merge_rules() {
     local input="$1"
