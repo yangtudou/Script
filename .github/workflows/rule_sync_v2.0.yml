@@ -157,17 +157,18 @@ jobs:
           
           # proxy
           # 直接完善数组的完整 path
-          echo "${!METACUBEX_SURGE_PROXY_FILES[@]}"
-          for index in "${!METACUBEX_SURGE_PROXY_FILES[@]}"; do
-            echo $index
-            echo METACUBEX_SURGE_PROXY_FILES[$index]
+          echo "$METACUBEX_SURGE_PROXY_FILES"
+          for i in "$METACUBEX_SURGE_PROXY_FILES"; do
+            echo $i
+            echo METACUBEX_SURGE_PROXY_FILES[$i]
+            
           done
           # merge_rules "METACUBEX_SURGE_PROXY_FILES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
-          for i in $METACUBEX_SURGE_DIRECT_FILES; do
-            merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
-          done
+          # for i in $METACUBEX_SURGE_DIRECT_FILES; do
+          #   merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
+          # done
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
