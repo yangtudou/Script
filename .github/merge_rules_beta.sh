@@ -10,11 +10,6 @@
 # 4. 目录 → 目录（合并同名文件）
 # 5. 数组 → 文件（写入内容）
 
-# 目前主要使用了 MetaCubeX 项目下的 geosite & geoip
-DOMAIN_PATH="${DOMAIN_PATH:-geo/geosite/classical}"
-
-# METACUBEX_SURGE_FILES="${METACUBEX_SURGE_FILES:-geo/*}"
-
 merge_rules() {
     local input="$1"
     local output="$2"
