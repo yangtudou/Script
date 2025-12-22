@@ -152,7 +152,11 @@ jobs:
           readarray -t PROXY_RULES << "EOF"
           ${{ env.METACUBEX_SURGE_PROXY_FILES }}
           EOF
-        
+
+          echo "${{ env.METACUBEX_SURGE_PROXY_FILES }}"
+          echo "${!PROXY_RULES[@]}"
+          echo "${#PROXY_RULES[@]}"
+
           # 完善路径
           for index in "${!PROXY_RULES[@]}"; do
             echo "当前索引: $index"
