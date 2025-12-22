@@ -152,12 +152,15 @@ jobs:
           readarray -t PROXY_RULES <<< "${{ env.METACUBEX_SURGE_PROXY_FILES }}"
 
           # 完善路径
-          for index in "${PROXY_RULES[@]:0:$((${#PROXY_RULES[@]}-1))}"; do
-            echo "当前索引: $index"
-            echo "索引对应的原始值: '${PROXY_RULES[$index]}'"
-            PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
-            echo "拼接后的新值: '${PROXY_RULES[$index]}"
-            echo "----"
+          
+          # 使用数组切片获取除最后一个元素外的所有元素，然后遍历
+          for element in "${PROXY_RULES[@]:0:$((${#PROXY_RULES[@]}-1))}"; do
+              echo "当前元素: '$element'"
+              # 注意：在此循环中，您无法直接修改数组中的原始元素。
+              # 下面的操作只改变了变量element，而非PROXY_RULES数组内的值。
+              new_value="$METACUBEX_BASE_DIR/$element"
+              echo "拼接后的新值: '$new_value'"
+              echo "----"
           done
           # 合并到 y3_proxy_rules@surge.list
           # merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
