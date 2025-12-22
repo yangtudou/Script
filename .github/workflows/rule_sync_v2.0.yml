@@ -157,7 +157,7 @@ jobs:
           
           # proxy
           # 读取变量中的内容转化为数组
-          readarray -t PROXY_RULES << "$METACUBEX_SURGE_PROXY_FILES"
+          readarray -d $'\n' -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
           # 完善路径
           for index in "${!PROXY_RULES[@]}"; do
             echo "当前索引: $index"
