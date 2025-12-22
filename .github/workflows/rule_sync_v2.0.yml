@@ -44,7 +44,6 @@ jobs:
         geo/geoip/classical/telegram.list
         geo/geosite/classical/google.list
         geo/geoip/classical/google.list
-        
       METACUBEX_SURGE_DIRECT_FILES: |
         geo/geosite/classical/icloud@cn.list
         geo/geosite/classical/apple@cn.list
@@ -157,7 +156,7 @@ jobs:
           
           # proxy
           # 读取变量中的内容转化为数组
-          readarray -d $'\n' -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
+          readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
           # 完善路径
           for index in "${!PROXY_RULES[@]}"; do
             echo "当前索引: $index"
