@@ -158,7 +158,9 @@ jobs:
           chmod +x merge_rules.sh
           source ./merge_rules.sh
 
-          echo "来自 shell 脚本 的变量：$METACUBEX_SURGE_FILES"
+          for i in $METACUBEX_SURGE_FILES; do
+            echo "来自 shell 脚本 的变量：$i"
+          done
           
           # proxy
           declare -a PROXY_RULES_MERGE=(
