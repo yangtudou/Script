@@ -99,6 +99,7 @@ jobs:
             # Filters/AWAvenue-Ads-Rule-Clash.yaml
             # Surge
             Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+
           sparse-checkout-cone-mode: false
 
       - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
@@ -110,6 +111,7 @@ jobs:
           path: Loyalsoldier_surge-rules
           sparse-checkout: |
             ruleset/apple.txt
+
           sparse-checkout-cone-mode: false
  
       # - name: 整理 ClashMeta 规则
@@ -147,25 +149,10 @@ jobs:
           
           # proxy
           action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
-
-          # readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
-          # 读取 github action 定义的 env 输出到数组最后总会多一个空的
-          # unset PROXY_RULES[-1]
-
-          # for index in "${!PROXY_RULES[@]}"; do
-            # PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
-          # done
-
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
-          readarray -t DIRECT_RULES <<< "$METACUBEX_SURGE_DIRECT_FILES"
-          unset DIRECT_RULES[-1]
-
-          for index in "${!DIRECT_RULES[@]}"; do
-            DIRECT_RULES[$index]="$METACUBEX_BASE_DIR/${DIRECT_RULES[$index]}"
-          done
-
+          action_env_to_array_fix "$METACUBEX_SURGE_DIRECT_FILES" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
           merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
 
           # AWAvenue-Ads-Rule
