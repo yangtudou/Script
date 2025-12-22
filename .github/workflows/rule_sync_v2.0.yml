@@ -146,13 +146,15 @@ jobs:
           source ./merge_rules.sh
           
           # proxy
-          readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
-          # 读取 github action 定义的 env 输出到数组最后总会多一个空的
-          unset PROXY_RULES[-1]
+          action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
 
-          for index in "${!PROXY_RULES[@]}"; do
-            PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
-          done
+          # readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
+          # 读取 github action 定义的 env 输出到数组最后总会多一个空的
+          # unset PROXY_RULES[-1]
+
+          # for index in "${!PROXY_RULES[@]}"; do
+            # PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
+          # done
 
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
