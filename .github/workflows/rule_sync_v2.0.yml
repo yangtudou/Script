@@ -152,12 +152,16 @@ jobs:
           mkdir -p rule_sync_temp/Surge
 
           
-          echo "${{ env.SURGE_GEOSITE_PATH }}"
+          echo "来自 yaml 的变量：${{ env.SURGE_GEOSITE_PATH }}"
+
+          
 
           # 引入外部 shell 脚本
           curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
           chmod +x merge_rules.sh
           source ./merge_rules.sh
+
+          echo "来自 Jshell脚本 的变量：$DOMAIN_PATH"
           
           # proxy
           declare -a PROXY_RULES_MERGE=(
