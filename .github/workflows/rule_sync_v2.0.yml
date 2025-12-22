@@ -156,8 +156,13 @@ jobs:
           source ./merge_rules.sh
           
           # proxy
-          # 读取变量中的内容
+          # 读取变量中的内容转化为数组
           readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
+          # 完善路径
+          for index in "${!PROXY_RULES[@]}"; do
+            PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
+          done
+          # 合并到 y3_proxy_rules@surge.list
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
