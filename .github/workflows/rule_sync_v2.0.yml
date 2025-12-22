@@ -158,7 +158,7 @@ jobs:
           echo "${#PROXY_RULES[@]}"
 
           # 完善路径
-          for index in "${!PROXY_RULES[@]}"; do
+          for index in "${PROXY_RULES[@]:0:${#PROXY_RULES[@]}-1}"; do
             echo "当前索引: $index"
             echo "索引对应的原始值: '${PROXY_RULES[$index]}'"
             PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
