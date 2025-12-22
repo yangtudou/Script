@@ -17,6 +17,10 @@ on:
   #   - cron: '0 22 * * *'
   workflow_dispatch:
 
+env:
+  SURGE_GEOSITE_PATH: "geo/geosite/classical"
+
+
 permissions:
   contents: write
   actions: write
@@ -146,6 +150,9 @@ jobs:
           echo "开始整理 Surge 规则..."
           rm -rf rule_sync_temp/Surge
           mkdir -p rule_sync_temp/Surge
+
+          
+          echo "${{ env.SURGE_GEOSITE_PATH }}"
 
           # 引入外部 shell 脚本
           curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
