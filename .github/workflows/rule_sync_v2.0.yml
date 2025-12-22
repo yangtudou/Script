@@ -156,8 +156,12 @@ jobs:
           source ./merge_rules.sh
           
           # proxy
-          # 直接完善数组的完整 path
-          merge_rules "METACUBEX_SURGE_PROXY_FILES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          # 读取变量中的内容
+          declare -a PROXY_RULES
+          for i in "$METACUBEX_SURGE_DIRECT_FILES"; do
+            PROXY_RULES+=("$METACUBEX_BASE_DIR/$i")
+          done
+          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
           # for i in $METACUBEX_SURGE_DIRECT_FILES; do
