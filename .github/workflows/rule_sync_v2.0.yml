@@ -146,20 +146,23 @@ jobs:
           source ./merge_rules.sh
           
           # proxy
-          # 读取变量中的内容转化为数组
           readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
+          # 读取 github action 定义的 env 输出到数组最后总会多一个空的
           unset PROXY_RULES[-1]
-          # 完善路径
+
           for index in "${!PROXY_RULES[@]}"; do
             PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
           done
-          # 合并到 y3_proxy_rules@surge.list
+
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
-          # for i in $METACUBEX_SURGE_DIRECT_FILES; do
-          #   merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
-          # done
+          readarray -t DIRECT_RULES <<< "$METACUBEX_SURGE_DIRECT_FILES"
+          unset DIRECT_RULES[-1]
+
+          for index in "${!DIRECT_RULES[@]}"; do
+            DIRECT_RULES[$index]="$METACUBEX_BASE_DIR/${DIRECT_RULES[$index]}"
+          done
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
