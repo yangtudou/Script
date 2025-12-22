@@ -163,7 +163,7 @@ jobs:
             echo "当前索引: $index"
             echo "索引对应的原始值: '${PROXY_RULES[$index]}'"
             PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
-            echo "拼接后的新值: '$PROXY_RULES"
+            echo "拼接后的新值: 'PROXY_RULES[$index]"
             echo "----"
           done
           # 合并到 y3_proxy_rules@surge.list
