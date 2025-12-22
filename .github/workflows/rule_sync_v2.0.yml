@@ -164,6 +164,8 @@ jobs:
             DIRECT_RULES[$index]="$METACUBEX_BASE_DIR/${DIRECT_RULES[$index]}"
           done
 
+          merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
+
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
 
