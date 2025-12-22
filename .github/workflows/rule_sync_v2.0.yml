@@ -17,10 +17,6 @@ on:
   #   - cron: '0 22 * * *'
   workflow_dispatch:
 
-env:
-  SURGE_GEOSITE_PATH: "geo/geosite/classical"
-
-
 permissions:
   contents: write
   actions: write
