@@ -163,7 +163,7 @@ jobs:
             echo "$METACUBEX_BASE_DIR/$i"
             PROXY_RULES+="$METACUBEX_BASE_DIR/$i"
           done
-          echo "PROXY_RULES"
+          echo "$PROXY_RULES"
           # merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
