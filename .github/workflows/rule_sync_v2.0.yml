@@ -157,12 +157,12 @@ jobs:
           
           # proxy
           for i in $METACUBEX_SURGE_PROXY_FILES; do
-            merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+            merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge"
           done
 
           # direct
           for i in $METACUBEX_SURGE_DIRECT_FILES; do
-            merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
+            merge_rules "$METACUBEX_BASE_DIR/$i" "rule_sync_temp/Surge"
           done
 
           # AWAvenue-Ads-Rule
