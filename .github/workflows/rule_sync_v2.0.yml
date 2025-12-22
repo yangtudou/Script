@@ -24,6 +24,7 @@ permissions:
 env:
   METACUBEX_BASE_DIR: "meta-rules-dat"
   METACUBEX_SURGE_PROXY_FILES: |
+
     geo/geosite/classical/missav.list
     geo/geosite/classical/javbus.list
     geo/geosite/classical/gfw.list
