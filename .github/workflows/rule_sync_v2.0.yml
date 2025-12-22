@@ -24,7 +24,6 @@ permissions:
 env:
   METACUBEX_BASE_DIR: "meta-rules-dat"
   METACUBEX_SURGE_PROXY_FILES: |
-
     geo/geosite/classical/missav.list
     geo/geosite/classical/javbus.list
     geo/geosite/classical/gfw.list
@@ -151,6 +150,7 @@ jobs:
           # proxy
           # 读取变量中的内容转化为数组
           readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
+          PROXY_RULES[-1]="${PROXY_RULES[-1]//[[:space:]]/}"
           # 完善路径
           for index in "${!PROXY_RULES[@]}"; do
             echo "当前索引: $index"
