@@ -140,8 +140,6 @@ jobs:
           rm -rf rule_sync_temp/Surge
           mkdir -p rule_sync_temp/Surge
 
-          
-
           # 引入外部 shell 脚本
           curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
           chmod +x merge_rules.sh
@@ -152,17 +150,11 @@ jobs:
           readarray -t PROXY_RULES <<< "$METACUBEX_SURGE_PROXY_FILES"
           unset PROXY_RULES[-1]
           # 完善路径
-          
-          # 使用数组切片获取除最后一个元素外的所有元素，然后遍历
           for index in "${!PROXY_RULES[@]}"; do
-              echo "当前索引: $index"
-              echo "索引对应的原始值: '${PROXY_RULES[$index]}'"
-              PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
-              echo "拼接后的新值: '${PROXY_RULES[$index]}'"
-              echo "----"
+            PROXY_RULES[$index]="$METACUBEX_BASE_DIR/${PROXY_RULES[$index]}"
           done
           # 合并到 y3_proxy_rules@surge.list
-          # merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
           # for i in $METACUBEX_SURGE_DIRECT_FILES; do
