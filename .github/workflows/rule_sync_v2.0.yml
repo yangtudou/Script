@@ -160,7 +160,9 @@ jobs:
           for i in $METACUBEX_SURGE_PROXY_FILES; do
             echo "$METACUBEX_BASE_DIR/$i"
           done
-          echo "${#METACUBEX_SURGE_PROXY_FILES[@]}"
+          echo "${METACUBEX_SURGE_PROXY_FILES[0]}"
+          echo "${METACUBEX_SURGE_PROXY_FILES[1]}"
+          echo "${METACUBEX_SURGE_PROXY_FILES[0][0]}"
           # merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
 
           # direct
