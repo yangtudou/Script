@@ -10,6 +10,36 @@
 # 4. 目录 → 目录（合并同名文件）
 # 5. 数组 → 文件（写入内容）
 
+
+# 把 Github Action yaml 配置中的环境变量转化为数组
+action_env_to_array_fix() {
+    local input_env="$1"
+    local output_array_name="$2"
+    local base_dir="${3:-}"
+    
+    # 使用 nameref 声明一个对目标数组的引用
+    local -n output_array="$output_array_name"
+    
+    # 清空目标数组，避免之前的内容干扰
+    output_array=()
+    
+    # 将环境变量的值按行读入数组引用
+    readarray -t output_array <<< "$input_env"
+    
+    # 如果数组不为空，则删除最后一个元素
+    if [ ${#output_array[@]} -gt 0 ]; then
+        unset 'output_array[-1]'
+    fi
+    
+    if [[ -n "$base_dir" ]]; then
+        for index in "${!output_array[@]}"; do
+            output_array["$index"]="$base_dir/${output_array[$index]}"
+        done
+    fi
+}
+
+
+
 merge_rules() {
     local input="$1"
     local output="$2"
