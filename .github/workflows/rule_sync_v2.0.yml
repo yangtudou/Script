@@ -21,57 +21,53 @@ permissions:
   contents: write
   actions: write
 
-env:
-  METACUBEX_BASE_DOMAIN_PATH: "geo/geosite"
-  METACUBEX_BASE_IP_PATH: "geo/geoip"
-
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
     env:
       METACUBEX_SURGE_FILES: |
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/missav.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/javbus.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/gfw.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/pinterest.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/cloudflare.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/github.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/google.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/meta.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/telegram.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/tld-!cn.list
+        geo/geosite/classical/missav.list
+        geo/geosite/classical/javbus.list
+        geo/geosite/classical/gfw.list
+        geo/geosite/classical/pinterest.list
+        geo/geosite/classical/cloudflare.list
+        geo/geosite/classical/github.list
+        geo/geosite/classical/google.list
+        geo/geosite/classical/meta.list
+        geo/geosite/classical/telegram.list
+        geo/geosite/classical/tld-!cn.list
         # DIRECT
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/private.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/icloud@cn.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/apple@cn.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/tesla@cn.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/cn.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/tencent.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/xunlei.list
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/classical/tld-cn.list
+        geo/geosite/classical/private.list
+        geo/geosite/classical/icloud@cn.list
+        geo/geosite/classical/apple@cn.list
+        geo/geosite/classical/tesla@cn.list
+        geo/geosite/classical/cn.list
+        geo/geosite/classical/tencent.list
+        geo/geosite/classical/xunlei.list
+        geo/geosite/classical/tld-cn.list
         # ip
-        ${{ METACUBEX_BASE_IP_PATH }}/classical/cloudflare.list
-        ${{ METACUBEX_BASE_IP_PATH }}/classical/google.list
-        ${{ METACUBEX_BASE_IP_PATH }/classical}/private.list
-        ${{ METACUBEX_BASE_IP_PATH }}/classical/telegram.list
-        ${{ METACUBEX_BASE_IP_PATH }}/classical/cn.list
+        geo/geoip/classical/cloudflare.list
+        geo/geoip/classical/google.list
+        geo/geoip/classical/private.list
+        geo/geoip/classical/telegram.list
+        geo/geoip/classical/cn.list
 
       CUBEMETAX_CLASH_FILES: |
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/geolocation-!cn.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/cn.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/google.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/telegram.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/github.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/apple.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/meta.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/private.yaml
-        ${{ METACUBEX_BASE_DOMAIN_PATH }}/cloudflare.yaml
+        geo/geosite/geolocation-!cn.yaml
+        geo/geosite/cn.yaml
+        geo/geosite/google.yaml
+        geo/geosite/telegram.yaml
+        geo/geosite/github.yaml
+        geo/geosite/apple.yaml
+        geo/geosite/meta.yaml
+        geo/geosite/private.yaml
+        geo/geosite/cloudflare.yaml
         # ip
-        ${{ METACUBEX_BASE_IP_PATH }}/cloudflare.yaml
-        ${{ METACUBEX_BASE_IP_PATH }}/cn.yaml
-        ${{ METACUBEX_BASE_IP_PATH }}/google.yaml
-        ${{ METACUBEX_BASE_IP_PATH }}/private.yaml
-        ${{ METACUBEX_BASE_IP_PATH }}/telegram.yaml
+        geo/geoip/cloudflare.yaml
+        geo/geoip/cn.yaml
+        geo/geoip/google.yaml
+        geo/geoip/private.yaml
+        geo/geoip/telegram.yaml
 
 
     steps:
@@ -142,8 +138,8 @@ jobs:
           
       - name: 整理 Surge 规则
         env:
-          METACUBEX_DOMIAN_PATH: "meta-rules-dat/${{ METACUBEX_BASE_DOMAIN_PATH }}/classical"
-          METACUBEX_IP_PATH: "meta-rules-dat/${{ METACUBEX_BASE_IP_PATH }}/classical"
+          METACUBEX_DOMIAN_PATH: "meta-rules-dat/geo/geosite/classical"
+          METACUBEX_IP_PATH: "meta-rules-dat/geo/geoip/classical"
         run: |
           set -e
 
