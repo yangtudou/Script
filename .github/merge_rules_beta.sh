@@ -363,26 +363,12 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（调试版）
+# 4. 目录 -> 目录（修复版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
     echo "处理目录: $input → $output"
-    
-    # 添加详细的调试信息
-    echo "=== 调试信息 ==="
-    echo "输入目录: '$input'"
-    echo "输出目录: '$output'"
-    echo "当前工作目录: $(pwd)"
-    echo "输入目录存在: $([[ -e "$input" ]] && echo "是" || echo "否")"
-    echo "输入目录是目录: $([[ -d "$input" ]] && echo "是" || echo "否")"
-    echo "输入目录可读: $([[ -r "$input" ]] && echo "是" || echo "否")"
-    echo "输入目录权限: $(ls -ld "$input" 2>/dev/null || echo "无法访问")"
-    echo "输出目录存在: $([[ -e "$output" ]] && echo "是" || echo "否")"
-    echo "输出目录是目录: $([[ -d "$output" ]] && echo "是" || echo "否")"
-    echo "输出目录可写: $([[ -w "$output" ]] && echo "是" || echo "否")"
-    echo "=== 调试结束 ==="
     
     # 基本检查
     if [[ ! -d "$input" ]]; then
@@ -401,12 +387,37 @@ _handle_directory_to_directory() {
         return 1
     }
     
-    # 使用简单的 find 和循环
+    # 查找文件 - 添加错误处理
+    echo "开始查找文件..."
+    local files
+    files=$(find "$input" -type f 2>/dev/null)
+    local find_result=$?
+    
+    if [[ $find_result -ne 0 ]]; then
+        echo "错误: 查找文件失败" >&2
+        return 1
+    fi
+    
+    if [[ -z "$files" ]]; then
+        echo "警告: 输入目录中没有找到任何文件"
+        return 0
+    fi
+    
+    # 处理文件
     local -i count=0
+    local -i success_count=0
+    
     while IFS= read -r file; do
         [[ -z "$file" ]] && continue
         ((count++))
         
+        # 检查文件是否存在且可读
+        if [[ ! -f "$file" ]] || [[ ! -r "$file" ]]; then
+            echo "[$count] 跳过: 文件不可读 - $file"
+            continue
+        fi
+        
+        # 获取相对路径
         local rel_path="${file#$input/}"
         local target="$output/$rel_path"
         local target_dir=$(dirname "$target")
@@ -414,20 +425,35 @@ _handle_directory_to_directory() {
         echo "[$count] 处理: $rel_path"
         
         # 创建目标目录
-        mkdir -p "$target_dir" || continue
+        mkdir -p "$target_dir" || {
+            echo "  错误: 无法创建目标目录" >&2
+            continue
+        }
         
         # 复制或追加文件
         if [[ -f "$target" ]]; then
             # 追加内容
-            [[ $(tail -c 1 "$target") != $'\n' ]] && echo "" >> "$target"
-            cat "$file" >> "$target" && echo "  ✓ 追加成功"
+            [[ $(tail -c 1 "$target" 2>/dev/null) != $'\n' ]] && echo "" >> "$target" 2>/dev/null
+            if cat "$file" >> "$target" 2>/dev/null; then
+                echo "  ✓ 追加成功"
+                ((success_count++))
+            else
+                echo "  ✗ 追加失败" >&2
+            fi
         else
             # 复制文件
-            cp "$file" "$target" && echo "  ✓ 复制成功"
+            if cp "$file" "$target" 2>/dev/null; then
+                echo "  ✓ 复制成功"
+                ((success_count++))
+            else
+                echo "  ✗ 复制失败" >&2
+            fi
         fi
-    done < <(find "$input" -type f)
+    done <<< "$files"
     
-    echo "完成: 处理了 $count 个文件"
+    echo "完成: 成功处理 $success_count/$count 个文件"
+    
+    # 即使没有成功处理任何文件，也返回0（表示操作完成）
     return 0
 }
 
