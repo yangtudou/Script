@@ -381,7 +381,7 @@ _handle_directory_to_directory() {
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
 
     for i in ${!source_files[@]}; do
-        echo "$i"
+        echo "source_files[$i]"
     done
     
     
