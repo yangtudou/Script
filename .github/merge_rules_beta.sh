@@ -381,8 +381,10 @@ _handle_directory_to_directory() {
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
     
     echo "数组内容预览:"
+    echo "${!source_files[@]}"
+    echo ""
     for i in "${!source_files[@]}"; do
-        echo "${array_files[$i]}"
+        echo "${source_files[$i]}"
     done
     
     
