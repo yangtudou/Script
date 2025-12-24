@@ -377,7 +377,7 @@ _handle_directory_to_directory() {
     local source_files=()
     while IFS= read -r -d '' file; do
         source_files+=("$file")
-    done < <(find "$source_dir" -type f -print0 2>/dev/null)
+    done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
 
 
     echo "找到 ${#source_files[@]} 个待处理文件。"
