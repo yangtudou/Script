@@ -363,7 +363,7 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（修复版）
+# 4. 目录 -> 目录（详细调试版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
@@ -387,21 +387,30 @@ _handle_directory_to_directory() {
         return 1
     }
     
-    # 查找文件 - 添加错误处理
+    # 查找文件
     echo "开始查找文件..."
-    local files
-    files=$(find "$input" -type f 2>/dev/null)
+    find "$input" -type f > /tmp/find_output.txt 2>&1
     local find_result=$?
+    
+    echo "find命令退出码: $find_result"
+    echo "find命令输出:"
+    cat /tmp/find_output.txt
     
     if [[ $find_result -ne 0 ]]; then
         echo "错误: 查找文件失败" >&2
         return 1
     fi
     
+    local files=$(cat /tmp/find_output.txt)
+    rm -f /tmp/find_output.txt
+    
     if [[ -z "$files" ]]; then
         echo "警告: 输入目录中没有找到任何文件"
         return 0
     fi
+    
+    echo "找到文件:"
+    echo "$files"
     
     # 处理文件
     local -i count=0
@@ -411,9 +420,16 @@ _handle_directory_to_directory() {
         [[ -z "$file" ]] && continue
         ((count++))
         
+        echo "处理文件 [$count]: $file"
+        
         # 检查文件是否存在且可读
-        if [[ ! -f "$file" ]] || [[ ! -r "$file" ]]; then
-            echo "[$count] 跳过: 文件不可读 - $file"
+        if [[ ! -f "$file" ]]; then
+            echo "  错误: 文件不存在"
+            continue
+        fi
+        
+        if [[ ! -r "$file" ]]; then
+            echo "  错误: 文件不可读"
             continue
         fi
         
@@ -422,7 +438,8 @@ _handle_directory_to_directory() {
         local target="$output/$rel_path"
         local target_dir=$(dirname "$target")
         
-        echo "[$count] 处理: $rel_path"
+        echo "  相对路径: $rel_path"
+        echo "  目标路径: $target"
         
         # 创建目标目录
         mkdir -p "$target_dir" || {
@@ -433,6 +450,7 @@ _handle_directory_to_directory() {
         # 复制或追加文件
         if [[ -f "$target" ]]; then
             # 追加内容
+            echo "  目标文件已存在，执行追加操作"
             [[ $(tail -c 1 "$target" 2>/dev/null) != $'\n' ]] && echo "" >> "$target" 2>/dev/null
             if cat "$file" >> "$target" 2>/dev/null; then
                 echo "  ✓ 追加成功"
@@ -442,6 +460,7 @@ _handle_directory_to_directory() {
             fi
         else
             # 复制文件
+            echo "  目标文件不存在，执行复制操作"
             if cp "$file" "$target" 2>/dev/null; then
                 echo "  ✓ 复制成功"
                 ((success_count++))
@@ -452,8 +471,6 @@ _handle_directory_to_directory() {
     done <<< "$files"
     
     echo "完成: 成功处理 $success_count/$count 个文件"
-    
-    # 即使没有成功处理任何文件，也返回0（表示操作完成）
     return 0
 }
 
