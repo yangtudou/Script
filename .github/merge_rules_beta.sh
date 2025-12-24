@@ -371,7 +371,7 @@ _handle_directory_to_directory() {
     
     echo "当前模式: 目录 -> 目录 "
     echo "来源目录: $source_dir"
-    exho "目标目录: $target_dir"
+    echo "目标目录: $target_dir"
     
     # 把来源目录内的文件做成数组
     local source_files=()
