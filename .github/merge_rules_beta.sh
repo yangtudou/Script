@@ -363,21 +363,43 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（最简化版）
+# 4. 目录 -> 目录（调试版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
     echo "处理目录: $input → $output"
     
+    # 添加详细的调试信息
+    echo "=== 调试信息 ==="
+    echo "输入目录: '$input'"
+    echo "输出目录: '$output'"
+    echo "当前工作目录: $(pwd)"
+    echo "输入目录存在: $([[ -e "$input" ]] && echo "是" || echo "否")"
+    echo "输入目录是目录: $([[ -d "$input" ]] && echo "是" || echo "否")"
+    echo "输入目录可读: $([[ -r "$input" ]] && echo "是" || echo "否")"
+    echo "输入目录权限: $(ls -ld "$input" 2>/dev/null || echo "无法访问")"
+    echo "输出目录存在: $([[ -e "$output" ]] && echo "是" || echo "否")"
+    echo "输出目录是目录: $([[ -d "$output" ]] && echo "是" || echo "否")"
+    echo "输出目录可写: $([[ -w "$output" ]] && echo "是" || echo "否")"
+    echo "=== 调试结束 ==="
+    
     # 基本检查
-    [[ -d "$input" && -r "$input" ]] || {
-        echo "错误: 输入目录无效" >&2
+    if [[ ! -d "$input" ]]; then
+        echo "错误: 输入目录不存在或不是目录 - $input" >&2
         return 1
-    }
+    fi
+    
+    if [[ ! -r "$input" ]]; then
+        echo "错误: 输入目录不可读 - $input" >&2
+        return 1
+    fi
     
     # 确保输出目录存在
-    mkdir -p "$output" || return 1
+    mkdir -p "$output" || {
+        echo "错误: 无法创建输出目录 - $output" >&2
+        return 1
+    }
     
     # 使用简单的 find 和循环
     local -i count=0
