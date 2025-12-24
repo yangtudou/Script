@@ -377,15 +377,22 @@ _handle_directory_to_directory() {
     # 把来源目录内的文件做成数组
     local source_files=()
     while IFS= read -r -d '' file; do
-        source_files+=("$file")
+        # 提取不含路径的文件名称
+        local filename=$(basename "$file")
+        
+        # 构架目标目录完整路径
+        # 用于比较同名文件
+        local target_dir_file="$target_dir/$filename"
+        
+        if [[ -e "$target_dir_file" ]]; then
+            echo "文件已存在，开启追加: $filename"
+            cat "$file" >> "$target_dir_file"
+        else
+            echo "目标文件不存在同名问价"
+            echo "开启移动模式"
+            mv "$file" "$target_dir_file"
+        fi
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
-    
-    echo "数组内容预览:"
-    echo "${!source_files[@]}"
-    echo ""
-    for i in "${!source_files[@]}"; do
-        echo "${source_files[$i]}"
-    done
     
     
 
