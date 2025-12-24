@@ -363,127 +363,50 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（修复版）
+# 4. 目录 -> 目录（最简化版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
     echo "处理目录: $input → $output"
     
-    # 基本检查 - 修复输入目录检查
-    if [[ ! -d "$input" ]]; then
-        echo "错误: 输入目录不存在 - $input"
+    # 基本检查
+    [[ -d "$input" && -r "$input" ]] || {
+        echo "错误: 输入目录无效" >&2
         return 1
-    fi
-    
-    if [[ ! -r "$input" ]]; then
-        echo "错误: 输入目录不可读 - $input"
-        return 1
-    fi
+    }
     
     # 确保输出目录存在
-    if [[ ! -d "$output" ]]; then
-        echo "创建输出目录: $output"
-        if ! mkdir -p "$output"; then
-            echo "错误: 无法创建输出目录"
-            return 1
-        fi
-    fi
+    mkdir -p "$output" || return 1
     
-    if [[ ! -w "$output" ]]; then
-        echo "错误: 输出目录不可写"
-        return 1
-    fi
-    
-    echo "开始扫描输入目录..."
-    
-    # 查找所有文件
-    local files=()
-    while IFS= read -r -d '' file; do
-        files+=("$file")
-    done < <(find "$input" -type f -print0 2>/dev/null)
-    
-    local total_count=${#files[@]}
-    
-    if [[ $total_count -eq 0 ]]; then
-        echo "警告: 输入目录中没有找到任何文件"
-        return 0
-    fi
-    
-    echo "找到 $total_count 个文件需要处理"
-    
-    # 处理文件
-    local -i success_count=0
-    local -i processed_count=0
-    
-    for file in "${files[@]}"; do
-        ((processed_count++))
+    # 使用简单的 find 和循环
+    local -i count=0
+    while IFS= read -r file; do
+        [[ -z "$file" ]] && continue
+        ((count++))
         
-        # 获取相对路径
         local rel_path="${file#$input/}"
         local target="$output/$rel_path"
         local target_dir=$(dirname "$target")
         
-        echo "[$processed_count/$total_count] 处理: $rel_path"
+        echo "[$count] 处理: $rel_path"
         
-        # 确保目标目录存在
-        if [[ ! -d "$target_dir" ]]; then
-            if ! mkdir -p "$target_dir"; then
-                echo "  错误: 无法创建目标目录"
-                continue
-            fi
-        fi
+        # 创建目标目录
+        mkdir -p "$target_dir" || continue
         
-        # 检查源文件
-        if [[ ! -f "$file" ]] || [[ ! -r "$file" ]]; then
-            echo "  错误: 源文件不可读"
-            continue
-        fi
-        
-        # 根据目标文件是否存在选择操作
+        # 复制或追加文件
         if [[ -f "$target" ]]; then
-            # 目标文件已存在，追加内容
-            
-            # 检查目标文件末尾是否有换行符
-            local last_char=$(tail -c 1 "$target" 2>/dev/null | od -An -tx1 | tr -d ' \n' 2>/dev/null || echo "")
-            if [[ "$last_char" != "0a" ]]; then
-                # 添加分隔符
-                echo "" >> "$target" || {
-                    echo "  错误: 无法添加分隔符"
-                    continue
-                }
-            fi
-            
             # 追加内容
-            if cat "$file" >> "$target"; then
-                echo "  ✓ 内容追加成功"
-                ((success_count++))
-            else
-                echo "  ✗ 内容追加失败"
-            fi
+            [[ $(tail -c 1 "$target") != $'\n' ]] && echo "" >> "$target"
+            cat "$file" >> "$target" && echo "  ✓ 追加成功"
         else
-            # 目标文件不存在，复制文件
-            if cp "$file" "$target"; then
-                echo "  ✓ 文件复制成功"
-                ((success_count++))
-            else
-                echo "  ✗ 文件复制失败"
-            fi
+            # 复制文件
+            cp "$file" "$target" && echo "  ✓ 复制成功"
         fi
-    done
+    done < <(find "$input" -type f)
     
-    echo ""
-    echo "处理完成:"
-    echo "  总共处理: $processed_count 个文件"
-    echo "  成功: $success_count 个"
-    echo "  失败: $((processed_count - success_count)) 个"
-    
-    if [[ $success_count -gt 0 ]]; then
-        return 0
-    else
-        echo "错误: 没有文件处理成功"
-        return 1
-    fi
+    echo "完成: 处理了 $count 个文件"
+    return 0
 }
 
 #######################################################################
