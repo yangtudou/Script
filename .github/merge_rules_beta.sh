@@ -361,111 +361,115 @@ _handle_directory_to_file() {
     fi
 }
 
-# 5. 目录 -> 目录
+#######################################################################
+#============================ 目录 -> 目录 ============================#
+# 4. 目录 -> 目录（完整独立版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
-    echo "处理: 目录 -> 目录"
-    echo "输入目录: $input"
-    echo "输出目录: $output"
+    echo "处理目录: $input → $output"
     
-    # 检查输入目录是否为空
-    if [[ -z "$(ls -A "$input" 2>/dev/null)" ]]; then
-        echo "警告: 输入目录为空，没有内容可处理" >&2
-        return 0
+    # 基本检查
+    if [[ ! -d "$input" ]] || [[ ! -r "$input" ]]; then
+        echo "错误: 输入目录无效" >&2
+        return 1
     fi
     
-    # 检查输出目录是否可写
-    if [[ ! -w "$output" ]]; then
+    # 确保输出目录存在
+    local output_dir=$(dirname "$output")
+    if [[ ! -d "$output_dir" ]]; then
+        echo "创建输出目录: $output_dir"
+        if ! mkdir -p "$output_dir"; then
+            echo "错误: 无法创建输出目录" >&2
+            return 1
+        fi
+    fi
+    
+    if [[ ! -w "$output_dir" ]]; then
         echo "错误: 输出目录不可写" >&2
         return 1
     fi
     
-    # 统计变量
-    local processed_count=0
-    local moved_count=0
-    local merged_count=0
-    local error_count=0
+    # 处理文件
+    local -i success_count=0
+    local -i total_count=0
     
-    echo "开始处理目录内容..."
-    
-    # 使用 find 命令递归查找输入目录中的所有文件
+    # 查找所有文件
     while IFS= read -r -d '' file; do
-        ((processed_count++))
-        
-        # 获取相对于输入目录的相对路径
+        ((total_count++))
         local rel_path="${file#$input/}"
-        local target_file="$output/$rel_path"
-        local target_dir=$(dirname "$target_file")
+        local target="$output/$rel_path"
+        local target_dir=$(dirname "$target")
         
-        echo "处理文件: $rel_path"
+        echo "处理文件 [$total_count]: $rel_path"
         
         # 确保目标目录存在
         if [[ ! -d "$target_dir" ]]; then
-            mkdir -p "$target_dir" || {
-                echo "  × 创建目录失败: $target_dir" >&2
-                ((error_count++))
+            if ! mkdir -p "$target_dir"; then
+                echo "  错误: 无法创建目标目录" >&2
                 continue
-            }
+            fi
         fi
         
-        # 检查目标文件是否已存在
-        if [[ -f "$target_file" ]]; then
+        # 检查源文件
+        if [[ ! -f "$file" ]] || [[ ! -r "$file" ]]; then
+            echo "  错误: 源文件不可读" >&2
+            continue
+        fi
+        
+        # 根据目标文件是否存在选择操作
+        if [[ -f "$target" ]]; then
             # 目标文件已存在，追加内容
-            echo "  存在同名文件，追加内容"
-            if cat "$file" >> "$target_file" 2>/dev/null; then
-                ((merged_count++))
-                echo "  √ 内容追加成功"
-                # 删除原文件（因为已经合并）
-                rm -f "$file"
+            
+            # 检查目标文件末尾是否有换行符
+            local last_char=$(tail -c 1 "$target" 2>/dev/null | od -An -tx1 | tr -d ' \n' 2>/dev/null || echo "")
+            if [[ "$last_char" != "0a" ]]; then
+                # 添加分隔符
+                echo "" >> "$target"
+            fi
+            
+            # 追加内容
+            if cat "$file" >> "$target"; then
+                echo "  ✓ 内容追加成功"
+                ((success_count++))
             else
-                echo "  × 内容追加失败" >&2
-                ((error_count++))
+                echo "  ✗ 内容追加失败" >&2
             fi
         else
-            # 目标文件不存在，直接移动
-            echo "  不存在同名文件，移动文件"
-            if mv "$file" "$target_file" 2>/dev/null; then
-                ((moved_count++))
-                echo "  √ 文件移动成功"
+            # 目标文件不存在，复制文件
+            if cp "$file" "$target"; then
+                echo "  ✓ 文件复制成功"
+                ((success_count++))
             else
-                echo "  × 文件移动失败" >&2
-                ((error_count++))
+                echo "  ✗ 文件复制失败" >&2
             fi
         fi
-        
     done < <(find "$input" -type f -print0 2>/dev/null)
     
-    # 尝试删除空的输入目录（如果所有文件都已处理）
-    if [[ -d "$input" ]] && [[ -z "$(ls -A "$input" 2>/dev/null)" ]]; then
-        rmdir "$input" 2>/dev/null && echo "已删除空输入目录: $input"
-    fi
+    echo "完成: 成功处理 $success_count/$total_count 个文件"
     
-    # 显示处理结果
-    echo ""
-    echo "处理完成:"
-    echo "  - 处理文件总数: $processed_count"
-    echo "  - 移动文件数: $moved_count"
-    echo "  - 合并文件数: $merged_count"
-    echo "  - 错误数: $error_count"
-    
-    if [[ $error_count -eq 0 ]]; then
-        echo "目录处理操作完成"
+    if [[ $success_count -gt 0 ]]; then
         return 0
     else
-        echo "警告: 处理过程中发生了 $error_count 个错误" >&2
+        echo "错误: 没有文件处理成功" >&2
         return 1
     fi
 }
 
-# 6. 目录 -> 数组
+#######################################################################
+#######################################################################
+
+#######################################################################
+#============================ 目录 -> 数组 ============================#
 _handle_directory_to_array() {
     local input="$1"
     local output="$2"
     echo "错误: 目录不能合并到数组，此功能暂不支持" >&2
     return 1
 }
+#######################################################################
+#######################################################################
 
 
 #######################################################################
