@@ -132,18 +132,12 @@ jobs:
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
 
           # domain
-          echo "Start Debug"
-          ls -l meta-rules-dat/geo/geosite
-          ls -l meta-rules-dat/geo/geosite/domain
-          ls -l meta-rules-dat/geo/geoip/ip
-
-          if [[ -d "meta-rules-dat/geo/geosite/domain" ]]; then
-            echo "输入的是目录"
-          fi
-          # merge_rules meta-rules-dat/geo/geosite/domain "rule_sync_temp/ClashMeta/domain"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain"
 
           # ip
-          # merge_rules "meta-rules-dat/geo/geoip/ip/" "rule_sync_temp/ClashMeta/ip"
+          merge_rules "$METACUBEX_BASE_DIR/meta-rules-dat/geo/geoip" "rule_sync_temp/ClashMeta/ip"
+
+          ls -l rule_sync_temp/ClashMeta/ip
 
           # # AWAvenue-Ads-Rule
           # merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain"
