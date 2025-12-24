@@ -363,25 +363,12 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（完整修复版）
+# 4. 目录 -> 目录（修复文件处理版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
     echo "处理目录: $input → $output"
-    
-    # 详细路径检查
-    echo "=== 路径检查 ==="
-    echo "输入目录: '$input'"
-    echo "输出目录: '$output'"
-    echo "当前工作目录: $(pwd)"
-    
-    # 使用绝对路径避免相对路径问题
-    local input_abs=$(realpath "$input" 2>/dev/null || echo "$input")
-    local output_abs=$(realpath "$output" 2>/dev/null || echo "$output")
-    
-    echo "绝对路径 - 输入: '$input_abs'"
-    echo "绝对路径 - 输出: '$output_abs'"
     
     # 基本检查
     if [[ ! -d "$input" ]]; then
@@ -394,78 +381,46 @@ _handle_directory_to_directory() {
         return 1
     fi
     
-    if [[ ! -x "$input" ]]; then
-        echo "错误: 输入目录不可执行（无法遍历子目录） - $input" >&2
-        return 1
-    fi
-    
     # 确保输出目录存在
-    if ! mkdir -p "$output"; then
-        echo "错误: 无法创建输出目录 - $output" >&2
-        return 1
+    if [[ ! -d "$output" ]]; then
+        echo "创建输出目录: $output"
+        if ! mkdir -p "$output"; then
+            echo "错误: 无法创建输出目录" >&2
+            return 1
+        fi
     fi
     
     if [[ ! -w "$output" ]]; then
-        echo "错误: 输出目录不可写 - $output" >&2
+        echo "错误: 输出目录不可写" >&2
         return 1
     fi
     
-    echo "=== 开始查找文件 ==="
+    echo "开始扫描输入目录..."
     
-    # 使用更安全的find命令，避免权限问题
-    local find_errors=$(mktemp)
-    local files
-    files=$(find "$input" -type f 2>"$find_errors")
-    local find_result=$?
+    # 使用更安全的文件查找方法[6,8](@ref)
+    local files=()
+    while IFS= read -r -d '' file; do
+        files+=("$file")
+    done < <(find "$input" -type f -print0 2>/dev/null)
     
-    # 检查find命令结果
-    if [[ $find_result -ne 0 ]]; then
-        echo "错误: find命令执行失败，退出码: $find_result" >&2
-        if [[ -s "$find_errors" ]]; then
-            echo "find错误信息:"
-            cat "$find_errors" >&2
-        fi
-        rm -f "$find_errors"
-        return 1
-    fi
+    local total_count=${#files[@]}
     
-    # 检查是否有权限错误
-    if [[ -s "$find_errors" ]]; then
-        echo "警告: find命令遇到一些错误:"
-        cat "$find_errors" >&2
-    fi
-    rm -f "$find_errors"
-    
-    # 处理文件列表
-    if [[ -z "$files" ]]; then
+    if [[ $total_count -eq 0 ]]; then
         echo "警告: 输入目录中没有找到任何文件"
         return 0
     fi
     
-    # 将文件列表转换为数组
-    local file_array=()
-    while IFS= read -r file; do
-        [[ -n "$file" ]] && file_array+=("$file")
-    done <<< "$files"
-    
-    local total_count=${#file_array[@]}
     echo "找到 $total_count 个文件需要处理"
-    
-    if [[ $total_count -eq 0 ]]; then
-        echo "警告: 没有找到可处理的文件"
-        return 0
-    fi
-    
     echo "=== 开始处理文件 ==="
     
-    # 处理文件
+    # 修复文件处理循环[6,7](@ref)
     local -i success_count=0
     local -i processed_count=0
     
-    for file in "${file_array[@]}"; do
+    for file in "${files[@]}"; do
         ((processed_count++))
         
-        # 检查文件是否存在且可读
+        # 检查文件是否存在且可读[1,5](@ref)
         if [[ ! -f "$file" ]]; then
             echo "[$processed_count/$total_count] 跳过: 文件不存在 - $file" >&2
             continue
@@ -488,24 +443,26 @@ _handle_directory_to_directory() {
         
         echo "[$processed_count/$total_count] 处理: $rel_path"
         
-        # 确保目标目录存在
-        if ! mkdir -p "$target_dir"; then
-            echo "  错误: 无法创建目标目录 - $target_dir" >&2
-            continue
+        # 确保目标目录存在[2,4](@ref)
+        if [[ ! -d "$target_dir" ]]; then
+            if ! mkdir -p "$target_dir"; then
+                echo "  错误: 无法创建目标目录" >&2
+                continue
+            fi
         fi
         
         # 检查目标目录是否可写
         if [[ ! -w "$target_dir" ]]; then
-            echo "  错误: 目标目录不可写 - $target_dir" >&2
+            echo "  错误: 目标目录不可写" >&2
             continue
         fi
         
-        # 根据目标文件是否存在选择操作
+        # 根据目标文件是否存在选择操作[3,5](@ref)
         if [[ -f "$target" ]]; then
             # 目标文件已存在，追加内容
             echo "  目标文件已存在，执行追加操作"
             
-            # 检查目标文件末尾是否有换行符
+            # 检查目标文件末尾是否有换行符[7](@ref)
             local last_char
             last_char=$(tail -c 1 "$target" 2>/dev/null | od -An -tx1 2>/dev/null | tr -d ' \n' 2>/dev/null || echo "")
             
@@ -517,7 +474,7 @@ _handle_directory_to_directory() {
                 fi
             fi
             
-            # 追加内容
+            # 追加内容[3](@ref)
             if cat "$file" >> "$target"; then
                 echo "  ✓ 追加成功"
                 ((success_count++))
@@ -525,7 +482,7 @@ _handle_directory_to_directory() {
                 echo "  ✗ 追加失败" >&2
             fi
         else
-            # 目标文件不存在，复制文件
+            # 目标文件不存在，复制文件[5](@ref)
             echo "  目标文件不存在，执行复制操作"
             if cp "$file" "$target"; then
                 echo "  ✓ 复制成功"
@@ -536,8 +493,8 @@ _handle_directory_to_directory() {
         fi
     done
     
-    echo "=== 处理完成 ==="
-    echo "统计信息:"
+    echo ""
+    echo "处理完成:"
     echo "  总共处理: $processed_count 个文件"
     echo "  成功: $success_count 个"
     echo "  失败: $((processed_count - success_count)) 个"
@@ -550,7 +507,6 @@ _handle_directory_to_directory() {
         return 1
     fi
 }
-
 #######################################################################
 #######################################################################
 
