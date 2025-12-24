@@ -137,8 +137,8 @@ jobs:
           # ip
           merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip"
 
-          # # AWAvenue-Ads-Rule
-          # merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain"
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml"
           
       - name: 整理 Surge 规则
         run: |
