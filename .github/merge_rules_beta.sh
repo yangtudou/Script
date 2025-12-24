@@ -363,12 +363,25 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（详细调试版）
+# 4. 目录 -> 目录（完整修复版）
 _handle_directory_to_directory() {
     local input="$1"
     local output="$2"
     
     echo "处理目录: $input → $output"
+    
+    # 详细路径检查
+    echo "=== 路径检查 ==="
+    echo "输入目录: '$input'"
+    echo "输出目录: '$output'"
+    echo "当前工作目录: $(pwd)"
+    
+    # 使用绝对路径避免相对路径问题
+    local input_abs=$(realpath "$input" 2>/dev/null || echo "$input")
+    local output_abs=$(realpath "$output" 2>/dev/null || echo "$output")
+    
+    echo "绝对路径 - 输入: '$input_abs'"
+    echo "绝对路径 - 输出: '$output_abs'"
     
     # 基本检查
     if [[ ! -d "$input" ]]; then
@@ -381,97 +394,161 @@ _handle_directory_to_directory() {
         return 1
     fi
     
-    # 确保输出目录存在
-    mkdir -p "$output" || {
-        echo "错误: 无法创建输出目录 - $output" >&2
-        return 1
-    }
-    
-    # 查找文件
-    echo "开始查找文件..."
-    find "$input" -type f > /tmp/find_output.txt 2>&1
-    local find_result=$?
-    
-    echo "find命令退出码: $find_result"
-    echo "find命令输出:"
-    cat /tmp/find_output.txt
-    
-    if [[ $find_result -ne 0 ]]; then
-        echo "错误: 查找文件失败" >&2
+    if [[ ! -x "$input" ]]; then
+        echo "错误: 输入目录不可执行（无法遍历子目录） - $input" >&2
         return 1
     fi
     
-    local files=$(cat /tmp/find_output.txt)
-    rm -f /tmp/find_output.txt
+    # 确保输出目录存在
+    if ! mkdir -p "$output"; then
+        echo "错误: 无法创建输出目录 - $output" >&2
+        return 1
+    fi
     
+    if [[ ! -w "$output" ]]; then
+        echo "错误: 输出目录不可写 - $output" >&2
+        return 1
+    fi
+    
+    echo "=== 开始查找文件 ==="
+    
+    # 使用更安全的find命令，避免权限问题
+    local find_errors=$(mktemp)
+    local files
+    files=$(find "$input" -type f 2>"$find_errors")
+    local find_result=$?
+    
+    # 检查find命令结果
+    if [[ $find_result -ne 0 ]]; then
+        echo "错误: find命令执行失败，退出码: $find_result" >&2
+        if [[ -s "$find_errors" ]]; then
+            echo "find错误信息:"
+            cat "$find_errors" >&2
+        fi
+        rm -f "$find_errors"
+        return 1
+    fi
+    
+    # 检查是否有权限错误
+    if [[ -s "$find_errors" ]]; then
+        echo "警告: find命令遇到一些错误:"
+        cat "$find_errors" >&2
+    fi
+    rm -f "$find_errors"
+    
+    # 处理文件列表
     if [[ -z "$files" ]]; then
         echo "警告: 输入目录中没有找到任何文件"
         return 0
     fi
     
-    echo "找到文件:"
-    echo "$files"
+    # 将文件列表转换为数组
+    local file_array=()
+    while IFS= read -r file; do
+        [[ -n "$file" ]] && file_array+=("$file")
+    done <<< "$files"
+    
+    local total_count=${#file_array[@]}
+    echo "找到 $total_count 个文件需要处理"
+    
+    if [[ $total_count -eq 0 ]]; then
+        echo "警告: 没有找到可处理的文件"
+        return 0
+    fi
+    
+    echo "=== 开始处理文件 ==="
     
     # 处理文件
-    local -i count=0
     local -i success_count=0
+    local -i processed_count=0
     
-    while IFS= read -r file; do
-        [[ -z "$file" ]] && continue
-        ((count++))
-        
-        echo "处理文件 [$count]: $file"
+    for file in "${file_array[@]}"; do
+        ((processed_count++))
         
         # 检查文件是否存在且可读
         if [[ ! -f "$file" ]]; then
-            echo "  错误: 文件不存在"
+            echo "[$processed_count/$total_count] 跳过: 文件不存在 - $file" >&2
             continue
         fi
         
         if [[ ! -r "$file" ]]; then
-            echo "  错误: 文件不可读"
+            echo "[$processed_count/$total_count] 跳过: 文件不可读 - $file" >&2
             continue
         fi
         
         # 获取相对路径
         local rel_path="${file#$input/}"
+        # 处理输入路径以斜杠结尾的情况
+        if [[ "$input" == */ ]]; then
+            rel_path="${file#${input%/}/}"
+        fi
+        
         local target="$output/$rel_path"
         local target_dir=$(dirname "$target")
         
-        echo "  相对路径: $rel_path"
-        echo "  目标路径: $target"
+        echo "[$processed_count/$total_count] 处理: $rel_path"
         
-        # 创建目标目录
-        mkdir -p "$target_dir" || {
-            echo "  错误: 无法创建目标目录" >&2
+        # 确保目标目录存在
+        if ! mkdir -p "$target_dir"; then
+            echo "  错误: 无法创建目标目录 - $target_dir" >&2
             continue
-        }
+        fi
         
-        # 复制或追加文件
+        # 检查目标目录是否可写
+        if [[ ! -w "$target_dir" ]]; then
+            echo "  错误: 目标目录不可写 - $target_dir" >&2
+            continue
+        fi
+        
+        # 根据目标文件是否存在选择操作
         if [[ -f "$target" ]]; then
-            # 追加内容
+            # 目标文件已存在，追加内容
             echo "  目标文件已存在，执行追加操作"
-            [[ $(tail -c 1 "$target" 2>/dev/null) != $'\n' ]] && echo "" >> "$target" 2>/dev/null
-            if cat "$file" >> "$target" 2>/dev/null; then
+            
+            # 检查目标文件末尾是否有换行符
+            local last_char
+            last_char=$(tail -c 1 "$target" 2>/dev/null | od -An -tx1 2>/dev/null | tr -d ' \n' 2>/dev/null || echo "")
+            
+            if [[ "$last_char" != "0a" ]]; then
+                # 添加分隔符
+                if ! echo "" >> "$target"; then
+                    echo "  错误: 无法添加分隔符" >&2
+                    continue
+                fi
+            fi
+            
+            # 追加内容
+            if cat "$file" >> "$target"; then
                 echo "  ✓ 追加成功"
                 ((success_count++))
             else
                 echo "  ✗ 追加失败" >&2
             fi
         else
-            # 复制文件
+            # 目标文件不存在，复制文件
             echo "  目标文件不存在，执行复制操作"
-            if cp "$file" "$target" 2>/dev/null; then
+            if cp "$file" "$target"; then
                 echo "  ✓ 复制成功"
                 ((success_count++))
             else
                 echo "  ✗ 复制失败" >&2
             fi
         fi
-    done <<< "$files"
+    done
     
-    echo "完成: 成功处理 $success_count/$count 个文件"
-    return 0
+    echo "=== 处理完成 ==="
+    echo "统计信息:"
+    echo "  总共处理: $processed_count 个文件"
+    echo "  成功: $success_count 个"
+    echo "  失败: $((processed_count - success_count)) 个"
+    
+    if [[ $success_count -gt 0 ]]; then
+        echo "✓ 目录处理完成"
+        return 0
+    else
+        echo "错误: 没有文件处理成功" >&2
+        return 1
+    fi
 }
 
 #######################################################################
