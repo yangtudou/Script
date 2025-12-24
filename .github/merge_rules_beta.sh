@@ -379,9 +379,10 @@ _handle_directory_to_directory() {
     while IFS= read -r -d '' file; do
         source_files+=("$file")
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
-
-    for i in ${!source_files[@]}; do
-        echo "$source_files[$i]"
+    
+    echo "数组内容预览:"
+    for i in "${!source_files[@]}"; do
+        echo "${array_files[$i]}"
     done
     
     
