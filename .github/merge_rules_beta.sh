@@ -376,12 +376,14 @@ _handle_directory_to_directory() {
     # 把来源目录内的文件做成数组
     local source_files=()
     while IFS= read -r -d '' file; do
-        files+=("$file")
+        source_files+=("$file")
     done < <(find "$source_dir" -type f -print0 2>/dev/null)
 
 
     echo "找到 ${#source_files[@]} 个待处理文件。"
-
+    
+    return 0
+    
 
 }
 
