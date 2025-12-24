@@ -370,6 +370,7 @@ _handle_directory_to_directory() {
     local target_dir="$2"
     
     echo "当前模式: 目录 -> 目录 "
+    echo "不会检索子目录"
     echo "来源目录: $source_dir"
     echo "目标目录: $target_dir"
     
@@ -379,10 +380,10 @@ _handle_directory_to_directory() {
         source_files+=("$file")
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
 
-
-    echo "找到 ${#source_files[@]} 个待处理文件。"
+    for i in ${!source_files[@]}; then
+        echo "$i"
+    done
     
-    return 0
     
 
 }
