@@ -3,7 +3,8 @@
 # 判断输入类型 → 判断输出类型
 # 一共为 9 种可能性, 目前只能实现以下 5 种
 #
-# 2025-12-20 已经验证的是：文件 → 目录、数组 → 文件
+# 2025-12-24 已经验证的是：
+# 文件 → 目录、数组 → 文件 目录 → 目录
 #    输入 → 输出
 # 1. 文件 → 文件（追加内容）
 # 2. 文件 → 目录（复制/合并）
@@ -121,56 +122,35 @@ _is_array() {
 	fi
 }
 
-
-
-
-
 # ========== 具体处理函数 ==========
 
 # 1. 文件 -> 文件：追加内容（需同名）
 _handle_file_to_file() {
     local input="$1"
     local output="$2"
-    local input_basename=$(basename "$input")
-    local output_basename=$(basename "$output")
+    local input_filename=$(basename "$input")
+    local output_filename=$(basename "$output")
+    local input_dir=$(dirname $input)
+    local output_dir=$(dirname $output)
     
-    echo "处理: 文件 -> 文件"
-    echo "输入文件: $input"
-    echo "输出文件: $output"
+    echo "当前模式: 文件 -> 文件"
+    echo "$input_filename -> $output_filename"
     
-    # 安全检查：确保输入文件存在且可读
-    if [[ ! -r "$input" ]]; then
-        echo "错误: 输入文件不存在或不可读" >&2
+    # 判断是否为同源文件
+    if [[ $input == $output ]]; then
+        echo "错误: 输入输出文件同源"
+        echo "不执行操作"
         return 1
     fi
     
     # 判断是否同名文件
     if [[ "$input_basename" == "$output_basename" ]]; then
-        echo "文件同名，执行内容追加操作"
-        
-        # 检查是否为同一个文件（相同路径）
-        if [[ "$(realpath "$input")" == "$(realpath "$output")" ]]; then
-            echo "警告: 输入和输出是同一个文件，将导致内容重复" >&2
-        fi
-        
-        # 执行内容追加
-        if cat "$input" >> "$output"; then
-            local input_size=$(wc -c < "$input")
-            local output_size=$(wc -c < "$output")
-            echo "内容追加成功"
-            echo "输入文件大小: $input_size 字节"
-            echo "输出文件大小: $output_size 字节"
-            return 0
-        else
-            echo "错误: 内容追加失败" >&2
-            return 1
-        fi
-        
+        echo "$input_basename 存在同名, 将执行追加模式"
+        echo "" >> "$output"
+        cat "$input" >> "$output"
     else
-        echo "错误: 输入输出文件不同名，不支持此操作" >&2
-        echo "输入文件名: $input_basename"
-        echo "输出文件名: $output_basename"
-        return 1
+        echo "$input_basename 不同名, 将执行移动模式"
+        mv "$input" "$output"
     fi
 }
 
