@@ -48,10 +48,12 @@ env:
     geo/geosite/classical/private.list
     geo/geoip/classical/private.list
   CUBEMETAX_CLASH_PROXY_FILES: |
+    # test
     geo/geosite/geolocation-!cn.yaml
     geo/geosite/cn.yaml
     geo/geosite/google.yaml
     geo/geosite/telegram.yaml
+    # 1111
     geo/geosite/github.yaml
     geo/geosite/apple.yaml
     geo/geosite/meta.yaml
@@ -62,6 +64,7 @@ env:
     geo/geoip/google.yaml
     geo/geoip/private.yaml
     geo/geoip/telegram.yaml
+    # 12121
     
 jobs:
   rule_sync:
@@ -152,7 +155,7 @@ jobs:
 
           echo "未处理的 env : $CUBEMETAX_CLASH_PROXY_FILES"
           action_env_to_array_fix "$CUBEMETAX_CLASH_PROXY_FILES" "PROXY_RULES_1" "$METACUBEX_BASE_DIR"
-          echo "处理过的 env :  $PROXY_RULES_1"
+          echo "处理过的 env :  ${!PROXY_RULES_1[@]}"
 
           # proxy
           action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
