@@ -384,12 +384,12 @@ _handle_directory_to_directory() {
         local target_dir_file="$target_dir/$filename"
         
         if [[ -e "$target_dir_file" ]]; then
-            echo "$file 已存在，开启追加模式"
+            echo "$filename 已存在，开启追加模式"
             # 防粘连
             echo "" >> "$target_dir_file"
             cat "$file" >> "$target_dir_file"
         else
-            echo "不存在 $file 同名文件"
+            echo "不存在 $filename 同名文件"
             echo "开启移动模式"
             mv "$file" "$target_dir_file"
         fi
