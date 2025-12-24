@@ -1,14 +1,13 @@
 # version: v2.1_beta
-# updated at: 2025-12-20
-# 主要改用了 checkout sparse-checkout 方法
+# updated at: 2025-12-24
+# 改用 checkout sparse-checkout
 # 改用 rules 分支管理
-# 使用外部 shell 脚本处理规则文件
-# 简化了整个 Github Action 流程
+# 使用外部 shell 脚本处理规则文件, 简化了整个 Github Action 流程
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
 #
-# 支持 ClashMeta 规则
-# 支持 Surge 规则
+# 支持 Surge ClashMeta、Clash Premium
+#
 
 name: 自动化规则下载 v2.1_beta
 
@@ -48,7 +47,7 @@ env:
     geo/geoip/classical/cn.list
     geo/geosite/classical/private.list
     geo/geoip/classical/private.list
-  CUBEMETAX_CLASH_FILES: |
+  CUBEMETAX_CLASH_PROXY_FILES: |
     geo/geosite/geolocation-!cn.yaml
     geo/geosite/cn.yaml
     geo/geosite/google.yaml
@@ -63,18 +62,19 @@ env:
     geo/geoip/google.yaml
     geo/geoip/private.yaml
     geo/geoip/telegram.yaml
+    
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出当前仓库 rules 分支
+      - name: "📥 当前仓库 rules 分支"
         uses: actions/checkout@v6
         with:
           path: rule_sync_temp
           ref: rules
           fetch-depth: 1
 
-      - name: 检出 MetaCubeX 仓库 meta 分支
+      - name: "📥 MetaCubeX 仓库 meta 分支"
         uses: actions/checkout@v6
         with:
           repository: MetaCubeX/meta-rules-dat
@@ -87,7 +87,7 @@ jobs:
 
           sparse-checkout-cone-mode: false
 
-      - name: 检出 AWAvenue 仓库 main 分支
+      - name: "📥 AWAvenue 仓库 main 分支"
         uses: actions/checkout@v6
         with:
           repository: TG-Twilight/AWAvenue-Ads-Rule
@@ -102,7 +102,7 @@ jobs:
 
           sparse-checkout-cone-mode: false
 
-      - name: 检出 Loyalsoldier/surge-rules 仓库 release 分支
+      - name: "📥 Loyalsoldier/surge-rules 仓库 release 分支"
         uses: actions/checkout@v6
         with:
           repository: Loyalsoldier/surge-rules
@@ -113,6 +113,11 @@ jobs:
             ruleset/apple.txt
 
           sparse-checkout-cone-mode: false
+
+      - name: "🔧 下载脚本"
+        run: |
+          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
+          chmod +x merge_rules.sh
  
       # - name: 整理 ClashMeta 规则
       #   run: |
@@ -138,15 +143,17 @@ jobs:
         run: |
           set -e
 
+          # 引入外部 shell 脚本
+          source ./merge_rules.sh
+          
           echo "开始整理 Surge 规则..."
           rm -rf rule_sync_temp/Surge
           mkdir -p rule_sync_temp/Surge
 
-          # 引入外部 shell 脚本
-          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
-          chmod +x merge_rules.sh
-          source ./merge_rules.sh
-          
+          echo "未处理的 env : $CUBEMETAX_CLASH_PROXY_FILES"
+          action_env_to_array_fix "$CUBEMETAX_CLASH_PROXY_FILES" "PROXY_RULES_1" "$METACUBEX_BASE_DIR"
+          echo "处理过的 env :  $PROXY_RULES_1"
+
           # proxy
           action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
@@ -157,13 +164,6 @@ jobs:
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
-
-
-
-      # - name: 统一添加时间戳
-      #   run: |
-      #     beijing_time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-      #     find rule_sync_temp -type f \( -name "*.list" -o -name "*.yaml" \) -exec sed -i "1i # 更新时间: 北京时间 $beijing_time" {} \;
       
       - name: 提交变更
         working-directory: rule_sync_temp
@@ -180,7 +180,8 @@ jobs:
           git push -f origin rules
 
       - name: 清除工作流
-        uses: Mattraks/delete-workflow-runs@main
+        uses: Mattraks/delete-workflow-runs@v2
         with:
           retain_days: 0
           keep_minimum_runs: 0
+          repository: ${{ github.repository }}
