@@ -132,7 +132,7 @@ jobs:
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
 
           # domain
-          action_env_to_array_fix "$METACUBEX_CLASH_DOMIAN_FILES" "DOAMIN_RULES" "$METACUBEX_BASE_DIR"
+          action_env_to_array_fix "$METACUBEX_CLASH_DOMAIN_FILES" "DOMAIN_RULES" "$METACUBEX_BASE_DIR"
           merge_rules "DOMIAN_RULES" "rule_sync_temp/ClashMeta/domain"
 
           # ip
