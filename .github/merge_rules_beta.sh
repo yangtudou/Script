@@ -370,9 +370,8 @@ _handle_directory_to_directory() {
     local target_dir="$2"
     
     echo "当前模式: 目录 -> 目录 "
-    echo "不会检索子目录"
-    echo "来源目录: $source_dir"
-    echo "目标目录: $target_dir"
+    echo "来源目录: $source_dir -> $target_dir"
+    echo "⚠️ 不会检索子目录"
     
     # 把来源目录内的文件做成数组
     local source_files=()
@@ -385,10 +384,12 @@ _handle_directory_to_directory() {
         local target_dir_file="$target_dir/$filename"
         
         if [[ -e "$target_dir_file" ]]; then
-            echo "文件已存在，开启追加: $filename"
+            echo "$file 已存在，开启追加模式"
+            # 防粘连
+            echo "" >> "$target_dir_file"
             cat "$file" >> "$target_dir_file"
         else
-            echo "目标文件不存在同名问价"
+            echo "不存在 $file 同名文件"
             echo "开启移动模式"
             mv "$file" "$target_dir_file"
         fi
