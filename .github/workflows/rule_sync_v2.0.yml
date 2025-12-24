@@ -135,7 +135,7 @@ jobs:
           merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain"
 
           # ip
-          merge_rules "$METACUBEX_BASE_DIR/meta-rules-dat/geoip" "rule_sync_temp/ClashMeta/ip"
+          merge_rules "$METACUBEX_BASE_DIR/geoip" "rule_sync_temp/ClashMeta/ip"
 
           # # AWAvenue-Ads-Rule
           # merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain"
