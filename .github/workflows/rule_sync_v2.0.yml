@@ -8,6 +8,7 @@
 #
 # 支持 Surge ClashMeta、Clash Premium
 #
+# tip: 这里 env 下不能写任何注释
 
 name: 自动化规则下载 v2.1_beta
 
@@ -47,25 +48,22 @@ env:
     geo/geoip/classical/cn.list
     geo/geosite/classical/private.list
     geo/geoip/classical/private.list
-  CUBEMETAX_CLASH_PROXY_FILES: |
-    # test
-    geo/geosite/geolocation-!cn.yaml
+  CUBEMETAX_CLASH_DOMAIN_FILES: |
     geo/geosite/cn.yaml
-    geo/geosite/google.yaml
-    geo/geosite/telegram.yaml
-    # 1111
-    geo/geosite/github.yaml
-    geo/geosite/apple.yaml
     geo/geosite/meta.yaml
+    geo/geosite/apple.yaml
+    geo/geosite/google.yaml
+    geo/geosite/github.yaml
     geo/geosite/private.yaml
+    geo/geosite/telegram.yaml
     geo/geosite/cloudflare.yaml
-    geo/geoip/cloudflare.yaml
+    geo/geosite/geolocation-!cn.yaml
+  CUBEMETAX_CLASH_IP_FILES: |
     geo/geoip/cn.yaml
     geo/geoip/google.yaml
     geo/geoip/private.yaml
     geo/geoip/telegram.yaml
-    # 12121
-    
+    geo/geoip/cloudflare.yaml
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
@@ -87,6 +85,8 @@ jobs:
           sparse-checkout: |
             ${{ env.METACUBEX_SURGE_DIRECT_FILES }}
             ${{ env.METACUBEX_SURGE_PROXY_FILES }}
+            ${{ env.CUBEMETAX_CLASH_DOMAIN_FILES }}
+            ${{ env.CUBEMETAX_CLASH_IP_FILES }}
 
           sparse-checkout-cone-mode: false
 
@@ -98,9 +98,7 @@ jobs:
           fetch-depth: 1
           path: AWAvenue-Ads-Rule
           sparse-checkout: |
-            # ClashMeta
-            # Filters/AWAvenue-Ads-Rule-Clash.yaml
-            # Surge
+            Filters/AWAvenue-Ads-Rule-Clash.yaml
             Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
           sparse-checkout-cone-mode: false
@@ -122,25 +120,27 @@ jobs:
           curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
           chmod +x merge_rules.sh
  
-      # - name: 整理 ClashMeta 规则
-      #   run: |
-      #     set -e
-          
-      #     echo "开始整理 ClashMeta 规则..."
-      #     # 定义常量
-      #     CLASHMETA_RULE_DIR="rule_sync_temp/ClashMeta"
+      - name: 整理 ClashMeta 规则
+        run: |
+          set -e
 
-      #     echo "清空 & 重建 ClashMeta 目录..."
-      #     rm -rf $CLASHMETA_RULE_DIR
-      #     mkdir -p $CLASHMETA_RULE_DIR/{domain,ip}
-      #     echo "复制文件到目标目录..."
-      #     find meta-rules-dat/geo/geosite -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/domain/ \;
-      #     find meta-rules-dat/geo/geoip -type f -name "*.yaml" -exec cp {} $CLASHMETA_RULE_DIR/ip/ \;
+          # 引入外部 shell 脚本
+          source ./merge_rules.sh
 
-      #     # 秋风去广告
-      #     # cp -r AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml
-          
-      #     echo "✅ ClashMeta 规则整理完成"
+          echo "开始整理 ClashMeta 规则..."
+          rm -rf rule_sync_temp/ClashMeta
+          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
+
+          # domain
+          action_env_to_array_fix "$METACUBEX_CLASH_DOMIAN_FILES" "DOAMIN_RULES" "$METACUBEX_BASE_DIR"
+          merge_rules "DOMIAN_RULES" "rule_sync_temp/ClashMeta/domain"
+
+          # ip
+          action_env_to_array_fix "$METACUBEX_CLASH_IP_FILES" "IP_RULES" "$METACUBEX_BASE_DIR"
+          merge_rules "IP_RULES" "rule_sync_temp/ClashMeta/ip"
+
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain"
           
       - name: 整理 Surge 规则
         run: |
@@ -150,12 +150,20 @@ jobs:
           source ./merge_rules.sh
           
           echo "开始整理 Surge 规则..."
-          rm -rf rule_sync_temp/Surge
-          mkdir -p rule_sync_temp/Surge
+          
+          if rm -rf "rule_sync_temp/Surge"; then
+            echo "✓ 目录删除成功: rule_sync_temp/Surge"
+          else
+            echo "✗ 删除失败: 权限不足或文件系统错误" >&2
+            return 1
+          fi
 
-          echo "未处理的 env : $CUBEMETAX_CLASH_PROXY_FILES"
-          action_env_to_array_fix "$CUBEMETAX_CLASH_PROXY_FILES" "PROXY_RULES_1" "$METACUBEX_BASE_DIR"
-          echo "处理过的 env :  ${!PROXY_RULES_1[@]}"
+          if mkdir -p "rule_sync_temp/Surge"; then
+            echo "✓ 目录重建成功: rule_sync_temp/Surge"
+          else
+            echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
+            return 1
+          fi
 
           # proxy
           action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
