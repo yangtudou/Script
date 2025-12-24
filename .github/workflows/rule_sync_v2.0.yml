@@ -48,7 +48,7 @@ env:
     geo/geoip/classical/cn.list
     geo/geosite/classical/private.list
     geo/geoip/classical/private.list
-  CUBEMETAX_CLASH_DOMAIN_FILES: |
+  METACUBEX_CLASH_DOMAIN_FILES: |
     geo/geosite/cn.yaml
     geo/geosite/meta.yaml
     geo/geosite/apple.yaml
@@ -58,7 +58,7 @@ env:
     geo/geosite/telegram.yaml
     geo/geosite/cloudflare.yaml
     geo/geosite/geolocation-!cn.yaml
-  CUBEMETAX_CLASH_IP_FILES: |
+  METACUBEX_CLASH_IP_FILES: |
     geo/geoip/cn.yaml
     geo/geoip/google.yaml
     geo/geoip/private.yaml
@@ -133,7 +133,7 @@ jobs:
 
           # domain
           action_env_to_array_fix "$METACUBEX_CLASH_DOMAIN_FILES" "DOMAIN_RULES" "$METACUBEX_BASE_DIR"
-          merge_rules "DOMIAN_RULES" "rule_sync_temp/ClashMeta/domain"
+          merge_rules "DOMAIN_RULES" "rule_sync_temp/ClashMeta/domain"
 
           # ip
           action_env_to_array_fix "$METACUBEX_CLASH_IP_FILES" "IP_RULES" "$METACUBEX_BASE_DIR"
