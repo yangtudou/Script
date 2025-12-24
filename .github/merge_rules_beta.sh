@@ -363,150 +363,136 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（修复文件处理版）
+# 4. 目录 -> 目录（完整版）
+# 功能：将源目录结构完整复制到目标目录，同名文件则追加内容。
 _handle_directory_to_directory() {
-    local input="$1"
-    local output="$2"
-    
-    echo "处理目录: $input → $output"
-    
-    # 基本检查
-    if [[ ! -d "$input" ]]; then
-        echo "错误: 输入目录不存在或不是目录 - $input" >&2
+    local source_dir="$1"
+    local target_dir="$2"
+
+    echo "开始目录复制：$source_dir -> $target_dir"
+
+    # 1. 基本参数验证
+    if [[ -z "$source_dir" || -z "$target_dir" ]]; then
+        echo "错误: 源目录或目标目录参数为空。" >&2
         return 1
     fi
-    
-    if [[ ! -r "$input" ]]; then
-        echo "错误: 输入目录不可读 - $input" >&2
+
+    # 2. 源目录检查
+    if [[ ! -d "$source_dir" ]]; then
+        echo "错误: 源目录不存在或不是一个目录: $source_dir" >&2
         return 1
     fi
-    
-    # 确保输出目录存在
-    if [[ ! -d "$output" ]]; then
-        echo "创建输出目录: $output"
-        if ! mkdir -p "$output"; then
-            echo "错误: 无法创建输出目录" >&2
-            return 1
-        fi
-    fi
-    
-    if [[ ! -w "$output" ]]; then
-        echo "错误: 输出目录不可写" >&2
+    if [[ ! -r "$source_dir" ]]; then
+        echo "错误: 源目录不可读: $source_dir" >&2
         return 1
     fi
-    
-    echo "开始扫描输入目录..."
-    
-    # 使用更安全的文件查找方法[6,8](@ref)
+
+    # 3. 目标目录准备
+    if ! mkdir -p "$target_dir"; then
+        echo "错误: 无法创建目标目录: $target_dir" >&2
+        return 1
+    fi
+    if [[ ! -w "$target_dir" ]]; then
+        echo "错误: 目标目录不可写: $target_dir" >&2
+        return 1
+    fi
+
+    echo "基础校验通过。开始遍历源目录..."
+
+    # 4. 使用 find 查找所有文件，处理包含空格等特殊字符的文件名
     local files=()
     while IFS= read -r -d '' file; do
         files+=("$file")
-    done < <(find "$input" -type f -print0 2>/dev/null)
-    
-    local total_count=${#files[@]}
-    
-    if [[ $total_count -eq 0 ]]; then
-        echo "警告: 输入目录中没有找到任何文件"
+    done < <(find "$source_dir" -type f -print0 2>/dev/null)
+
+    local total_files=${#files[@]}
+    if [[ $total_files -eq 0 ]]; then
+        echo "提示: 源目录中未找到任何文件。"
         return 0
     fi
-    
-    echo "找到 $total_count 个文件需要处理"
-    echo "=== 开始处理文件 ==="
-    
-    # 修复文件处理循环[6,7](@ref)
-    local -i success_count=0
-    local -i processed_count=0
-    
-    for file in "${files[@]}"; do
-        ((processed_count++))
-        
-        # 检查文件是否存在且可读[1,5](@ref)
-        if [[ ! -f "$file" ]]; then
-            echo "[$processed_count/$total_count] 跳过: 文件不存在 - $file" >&2
+
+    echo "找到 $total_files 个待处理文件。"
+
+    # 5. 处理文件
+    local success_count=0
+    local skip_count=0
+    local fail_count=0
+
+    for file_path in "${files[@]}"; do
+        # 计算相对路径，用于在目标目录中创建相同结构
+        local rel_path="${file_path#$source_dir/}"
+        local target_file="$target_dir/$rel_path"
+        local target_parent_dir=$(dirname "$target_file")
+
+        # 5.1 确保目标文件的父目录存在
+        if ! mkdir -p "$target_parent_dir"; then
+            echo "失败: 无法创建目录 '$target_parent_dir'，跳过文件 '$rel_path'。" >&2
+            ((fail_count++))
             continue
         fi
-        
-        if [[ ! -r "$file" ]]; then
-            echo "[$processed_count/$total_count] 跳过: 文件不可读 - $file" >&2
+
+        # 5.2 检查源文件是否可读
+        if [[ ! -r "$file_path" ]]; then
+            echo "失败: 源文件不可读 '$rel_path'，跳过。" >&2
+            ((fail_count++))
             continue
         fi
-        
-        # 获取相对路径
-        local rel_path="${file#$input/}"
-        # 处理输入路径以斜杠结尾的情况
-        if [[ "$input" == */ ]]; then
-            rel_path="${file#${input%/}/}"
-        fi
-        
-        local target="$output/$rel_path"
-        local target_dir=$(dirname "$target")
-        
-        echo "[$processed_count/$total_count] 处理: $rel_path"
-        
-        # 确保目标目录存在[2,4](@ref)
-        if [[ ! -d "$target_dir" ]]; then
-            if ! mkdir -p "$target_dir"; then
-                echo "  错误: 无法创建目标目录" >&2
-                continue
-            fi
-        fi
-        
-        # 检查目标目录是否可写
-        if [[ ! -w "$target_dir" ]]; then
-            echo "  错误: 目标目录不可写" >&2
-            continue
-        fi
-        
-        # 根据目标文件是否存在选择操作[3,5](@ref)
-        if [[ -f "$target" ]]; then
-            # 目标文件已存在，追加内容
-            echo "  目标文件已存在，执行追加操作"
-            
-            # 检查目标文件末尾是否有换行符[7](@ref)
-            local last_char
-            last_char=$(tail -c 1 "$target" 2>/dev/null | od -An -tx1 2>/dev/null | tr -d ' \n' 2>/dev/null || echo "")
-            
-            if [[ "$last_char" != "0a" ]]; then
-                # 添加分隔符
-                if ! echo "" >> "$target"; then
-                    echo "  错误: 无法添加分隔符" >&2
-                    continue
-                fi
-            fi
-            
-            # 追加内容[3](@ref)
-            if cat "$file" >> "$target"; then
-                echo "  ✓ 追加成功"
+
+        # 5.3 核心逻辑：判断目标文件是否存在，选择复制或追加
+        if [[ ! -f "$target_file" ]]; then
+            # 目标文件不存在，直接复制
+            if cp "$file_path" "$target_file"; then
                 ((success_count++))
             else
-                echo "  ✗ 追加失败" >&2
+                echo "失败: 无法复制文件 '$rel_path' 到目标位置。" >&2
+                ((fail_count++))
             fi
         else
-            # 目标文件不存在，复制文件[5](@ref)
-            echo "  目标文件不存在，执行复制操作"
-            if cp "$file" "$target"; then
-                echo "  ✓ 复制成功"
+            # 目标文件已存在，准备追加内容
+            # 5.3.1 检查目标文件是否可写
+            if [[ ! -w "$target_file" ]]; then
+                echo "失败: 目标文件不可写，无法追加 '$rel_path'。" >&2
+                ((fail_count++))
+                continue
+            fi
+
+            # 5.3.2 检查并确保目标文件以换行符结尾，避免内容粘连
+            # 使用 tail 和 od 检查文件最后一个字节是否为换行符(0a)
+            local last_byte
+            last_byte=$(tail -c 1 "$target_file" | od -An -tx1 | tr -d ' \n' 2>/dev/null)
+            if [[ "$last_byte" != "0a" ]]; then
+                # 如果目标文件末尾没有换行符，则先添加一个换行符
+                echo "" >> "$target_file"
+            fi
+
+            # 5.3.3 将源文件内容追加到目标文件
+            if cat "$file_path" >> "$target_file"; then
                 ((success_count++))
             else
-                echo "  ✗ 复制失败" >&2
+                echo "失败: 追加文件内容失败 '$rel_path'。" >&2
+                ((fail_count++))
             fi
         fi
     done
-    
+
+    # 6. 输出最终结果
     echo ""
-    echo "处理完成:"
-    echo "  总共处理: $processed_count 个文件"
-    echo "  成功: $success_count 个"
-    echo "  失败: $((processed_count - success_count)) 个"
-    
+    echo "目录复制操作完成。"
+    echo "================================"
+    echo "文件总数:    $total_files"
+    echo "成功:       $success_count"
+    echo "失败:       $fail_count"
+    echo "================================"
+
+    # 7. 确定返回值：只要成功处理过文件，就认为整体成功
     if [[ $success_count -gt 0 ]]; then
-        echo "✓ 目录处理完成"
         return 0
     else
-        echo "错误: 没有文件处理成功" >&2
+        echo "错误: 未能成功处理任何文件。" >&2
         return 1
     fi
 }
+
 #######################################################################
 #######################################################################
 
