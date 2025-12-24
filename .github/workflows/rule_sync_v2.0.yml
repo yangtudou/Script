@@ -133,8 +133,6 @@ jobs:
 
           # domain
           echo "Start Debug"
-          ls -l meta-rules-dat
-          ls -l meta-rules-dat/geo
           ls -l meta-rules-dat/geo/geosite
           ls -l meta-rules-dat/geo/geosite/domain
           ls -l meta-rules-dat/geo/geoip/ip
