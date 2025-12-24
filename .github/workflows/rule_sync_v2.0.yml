@@ -85,8 +85,8 @@ jobs:
           sparse-checkout: |
             ${{ env.METACUBEX_SURGE_DIRECT_FILES }}
             ${{ env.METACUBEX_SURGE_PROXY_FILES }}
-            ${{ env.CUBEMETAX_CLASH_DOMAIN_FILES }}
-            ${{ env.CUBEMETAX_CLASH_IP_FILES }}
+            ${{ env.METACUBEX_CLASH_DOMAIN_FILES }}
+            ${{ env.METACUBEX_CLASH_IP_FILES }}
 
           sparse-checkout-cone-mode: false
 
@@ -132,10 +132,10 @@ jobs:
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
 
           # domain
-          merge_rules "meta-rules-dat/geo/geosite/domain/" "rule_sync_temp/ClashMeta/domain"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite/domain/" "rule_sync_temp/ClashMeta/domain"
 
           # ip
-          merge_rules "meta-rules-dat/geo/geoip/ip/" "rule_sync_temp/ClashMeta/ip"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geoip/ip/" "rule_sync_temp/ClashMeta/ip"
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain"
