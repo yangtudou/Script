@@ -44,66 +44,54 @@ action_env_to_array_fix() {
     fi
 }
 
-
+trap 'echo "错误发生在: $BASH_COMMAND"; exit 1' ERR
 
 merge_rules() {
     local input="$1"
     local output="$2"
+	local output_type="$3"
     
-	trap 'echo "错误发生在: $BASH_COMMAND"; exit 1' ERR
-    
-	# 输入验证
-    if [[ -z "$input" || -z "$output" ]]; then
-        echo "错误: 输入和输出参数不能为空" >&2
-        return 1
-    fi
-	
     if [[ -f "$input" ]]; then
-	    echo "输入类型: 文件"
-        if [[ -f "$output" ]]; then
-            _handle_file_to_file "$input" "$output"
-        elif [[ -d "$output" ]]; then
-            _handle_file_to_directory "$input" "$output"
-        elif _is_array "$output"; then
-            _handle_file_to_array "$input" "$output"         
-        else
-            echo "错误: 不支持的输出类型" >&2
-            return 1
-        fi
-    # 输入类型：目录
+	    echo "input type: file"
+		case $output_type in
+		    "file")
+			     _handle_file_to_file "$input" "$output"
+				 ;;
+			"directory")
+			    _handle_file_to_directory "$input" "$output"
+				;;
+			*)
+			    echo "output type format not support"
+				return 1
+				;;
+		esac
+
     elif [[ -d "$input" ]]; then
-	    echo "输入类型: 目录"
-        if [[ -f "$output" ]]; then
-            _handle_directory_to_file "$input" "$output"
-        elif [[ -d "$output" ]]; then
-            _handle_directory_to_directory "$input" "$output"
-        elif _is_array "$output"; then
-            echo "输出类型: 数组"
-            _handle_directory_to_array "$input" "$output"
-        else
-            echo "错误: 不支持的输出类型" >&2
-            return 1
-        fi
+	    echo "input type: directory"
+		case $output_type in
+		    "file")
+			    _handle_directory_to_file "$input" "$output"
+				;;
+			"directory")
+			    _handle_directory_to_directory "$input" "$output"
+				;;
+			*)
+			    echo "output type format not support"
+				return 1
+				;;
+		esac
 
-    # 输入类型：数组
-    # 输出目前只定义了为文件
     elif _is_array "$input"; then
-        echo "输入类型：数组"
-        if [[ -f "$output" ]]; then
-            echo ""
-            echo "输出类型：文件"
-            _handle_array_to_file "$input" "$output"
-        else
-            echo "识别到没有创建输出文件"
-            if touch "$output"; then
-                echo "已经创建输出文件：$output"
-                echo "开始合并文件"
-                _handle_array_to_file "$input" "$output"
-            else
-                echo "ERROR：无法创建输出文件"
-            fi
-        fi
-
+        echo "input type：array"
+		case $output_type in
+		    "file")
+			    _handle_array_to_file "$input" "$output"
+				;;
+			*)
+			    echo "output type format not support"
+				return 1
+				;;
+		esac
     else
         echo "错误: 输入类型不被支持 - $input" >&2
         return 1
