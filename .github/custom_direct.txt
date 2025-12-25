@@ -1,6 +1,1 @@
-# updated time: 2025-12-25
-# custom direct
-# 以 Surge 为基础的规则写法为准
-# 也就是 Clash Meta 的 classical
-
-DOMAIN,www.baidu.com
+DOMAIN-SUFFIX,y3-3am.top
