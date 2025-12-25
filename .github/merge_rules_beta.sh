@@ -355,8 +355,7 @@ _handle_directory_to_directory() {
             echo "" >> "$target_dir_file"
             cat "$file" >> "$target_dir_file"
         else
-            echo "不存在 $filename 同名文件"
-            echo "开启移动模式"
+            echo "不存在 $filename 同名文件, 开启移动模式"
             mv "$file" "$target_dir_file"
         fi
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
