@@ -112,14 +112,12 @@ _is_array() {
 
 # ========== 具体处理函数 ==========
 
-# 1. 文件 -> 文件：追加内容（需同名）
+# 文件 -> 文件
 _handle_file_to_file() {
     local input="$1"
     local output="$2"
     local input_filename=$(basename "$input")
     local output_filename=$(basename "$output")
-    local input_dir=$(dirname $input)
-    local output_dir=$(dirname $output)
     
     echo "当前模式: 文件 -> 文件"
     echo "$input_filename -> $output_filename"
@@ -142,7 +140,7 @@ _handle_file_to_file() {
     fi
 }
 
-# 2. 文件 -> 目录
+# 文件 -> 目录
 _handle_file_to_directory() {
     local input="$1"
     local output="$2"
