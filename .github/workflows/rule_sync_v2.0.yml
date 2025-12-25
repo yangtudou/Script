@@ -51,7 +51,6 @@ env:
     geo/geosite/classical/xunlei.list
     geo/geosite/classical/tld-cn.list
     geo/geosite/classical/cn.list
-    geo/geoip/classical/cn.list
     geo/geosite/classical/private.list
     geo/geoip/classical/private.list
   METACUBEX_CLASH_DOMAIN_FILES: |
