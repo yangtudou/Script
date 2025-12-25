@@ -117,7 +117,8 @@ _handle_file_to_file() {
     local input="$1"
     local output="$2"
     local input_filename=$(basename "$input")
-    local output_filename=$(basename "$output")
+    local output_dir=$(dirname "$output")
+	local target_file=$output_dir/$input_filename
     
     echo "当前模式: 文件 -> 文件"
     echo "$input_filename -> $output_filename"
@@ -130,12 +131,12 @@ _handle_file_to_file() {
     fi
     
     # 判断是否同名文件
-    if [[ "$input_basename" == "$output_basename" ]]; then
+    if [[ -e "$target_file" ]]; then
         echo "$input_basename 存在同名, 将执行追加模式"
         echo "" >> "$output"
         cat "$input" >> "$output"
     else
-        echo "$input_basename 不同名, 将执行移动模式"
+        echo "$input_basename 不存在同名, 将执行移动模式"
         mv "$input" "$output"
     fi
 }
@@ -339,8 +340,6 @@ _handle_directory_to_directory() {
     echo "来源目录: $source_dir -> $target_dir"
     echo "⚠️ 不会检索子目录"
     
-    # 把来源目录内的文件做成数组
-    local source_files=()
     while IFS= read -r -d '' file; do
         # 提取不含路径的文件名称
         local filename=$(basename "$file")
