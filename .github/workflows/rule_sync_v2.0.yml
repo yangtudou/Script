@@ -177,10 +177,10 @@ jobs:
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
 
           # direct
-          curl -L -o "rule_sync_temp/custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
+          curl -L -o "custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
           
           action_env_to_array_fix "$METACUBEX_SURGE_DIRECT_FILES" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
-          DIRECT_RULES+=("rule_sync_temp/custom_direct.txt")
+          DIRECT_RULES+=("custom_direct.txt")
           merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
 
           # AWAvenue-Ads-Rule
