@@ -21,6 +21,7 @@ on:
       - main
     paths:
       - ".github/custom_direct.txt"
+      - ".github/custom_proxy.txt"
 
 permissions:
   contents: write
@@ -169,7 +170,10 @@ jobs:
           fi
 
           # proxy
+          curl -L -o "rule_sync_temp/custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
+          
           action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
+          PROXY_RULES+=("rule_sync_temp/custom_proxy.txt")
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
 
           # direct
