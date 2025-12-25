@@ -116,12 +116,13 @@ _is_array() {
 _handle_file_to_file() {
     local input="$1"
     local output="$2"
+	
     local input_filename=$(basename "$input")
     local output_dir=$(dirname "$output")
 	local target_file=$output_dir/$input_filename
     
     echo "当前模式: 文件 -> 文件"
-    echo "$input_filename -> $output_filename"
+    echo "$input -> $output"
     
     # 判断是否为同源文件
     if [[ $input == $output ]]; then
