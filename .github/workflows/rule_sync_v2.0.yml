@@ -132,13 +132,13 @@ jobs:
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
 
           # domain
-          merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain" "directory"
 
           # ip
-          merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
 
           # AWAvenue-Ads-Rule
-          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml"
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
           
       - name: 整理 Surge 规则
         run: |
@@ -165,14 +165,14 @@ jobs:
 
           # proxy
           action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
-          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list"
+          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
 
           # direct
           action_env_to_array_fix "$METACUBEX_SURGE_DIRECT_FILES" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
-          merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list"
+          merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
 
           # AWAvenue-Ads-Rule
-          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge"
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
       
       - name: 提交变更
         working-directory: rule_sync_temp
