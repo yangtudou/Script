@@ -122,21 +122,6 @@ jobs:
 
           sparse-checkout-cone-mode: false
 
-      - name: "罗列 meta-rules-dat"
-        run: |
-          ls -l meta-rules-dat
-          echo "=============="
-          ls -l meta-rules-dat/geo
-          echo "=============="
-          ls -l meta-rules-dat/geo/geosite
-          echo "=============="
-          ls -l meta-rules-dat/geo/geoip
-          echo "=============="
-          ls -l meta-rules-dat/geo/geosite/classical
-          echo "=============="
-          ls -l meta-rules-dat/geo/geoip/classical
-
-
       # - name: "📥 AWAvenue 仓库 main 分支"
       #   uses: actions/checkout@v6
       #   with:
@@ -161,28 +146,21 @@ jobs:
       #       ruleset/apple.txt
 
       #     sparse-checkout-cone-mode: false
-
-      # - name: "🔧 下载脚本"
-      #   run: |
-      #     curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
-      #     chmod +x merge_rules.sh
  
-      # - name: 整理 ClashMeta 规则
-      #   run: |
-      #     set -e
+      - name: 整理 ClashMeta 规则
+        run: |
+          # 引入外部 shell 脚本
+          source ./merge_rules.sh
 
-      #     # 引入外部 shell 脚本
-      #     source ./merge_rules.sh
+          echo "开始整理 ClashMeta 规则..."
+          rm -rf rule_sync_temp/ClashMeta
+          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
 
-      #     echo "开始整理 ClashMeta 规则..."
-      #     rm -rf rule_sync_temp/ClashMeta
-      #     mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
+          # domain
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain" "directory"
 
-      #     # domain
-      #     merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain" "directory"
-
-      #     # ip
-      #     merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
+          # ip
+          merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
 
       #     # AWAvenue-Ads-Rule
       #     merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
@@ -227,23 +205,23 @@ jobs:
       #     # AWAvenue-Ads-Rule
       #     merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
       
-      # - name: 提交变更
-      #   working-directory: rule_sync_temp
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: 提交变更
+        working-directory: rule_sync_temp
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      #     git checkout --orphan temp
-      #     git branch -D rules
-      #     git checkout --orphan rules
+          git checkout --orphan temp
+          git branch -D rules
+          git checkout --orphan rules
           
-      #     git add .
-      #     git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
-      #     git push -f origin rules
+          git add .
+          git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
+          git push -f origin rules
 
-      # - name: 清除工作流
-      #   uses: Mattraks/delete-workflow-runs@v2
-      #   with:
-      #     retain_days: 0
-      #     keep_minimum_runs: 0
-      #     repository: ${{ github.repository }}
+      - name: 清除工作流
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 0
+          keep_minimum_runs: 0
+          repository: ${{ github.repository }}
