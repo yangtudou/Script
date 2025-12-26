@@ -71,14 +71,14 @@ env:
     geo/geoip/telegram.yaml
     geo/geoip/cloudflare.yaml
   GEOX: |
-    cn # aio
+    cn #aio
     meta
     apple
-    google
+    google #aio
     github
-    private
-    telegram
-    cloudflare
+    private #aio
+    telegram #aio
+    cloudflare #aio
     geolocation-!cn
 jobs:
   rule_sync:
@@ -92,6 +92,7 @@ jobs:
 
             clean_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
             [[ -z "$clean_line" ]] && continue
+
               if [[ "$clean_line" == *"#"* ]]; then
                 # 有注释的情况
                 main_part=$(echo "$clean_line" | cut -d'#' -f1 | xargs)
