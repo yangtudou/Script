@@ -91,7 +91,7 @@ jobs:
           
       - name: "展示变量"
         run: |
-          echo "$METACUBEX_CLASH_IP_FILES"
+          echo "$SURGE_FILES"
 
           
       # - name: "📥 当前仓库 rules 分支"
