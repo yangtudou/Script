@@ -71,12 +71,12 @@ env:
     geo/geoip/telegram.yaml
     geo/geoip/cloudflare.yaml
   GEOX: |
-    cn #aio
+    cn #aio #direct
     meta
-    apple
+    apple #direct
     google #aio
     github
-    private #aio
+    private #aio #direct
     telegram #aio
     cloudflare #aio
     geolocation-!cn
@@ -152,6 +152,7 @@ jobs:
           # 引入外部 shell 脚本
           source ./merge_rules.sh
 
+          echo "$CLASH_DIRECT_FILES"
           echo "开始整理 ClashMeta 规则..."
           rm -rf rule_sync_temp/ClashMeta
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
