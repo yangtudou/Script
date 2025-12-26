@@ -70,25 +70,60 @@ env:
     geo/geoip/private.yaml
     geo/geoip/telegram.yaml
     geo/geoip/cloudflare.yaml
-  DOMAIN: |
-    google
+  GEOX: |
+    cn # aio
     meta
+    apple
+    google
     github
+    private
+    telegram
     cloudflare
+    geolocation-!cn
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
       - name: "处理变量"
         run: |
-          # 正确的 EOF 语法
           {
             echo "SURGE_FILES<<EOF"
-            while IFS= read -r domain; do
-              if [[ -n "$domain" ]]; then
-                echo "geo/geosite/classical/$domain.list"
+            while IFS= read -r line; do
+
+            clean_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            [[ -z "$clean_line" ]] && continue
+              if [[ "$clean_line" == *"#"* ]]; then
+                # 有注释的情况
+                main_part=$(echo "$clean_line" | cut -d'#' -f1 | xargs)
+                comment_part=$(echo "$clean_line" | cut -d'#' -f2- | xargs)
+              else
+                # 没有注释的情况
+                main_part="$clean_line"
+                comment_part=""
               fi
-            done <<< "$DOMAIN"
+            
+              # 根据注释决定路径
+              if [[ -n "$comment_part" ]]; then
+                case "$comment_part" in
+                  "aio") 
+                    echo "geo/geosite/aio/$main_part.yaml"
+                    ;;
+                  "classical"|"standard")
+                    echo "geo/geosite/classical/$main_part.yaml"
+                    ;;
+                  "special"|"custom"|"unique")
+                    echo "geo/geosite/custom/$main_part.yaml"
+                    ;;
+                  *)
+                    # 未知注释，使用默认路径但记录警告
+                    echo "geo/geosite/$main_part.yaml"
+                    echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
+                    ;;
+                esac
+              else
+                echo "geo/geosite/$main_part.yaml"
+              fi
+            done <<< "$GEOX"
             echo "EOF"
           } >> $GITHUB_ENV
           
