@@ -70,13 +70,24 @@ env:
     geo/geoip/private.yaml
     geo/geoip/telegram.yaml
     geo/geoip/cloudflare.yaml
+  DOMAIN: |
+    google
+    meta
+    github
+    cloudflare
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
       - name: "处理变量"
         run: |
-          echo "METACUBEX_CLASH_IP_FILES=env_demo" >> $GITHUB_ENV
+          {
+            echo "SURGE_FILES<<<EOF"
+            for i in "$DOMIAN"; do
+              echo "geo/geosite/classical/$i"
+            done
+            echo "EOF"
+          } >> $GITHUB_ENV
           
       - name: "展示变量"
         run: |
