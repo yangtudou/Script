@@ -13,6 +13,62 @@
 # 5. 数组 → 文件（写入内容）
 
 
+# 新的传递 env 的方法
+# 大大减少了重复代码
+add_action_env() {
+    local new_env_name="$1"
+    local domain_path="${2:-geo/geosite}"
+    local ip_path="${3:-geo/geoip}"
+    local file_suffix="${4:-yaml}"
+    local action_env_content="$4"
+
+    {
+        echo "${new_env_name}<<EOF"  # 使用传入的环境变量名
+        while IFS= read -r line; do
+            # 删除头尾空格
+            env_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            # 检测到空行则跳过
+            [[ -z "$env_line" ]] && continue
+
+            # 判断是否有注释
+            if [[ "$env_line" == *"#"* ]]; then
+                # 有注释的情况
+                main_part=$(echo "$env_line" | cut -d'#' -f1 | xargs)
+                comment_part=$(echo "$env_line" | cut -d'#' -f2- | xargs)
+            else
+                # 没有注释的情况
+                main_part="$env_line"
+                comment_part=""
+            fi
+            
+            # 根据注释决定路径
+            if [[ -n "$comment_part" ]]; then
+                case "$comment_part" in
+                    "aio") 
+                        # 使用传入的基础路径前缀
+                        echo "${domain_path}/${main_part}.${file_suffix}"
+                        echo "${ip_path}/${main_part}.${file_suffix}"
+                        ;;
+                    *)
+                        # 使用传入的基础路径前缀
+                        echo "${domain_path}/${main_part}.${file_suffix}"
+                        echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
+                        ;;
+                esac
+            else
+                # 使用传入的基础路径前缀
+                echo "${domain_path}/${main_part}.${file_suffix}"
+            fi
+        done <<< "$action_env_content"
+        echo "EOF"
+    } >> ${GITHUB_ENV}
+}
+
+
+
+
+
+
 # Github Action yaml 配置中的环境变量转化为数组
 # Github Action 配置中的 env 在传递过程中, 会存在最后一个值是空的
 # 这里最佳的写法应该是判断空值, 直接删掉
