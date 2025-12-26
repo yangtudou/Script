@@ -22,45 +22,76 @@ add_action_env() {
     local ip_path="${4:-geo/geoip}"
     local file_suffix="${5:-yaml}"
 
-    {
-        echo "${new_env_name}<<EOF"  # 使用传入的环境变量名
-        while IFS= read -r line; do
-            # 删除头尾空格
-            env_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-            # 检测到空行则跳过
-            [[ -z "$env_line" ]] && continue
+    # 初始化两个数组来存储不同环境变量的路径
+    declare -a main_paths      # 主环境变量路径
+    declare -a direct_paths   # direct环境变量路径
 
-            # 判断是否有注释
-            if [[ "$env_line" == *"#"* ]]; then
-                # 有注释的情况
-                main_part=$(echo "$env_line" | cut -d'#' -f1 | xargs)
-                comment_part=$(echo "$env_line" | cut -d'#' -f2- | xargs)
-            else
-                # 没有注释的情况
-                main_part="$env_line"
-                comment_part=""
-            fi
-            
-            # 根据注释决定路径
-            if [[ -n "$comment_part" ]]; then
-                case "$comment_part" in
-                    "aio") 
-                        # 使用传入的基础路径前缀
-                        echo "${domain_path}/${main_part}.${file_suffix}"
-                        echo "${ip_path}/${main_part}.${file_suffix}"
-                        ;;
-                    *)
-                        # 使用传入的基础路径前缀
-                        echo "${domain_path}/${main_part}.${file_suffix}"
-                        echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
-                        ;;
-                esac
-            else
-                # 使用传入的基础路径前缀
-                echo "${domain_path}/${main_part}.${file_suffix}"
-            fi
-        done <<< "$action_env_content"
-        echo "EOF"
+    # 逐行处理内容
+    while IFS= read -r line; do
+        # 删除头尾空格
+        env_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        [[ -z "$env_line" ]] && continue
+
+        # 判断是否有注释
+        if [[ "$env_line" == *"#"* ]]; then
+            # 有注释的情况
+            main_part=$(echo "$env_line" | cut -d'#' -f1 | xargs)
+            comment_part=$(echo "$env_line" | cut -d'#' -f2- | xargs)
+        else
+            # 没有注释的情况
+            main_part="$env_line"
+            comment_part=""
+        fi
+
+        # 根据注释决定路径并分类存储
+        if [[ -n "$comment_part" ]]; then
+            case "$comment_part" in
+                "aio") 
+                    # AIO标签：添加到主环境变量
+                    main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    main_paths+=("${ip_path}/${main_part}.${file_suffix}")
+                    ;;
+                "direct")
+                    # DIRECT标签：同时添加到主环境变量和direct环境变量
+                    main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    direct_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    ;;
+                "aio direct"|"direct aio")
+                    # 双标签：同时添加两条路径到两个环境变量
+                    main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    main_paths+=("${ip_path}/${main_part}.${file_suffix}")
+                    direct_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    direct_paths+=("${ip_path}/${main_part}.${file_suffix}")
+                    ;;
+                *)
+                    # 未知注释：只添加到主环境变量
+                    main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
+                    ;;
+            esac
+        else
+            # 没有注释：只添加到主环境变量
+            main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+        fi
+    done <<< "$action_env_content"
+
+    # 输出环境变量
+    {
+        # 输出主环境变量
+        if [[ ${#main_paths[@]} -gt 0 ]]; then
+            echo "${new_env_name}<<EOF"
+            printf '%s\n' "${main_paths[@]}"
+            echo "EOF"
+        fi
+
+        # 输出direct环境变量（如果有内容）
+        if [[ ${#direct_paths[@]} -gt 0 ]]; then
+            # 使用new_env_name构建direct环境变量名
+            local direct_env_name="${new_env_name}_DIRECT"
+            echo "${direct_env_name}<<EOF"
+            printf '%s\n' "${direct_paths[@]}"
+            echo "EOF"
+        fi
     }
 }
 
