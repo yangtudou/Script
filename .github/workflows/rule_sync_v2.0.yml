@@ -92,10 +92,14 @@ jobs:
 
           add_action_env "CLASH_FILES" "$GEOX" >> $GITHUB_ENV
 
+          add_action_env "SURGE_FILES" "$GEOX" "geo/geosite/classical/" "geo/geosite/classical/" "list" >> $GITHUB_ENV
+
 
       - name: "展示变量"
         run: |
-          # echo "$SURGE_FILES"
+          echo "$SURGE_FILES"
+          echo ""
+          echo "=========="
           echo "$CLASH_FILES"
 
           
