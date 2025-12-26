@@ -81,11 +81,14 @@ jobs:
     steps:
       - name: "处理变量"
         run: |
+          # 正确的 EOF 语法
           {
             echo "SURGE_FILES<<EOF"
-            echo "$DOMAIN" | while IFS= read -r domain; do
-              [[ -n "$domain" ]] && echo "geo/geosite/classical/$domain.list"
-            done
+            while IFS= read -r domain; do
+              if [[ -n "$domain" ]]; then
+                echo "geo/geosite/classical/$domain.list"
+              fi
+            done <<< "$DOMAIN"
             echo "EOF"
           } >> $GITHUB_ENV
           
