@@ -144,6 +144,12 @@ jobs:
 
           # AWAvenue-Ads-Rule
           merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
+
+          echo "START DEBUG"
+
+          while IFS= read -r line; do
+            echo "当前行: $line"
+          done <<< "$METACUBEX_CLASH_DOMAIN_FILES"
           
       - name: 整理 Surge 规则
         run: |
