@@ -29,19 +29,16 @@ action_env_to_array_fix() {
     # 清空目标数组，避免之前的内容干扰
     output_array=()
     
-    # 将环境变量的值按行读入数组引用
-    readarray -t output_array <<< "$input_env"
-    
-    # 如果数组不为空，则删除最后一个元素
-    if [ ${#output_array[@]} -gt 0 ]; then
-        unset 'output_array[-1]'
-    fi
-    
-    if [[ -n "$base_dir" ]]; then
-        for index in "${!output_array[@]}"; do
-            output_array["$index"]="$base_dir/${output_array[$index]}"
-        done
-    fi
+    # 删除空行和注释行(#)
+    while IFS= read -r line; do
+	    if [[ -n "$line" && ! "$line" =~ ^# ]]; then
+		    if [[ -n "$base_dir" ]]; then
+		        output_array+=("$base_dir/$line")
+			else
+			    output_array+=("$line")
+			fi
+        fi
+	done <<< "$input_env"
 }
 
 trap 'echo "错误发生在: $BASH_COMMAND"; exit 1' ERR
