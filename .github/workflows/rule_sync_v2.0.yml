@@ -107,13 +107,8 @@ jobs:
               if [[ -n "$comment_part" ]]; then
                 case "$comment_part" in
                   "aio") 
-                    echo "geo/geosite/aio/$main_part.yaml"
-                    ;;
-                  "classical"|"standard")
-                    echo "geo/geosite/classical/$main_part.yaml"
-                    ;;
-                  "special"|"custom"|"unique")
-                    echo "geo/geosite/custom/$main_part.yaml"
+                    echo "meta-rules-dat/geo/geosite/classical/$main_part.list"
+                    echo "meta-rules-dat/geo/geoip/classical/$main_part.list"
                     ;;
                   *)
                     # 未知注释，使用默认路径但记录警告
@@ -122,7 +117,7 @@ jobs:
                     ;;
                 esac
               else
-                echo "geo/geosite/$main_part.yaml"
+                echo "meta-rules-dat/geo/geosite/classical/$main_part.list"
               fi
             done <<< "$GEOX"
             echo "EOF"
