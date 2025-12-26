@@ -17,10 +17,10 @@
 # 大大减少了重复代码
 add_action_env() {
     local new_env_name="$1"
-    local domain_path="${2:-geo/geosite}"
-    local ip_path="${3:-geo/geoip}"
-    local file_suffix="${4:-yaml}"
-    local action_env_content="$4"
+    local action_env_content="$2"
+    local domain_path="${3:-geo/geosite}"
+    local ip_path="${4:-geo/geoip}"
+    local file_suffix="${5:-yaml}"
 
     {
         echo "${new_env_name}<<EOF"  # 使用传入的环境变量名
