@@ -90,7 +90,7 @@ jobs:
           chmod +x merge_rules.sh
           source ./merge_rules.sh
 
-          add_action_env CLASH_FILES $GEOX
+          add_action_env CLASH_FILES $GEOX >> $GITHUB_ENV
 
 
       - name: "展示变量"
