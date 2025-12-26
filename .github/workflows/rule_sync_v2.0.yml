@@ -152,7 +152,11 @@ jobs:
           # 引入外部 shell 脚本
           source ./merge_rules.sh
 
+          echo "================="
           echo "$CLASH_FILES_DIRECT"
+          echo "================="
+          echo "$CLASH_FILES_PROXY"
+          echo "================="
           echo "开始整理 ClashMeta 规则..."
           rm -rf rule_sync_temp/ClashMeta
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
