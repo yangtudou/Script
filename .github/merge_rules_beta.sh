@@ -61,7 +61,7 @@ add_action_env() {
             fi
         done <<< "$action_env_content"
         echo "EOF"
-    } >> ${GITHUB_ENV}
+    }
 }
 
 
