@@ -84,19 +84,21 @@ jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: "处理变量"
+      - name: "下载脚本"
         run: |
           curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
           chmod +x merge_rules.sh
+
+      - name: "写入变量 -> sparse-checkout"
+        run: |
           source ./merge_rules.sh
 
           add_action_env "CLASH_FILES" "$GEOX" >> $GITHUB_ENV
+          add_action_env "SURGE_FILES" "$GEOX" \
+          "geo/geosite/classical" \
+          "geo/geosite/classical" \
+          "list" >> $GITHUB_ENV
 
-          add_action_env "SURGE_FILES" "$GEOX" "geo/geosite/classical/" "geo/geosite/classical/" "list" >> $GITHUB_ENV
-
-
-      - name: "展示变量"
-        run: |
           echo "$SURGE_FILES"
           echo ""
           echo "=========="
@@ -110,20 +112,33 @@ jobs:
       #     ref: rules
       #     fetch-depth: 1
 
-      # - name: "📥 MetaCubeX 仓库 meta 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: MetaCubeX/meta-rules-dat
-      #     ref: meta
-      #     fetch-depth: 1
-      #     path: ${{ env.METACUBEX_BASE_DIR }}
-      #     sparse-checkout: |
-      #       ${{ env.METACUBEX_SURGE_DIRECT_FILES }}
-      #       ${{ env.METACUBEX_SURGE_PROXY_FILES }}
-      #       ${{ env.METACUBEX_CLASH_DOMAIN_FILES }}
-      #       ${{ env.METACUBEX_CLASH_IP_FILES }}
+      - name: "📥 MetaCubeX 仓库 meta 分支"
+        uses: actions/checkout@v6
+        with:
+          repository: MetaCubeX/meta-rules-dat
+          ref: meta
+          fetch-depth: 1
+          path: ${{ env.METACUBEX_BASE_DIR }}
+          sparse-checkout: |
+            ${{ env.SURGE_FILES }}
+            ${{ env.CLASH_FILES }}
 
-      #     sparse-checkout-cone-mode: false
+          sparse-checkout-cone-mode: false
+
+      - name: "罗列 meta-rules-dat"
+        run: |
+          ls -l meta-rules-dat
+          echo "=============="
+          ls -l meta-rules-dat/geo
+          echo "=============="
+          ls -l meta-rules-dat/geosite
+          echo "=============="
+          ls -l meta-rules-dat/geoip
+          echo "=============="
+          ls -l meta-rules-dat/geosite/classical
+          echo "=============="
+          ls -l meta-rules-datgeoip/classical
+
 
       # - name: "📥 AWAvenue 仓库 main 分支"
       #   uses: actions/checkout@v6
