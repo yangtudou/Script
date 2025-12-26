@@ -82,9 +82,9 @@ jobs:
       - name: "处理变量"
         run: |
           {
-            echo "SURGE_FILES<<<EOF"
-            for i in "$DOMIAN"; do
-              echo "geo/geosite/classical/$i"
+            echo "SURGE_FILES<<EOF"
+            echo "$DOMAIN" | while IFS= read -r domain; do
+              [[ -n "$domain" ]] && echo "geo/geosite/classical/$domain.list"
             done
             echo "EOF"
           } >> $GITHUB_ENV
