@@ -23,9 +23,9 @@ add_action_env() {
     local file_suffix="${5:-yaml}"
 
     # 初始化路径存储数组
-    declare -a main_paths      # 主环境变量路径 (SURGE_FILES)
-    declare -a direct_paths    # direct环境变量路径 (SURGE_DIRECT_FILES)
-    declare -a proxy_paths      # proxy环境变量路径 (SURGE_PROXY_FILES)
+    declare -a main_paths      # 主环境变量路径
+    declare -a direct_paths     # direct环境变量路径
+    declare -a proxy_paths      # proxy环境变量路径
 
     # 逐行处理内容
     while IFS= read -r line; do
@@ -33,61 +33,63 @@ add_action_env() {
         env_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
         [[ -z "$env_line" ]] && continue
 
-        # 1. 提取主部分（移除所有 #@tag 格式的标签）
-        main_part=$(echo "$env_line" | sed 's/#@[a-zA-Z0-9_]*//g' | xargs)
-        [[ -z "$main_part" ]] && continue
-
-        # 2. 提取本行所有标签到一个数组
-        # 使用 grep -o 只输出匹配的部分，即所有的 #@tag
-        mapfile -t tags < <(echo "$env_line" | grep -o '#@[a-zA-Z0-9_]*' | sed 's/#@//' | xargs)
-
-        # 3. 根据标签组合决定路径分发策略
-        # 生成基础路径
-        local domain_path_entry="${domain_path}/${main_part}.${file_suffix}"
-        local ip_path_entry="${ip_path}/${main_part}.${file_suffix}"
-
-        # 检查是否存在特定标签
-        has_tag() {
-            local tag_to_find="$1"
-            for t in "${tags[@]}"; do
-                if [[ "$t" == "$tag_to_find" ]]; then
-                    return 0 # true, found
-                fi
-            done
-            return 1 # false, not found
-        }
-
-        # 核心逻辑：根据标签组合分发路径
-        if has_tag "aio"; then
-            # 规则1 & 2: 含有 aio 标签，生成两条路径到主集合
-            main_paths+=("$domain_path_entry")
-            main_paths+=("$ip_path_entry")
-
-            # 规则2: 如果同时含有 direct 或 proxy 标签，也添加到相应的集合
-            if has_tag "direct"; then
-                direct_paths+=("$domain_path_entry")
-                direct_paths+=("$ip_path_entry")
-            fi
-            if has_tag "proxy"; then
-                proxy_paths+=("$domain_path_entry")
-                proxy_paths+=("$ip_path_entry")
-            fi
-        elif has_tag "direct"; then
-            # 规则3: 只有 direct 标签，路径同时添加到主集合和 direct 集合
-            main_paths+=("$domain_path_entry")
-            direct_paths+=("$domain_path_entry")
-        elif has_tag "proxy"; then
-            # 规则: 只有 proxy 标签，路径同时添加到主集合和 proxy 集合
-            main_paths+=("$domain_path_entry")
-            proxy_paths+=("$domain_path_entry")
+        # 判断是否有注释
+        if [[ "$env_line" == *"#"* ]]; then
+            # 有注释的情况
+            main_part=$(echo "$env_line" | cut -d'#' -f1 | xargs)
+            comment_part=$(echo "$env_line" | cut -d'#' -f2- | xargs)
         else
-            # 默认情况: 无标签或未知标签，只添加到主集合
-            main_paths+=("$domain_path_entry")
+            # 没有注释的情况
+            main_part="$env_line"
+            comment_part=""
         fi
 
+        # 根据注释决定路径并分类存储
+        if [[ -n "$comment_part" ]]; then
+            # 核心修正：处理互斥逻辑，优先判断明确的组合
+            case "$comment_part" in
+                *"aio"*)
+                    # 规则1 & 2: 含有aio标签，生成两条路径
+                    path1="${domain_path}/${main_part}.${file_suffix}"
+                    path2="${ip_path}/${main_part}.${file_suffix}"
+                    main_paths+=("$path1")
+                    main_paths+=("$path2")
+
+                    # 规则2: 如果同时明确含有direct，也添加到 DIRECT
+                    if [[ "$comment_part" == *"direct"* ]]; then
+                        direct_paths+=("$path1")
+                        direct_paths+=("$path2")
+                    # 如果同时明确含有proxy，也添加到 PROXY
+                    elif [[ "$comment_part" == *"proxy"* ]]; then
+                        proxy_paths+=("$path1")
+                        proxy_paths+=("$path2")
+                    fi
+                    ;;
+                *"direct"*)
+                    # 规则3: 只含有direct（或direct与其他未知标签，但不含aio和proxy），添加到主集合和DIRECT
+                    path1="${domain_path}/${main_part}.${file_suffix}"
+                    main_paths+=("$path1")
+                    direct_paths+=("$path1")
+                    ;;
+                *"proxy"*)
+                    # 规则: 只含有proxy（或proxy与其他未知标签，但不含aio和direct），添加到主集合和PROXY
+                    path1="${domain_path}/${main_part}.${file_suffix}"
+                    main_paths+=("$path1")
+                    proxy_paths+=("$path1")
+                    ;;
+                *)
+                    # 未知注释：只添加到主环境变量
+                    main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+                    echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
+                    ;;
+            esac
+        else
+            # 没有注释：只添加到主环境变量
+            main_paths+=("${domain_path}/${main_part}.${file_suffix}")
+        fi
     done <<< "$action_env_content"
 
-    # 输出到环境变量
+    # 输出环境变量
     {
         # 输出主环境变量 (SURGE_FILES)
         if [[ ${#main_paths[@]} -gt 0 ]]; then
@@ -96,21 +98,25 @@ add_action_env() {
             echo "EOF"
         fi
 
-        # 输出 SURGE_DIRECT_FILES
+        # 输出direct环境变量（如果有内容）
         if [[ ${#direct_paths[@]} -gt 0 ]]; then
-            echo "${new_env_name}_DIRECT<<EOF"
+            local direct_env_name="${new_env_name}_DIRECT"
+            echo "${direct_env_name}<<EOF"
             printf '%s\n' "${direct_paths[@]}"
             echo "EOF"
         fi
 
-        # 输出 SURGE_PROXY_FILES (可根据需要添加更多)
+        # 输出proxy环境变量（如果有内容）
         if [[ ${#proxy_paths[@]} -gt 0 ]]; then
-            echo "${new_env_name}_PROXY<<EOF"
+            local proxy_env_name="${new_env_name}_PROXY"
+            echo "${proxy_env_name}<<EOF"
             printf '%s\n' "${proxy_paths[@]}"
             echo "EOF"
         fi
     }
 }
+
+
 
 
 
