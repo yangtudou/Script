@@ -86,89 +86,16 @@ jobs:
     steps:
       - name: "处理变量"
         run: |
-          # Surge
-          {
-            echo "SURGE_FILES<<EOF"
-            while IFS= read -r line; do
+          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
+          chmod +x merge_rules.sh
+          source ./merge_rules.sh
 
-            # 删除头尾空格
-            env_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-            # 检测到啥也没有就跳过 while 循环
-            [[ -z "$env_line" ]] && continue
-              # 判断是否有注释
-              if [[ "$env_line" == *"#"* ]]; then
-                # 有注释的情况
-                main_part=$(echo "$env_line" | cut -d'#' -f1 | xargs)
-                comment_part=$(echo "$env_line" | cut -d'#' -f2- | xargs)
-              else
-                # 没有注释的情况
-                main_part="$env_line"
-                comment_part=""
-              fi
-            
-              # 根据注释决定路径
-              if [[ -n "$comment_part" ]]; then
-                case "$comment_part" in
-                  "aio") 
-                    echo "geo/geosite/classical/$main_part.list"
-                    echo "geo/geoip/classical/$main_part.list"
-                    ;;
-                  *)
-                    # 未知注释，使用默认路径但记录警告
-                    echo "geo/geosite/classical/$main_part.yaml"
-                    echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
-                    ;;
-                esac
-              else
-                echo "geo/geosite/classical/$main_part.list"
-              fi
-            done <<< "$GEOX"
-            echo "EOF"
-          } >> $GITHUB_ENV
+          add_action_env CLASH_FILES $GEOX
 
-          # ClashMeta
-          {
-            echo "CLASH_FILES<<EOF"
-            while IFS= read -r line; do
-
-            # 删除头尾空格
-            env_line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-            # 检测到啥也没有就跳过 while 循环
-            [[ -z "$env_line" ]] && continue
-              # 判断是否有注释
-              if [[ "$env_line" == *"#"* ]]; then
-                # 有注释的情况
-                main_part=$(echo "$env_line" | cut -d'#' -f1 | xargs)
-                comment_part=$(echo "$env_line" | cut -d'#' -f2- | xargs)
-              else
-                # 没有注释的情况
-                main_part="$env_line"
-                comment_part=""
-              fi
-            
-              # 根据注释决定路径
-              if [[ -n "$comment_part" ]]; then
-                case "$comment_part" in
-                  "aio") 
-                    echo "geo/geosite/$main_part.list"
-                    echo "geo/geoip/$main_part.list"
-                    ;;
-                  *)
-                    # 未知注释，使用默认路径但记录警告
-                    echo "geo/geosite/$main_part.yaml"
-                    echo "警告: 未知注释 '$comment_part' 用于文件 '$main_part'" >&2
-                    ;;
-                esac
-              else
-                echo "geo/geosite/$main_part.list"
-              fi
-            done <<< "$GEOX"
-            echo "EOF"
-          } >> $GITHUB_ENV
 
       - name: "展示变量"
         run: |
-          echo "$SURGE_FILES"
+          # echo "$SURGE_FILES"
           echo "$CLASH_FILES"
 
           
