@@ -80,6 +80,9 @@ env:
     telegram #aio
     cloudflare #aio
     geolocation-!cn
+    missav
+    javbus
+
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
