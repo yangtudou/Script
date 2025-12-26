@@ -77,7 +77,12 @@ jobs:
       - name: "处理变量"
         run: |
           echo "METACUBEX_CLASH_IP=null" >> $GITHUB_ENV
+          
+      - name: "展示变量"
+        run: |
           echo "$METACUBEX_CLASH_IP"
+
+          
       # - name: "📥 当前仓库 rules 分支"
       #   uses: actions/checkout@v6
       #   with:
