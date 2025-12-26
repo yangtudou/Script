@@ -16,12 +16,12 @@ on:
   # schedule:
   #   - cron: '0 22 * * *'
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    # paths:
-    #   - ".github/custom_direct.txt"
-    #   - ".github/custom_proxy.txt"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - ".github/custom_direct.txt"
+  #     - ".github/custom_proxy.txt"
 
 permissions:
   contents: write
@@ -73,147 +73,135 @@ jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      # - name: "📥 当前仓库 rules 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     path: rule_sync_temp
-      #     ref: rules
-      #     fetch-depth: 1
+      - name: "📥 当前仓库 rules 分支"
+        uses: actions/checkout@v6
+        with:
+          path: rule_sync_temp
+          ref: rules
+          fetch-depth: 1
 
-      # - name: "📥 MetaCubeX 仓库 meta 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: MetaCubeX/meta-rules-dat
-      #     ref: meta
-      #     fetch-depth: 1
-      #     path: ${{ env.METACUBEX_BASE_DIR }}
-      #     sparse-checkout: |
-      #       ${{ env.METACUBEX_SURGE_DIRECT_FILES }}
-      #       ${{ env.METACUBEX_SURGE_PROXY_FILES }}
-      #       ${{ env.METACUBEX_CLASH_DOMAIN_FILES }}
-      #       ${{ env.METACUBEX_CLASH_IP_FILES }}
+      - name: "📥 MetaCubeX 仓库 meta 分支"
+        uses: actions/checkout@v6
+        with:
+          repository: MetaCubeX/meta-rules-dat
+          ref: meta
+          fetch-depth: 1
+          path: ${{ env.METACUBEX_BASE_DIR }}
+          sparse-checkout: |
+            ${{ env.METACUBEX_SURGE_DIRECT_FILES }}
+            ${{ env.METACUBEX_SURGE_PROXY_FILES }}
+            ${{ env.METACUBEX_CLASH_DOMAIN_FILES }}
+            ${{ env.METACUBEX_CLASH_IP_FILES }}
 
-      #     sparse-checkout-cone-mode: false
+          sparse-checkout-cone-mode: false
 
-      # - name: "📥 AWAvenue 仓库 main 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: TG-Twilight/AWAvenue-Ads-Rule
-      #     ref: main
-      #     fetch-depth: 1
-      #     path: AWAvenue-Ads-Rule
-      #     sparse-checkout: |
-      #       Filters/AWAvenue-Ads-Rule-Clash.yaml
-      #       Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+      - name: "📥 AWAvenue 仓库 main 分支"
+        uses: actions/checkout@v6
+        with:
+          repository: TG-Twilight/AWAvenue-Ads-Rule
+          ref: main
+          fetch-depth: 1
+          path: AWAvenue-Ads-Rule
+          sparse-checkout: |
+            Filters/AWAvenue-Ads-Rule-Clash.yaml
+            Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
 
-      #     sparse-checkout-cone-mode: false
+          sparse-checkout-cone-mode: false
 
-      # - name: "📥 Loyalsoldier/surge-rules 仓库 release 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: Loyalsoldier/surge-rules
-      #     ref: release
-      #     fetch-depth: 1
-      #     path: Loyalsoldier_surge-rules
-      #     sparse-checkout: |
-      #       ruleset/apple.txt
+      - name: "📥 Loyalsoldier/surge-rules 仓库 release 分支"
+        uses: actions/checkout@v6
+        with:
+          repository: Loyalsoldier/surge-rules
+          ref: release
+          fetch-depth: 1
+          path: Loyalsoldier_surge-rules
+          sparse-checkout: |
+            ruleset/apple.txt
 
-      #     sparse-checkout-cone-mode: false
+          sparse-checkout-cone-mode: false
 
-      # - name: "🔧 下载脚本"
-      #   run: |
-      #     curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
-      #     chmod +x merge_rules.sh
+      - name: "🔧 下载脚本"
+        run: |
+          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
+          chmod +x merge_rules.sh
  
       - name: 整理 ClashMeta 规则
         run: |
           set -e
 
-          # # 引入外部 shell 脚本
-          # source ./merge_rules.sh
+          # 引入外部 shell 脚本
+          source ./merge_rules.sh
 
-          # echo "开始整理 ClashMeta 规则..."
-          # rm -rf rule_sync_temp/ClashMeta
-          # mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
+          echo "开始整理 ClashMeta 规则..."
+          rm -rf rule_sync_temp/ClashMeta
+          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
 
-          # # domain
-          # merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain" "directory"
+          # domain
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain" "directory"
 
-          # # ip
-          # merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
+          # ip
+          merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
 
-          # # AWAvenue-Ads-Rule
-          # merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
-
-          echo "START DEBUG"
-          echo "--------------------------"
-
-          while IFS= read -r line; do
-            if [[ -n "$line" && ! "$line" =~ ^# ]]; then
-              echo "当前行: $line"
-            fi
-          done <<< "$METACUBEX_CLASH_DOMAIN_FILES"
-
-          echo "STOP DEBUG"
-          echo "--------------------------"
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
           
-      # - name: 整理 Surge 规则
-      #   run: |
-      #     set -e
+      - name: 整理 Surge 规则
+        run: |
+          set -e
 
-      #     # 引入外部 shell 脚本
-      #     source ./merge_rules.sh
+          # 引入外部 shell 脚本
+          source ./merge_rules.sh
           
-      #     echo "开始整理 Surge 规则..."
+          echo "开始整理 Surge 规则..."
           
-      #     if rm -rf "rule_sync_temp/Surge"; then
-      #       echo "✓ 目录删除成功: rule_sync_temp/Surge"
-      #     else
-      #       echo "✗ 删除失败: 权限不足或文件系统错误" >&2
-      #       return 1
-      #     fi
+          if rm -rf "rule_sync_temp/Surge"; then
+            echo "✓ 目录删除成功: rule_sync_temp/Surge"
+          else
+            echo "✗ 删除失败: 权限不足或文件系统错误" >&2
+            return 1
+          fi
 
-      #     if mkdir -p "rule_sync_temp/Surge"; then
-      #       echo "✓ 目录重建成功: rule_sync_temp/Surge"
-      #     else
-      #       echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
-      #       return 1
-      #     fi
+          if mkdir -p "rule_sync_temp/Surge"; then
+            echo "✓ 目录重建成功: rule_sync_temp/Surge"
+          else
+            echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
+            return 1
+          fi
 
-      #     # proxy
-      #     curl -L -o "custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
+          # proxy
+          curl -L -o "custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
           
-      #     action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
-      #     PROXY_RULES+=("custom_proxy.txt")
-      #     merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
+          action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
+          PROXY_RULES+=("custom_proxy.txt")
+          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
 
-      #     # direct
-      #     curl -L -o "custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
+          # direct
+          curl -L -o "custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
           
-      #     action_env_to_array_fix "$METACUBEX_SURGE_DIRECT_FILES" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
-      #     DIRECT_RULES+=("custom_direct.txt")
-      #     merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
+          action_env_to_array_fix "$METACUBEX_SURGE_DIRECT_FILES" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
+          DIRECT_RULES+=("custom_direct.txt")
+          merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
 
-      #     # AWAvenue-Ads-Rule
-      #     merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
       
-      # - name: 提交变更
-      #   working-directory: rule_sync_temp
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: 提交变更
+        working-directory: rule_sync_temp
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      #     git checkout --orphan temp
-      #     git branch -D rules
-      #     git checkout --orphan rules
+          git checkout --orphan temp
+          git branch -D rules
+          git checkout --orphan rules
           
-      #     git add .
-      #     git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
-      #     git push -f origin rules
+          git add .
+          git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
+          git push -f origin rules
 
-      # - name: 清除工作流
-      #   uses: Mattraks/delete-workflow-runs@v2
-      #   with:
-      #     retain_days: 0
-      #     keep_minimum_runs: 0
-      #     repository: ${{ github.repository }}
+      - name: 清除工作流
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 0
+          keep_minimum_runs: 0
+          repository: ${{ github.repository }}
