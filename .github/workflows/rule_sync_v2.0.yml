@@ -74,14 +74,14 @@ env:
     cn #@aio #@direct
     meta #@proxy
     apple #@direct
-    google #@aio
-    github 
+    google #@aio #@proxy
+    github #@proxy
     private #@aio #@direct
-    telegram #@aio
-    cloudflare #@aio
-    geolocation-!cn
-    missav
-    javbus
+    telegram #@aio #@proxy
+    cloudflare #@aio #@proxy
+    geolocation-!cn #@proxy
+    missav #@proxy
+    javbus #@proxy
 
 jobs:
   rule_sync:
