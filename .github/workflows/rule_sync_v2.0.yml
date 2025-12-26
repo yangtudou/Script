@@ -55,7 +55,7 @@ env:
     geo/geoip/classical/private.list
   METACUBEX_CLASH_DOMAIN_FILES: |
     geo/geosite/cn.yaml
-    geo/geosite/meta.yaml
+    # geo/geosite/meta.yaml
     geo/geosite/apple.yaml
     geo/geosite/google.yaml
     geo/geosite/github.yaml
@@ -149,7 +149,7 @@ jobs:
           echo "--------------------------"
 
           while IFS= read -r line; do
-            if [[ -n "$line" ]]; then
+            if [[ -n "$line" && ! "$line" =~ ^# ]]; then
               echo "当前行: $line"
             fi
           done <<< "$METACUBEX_CLASH_DOMAIN_FILES"
