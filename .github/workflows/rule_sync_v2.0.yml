@@ -98,12 +98,6 @@ jobs:
           "geo/geosite/classical" \
           "geo/geosite/classical" \
           "list" >> $GITHUB_ENV
-
-          echo "$SURGE_FILES"
-          echo ""
-          echo "=========="
-          echo "$CLASH_FILES"
-
           
       # - name: "📥 当前仓库 rules 分支"
       #   uses: actions/checkout@v6
@@ -131,13 +125,13 @@ jobs:
           echo "=============="
           ls -l meta-rules-dat/geo
           echo "=============="
-          ls -l meta-rules-dat/geosite
+          ls -l meta-rules-dat/geo/geosite
           echo "=============="
-          ls -l meta-rules-dat/geoip
+          ls -l meta-rules-dat/geo/geoip
           echo "=============="
-          ls -l meta-rules-dat/geosite/classical
+          ls -l meta-rules-dat/geo/geosite/classical
           echo "=============="
-          ls -l meta-rules-datgeoip/classical
+          ls -l meta-rules-dat/geo/geoip/classical
 
 
       # - name: "📥 AWAvenue 仓库 main 分支"
