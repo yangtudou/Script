@@ -71,14 +71,14 @@ env:
     geo/geoip/telegram.yaml
     geo/geoip/cloudflare.yaml
   GEOX: |
-    cn #aio direct
-    meta
-    apple #direct
-    google #aio
-    github
-    private #aio direct
-    telegram #aio
-    cloudflare #aio
+    cn #@aio #@direct
+    meta #@proxy
+    apple #@direct
+    google #@aio
+    github 
+    private #@aio #@direct
+    telegram #@aio
+    cloudflare #@aio
     geolocation-!cn
     missav
     javbus
