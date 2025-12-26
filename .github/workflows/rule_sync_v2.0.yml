@@ -102,12 +102,12 @@ jobs:
           "geo/geoip/classical" \
           "list" >> $GITHUB_ENV
           
-      # - name: "📥 当前仓库 rules 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     path: rule_sync_temp
-      #     ref: rules
-      #     fetch-depth: 1
+      - name: "📥 当前仓库 rules 分支"
+        uses: actions/checkout@v6
+        with:
+          path: rule_sync_temp
+          ref: rules
+          fetch-depth: 1
 
       - name: "📥 MetaCubeX 仓库 meta 分支"
         uses: actions/checkout@v6
