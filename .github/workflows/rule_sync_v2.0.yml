@@ -76,11 +76,11 @@ jobs:
     steps:
       - name: "处理变量"
         run: |
-          echo "METACUBEX_CLASH_IP=null" >> $GITHUB_ENV
+          echo "METACUBEX_CLASH_IP_FILES=env_demo" >> $GITHUB_ENV
           
       - name: "展示变量"
         run: |
-          echo "$METACUBEX_CLASH_IP"
+          echo "$METACUBEX_CLASH_IP_FILES"
 
           
       # - name: "📥 当前仓库 rules 分支"
