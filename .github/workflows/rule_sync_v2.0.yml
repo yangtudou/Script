@@ -192,8 +192,8 @@ jobs:
           action_env_to_array_fix "$SURGE_FILES_DIRECT" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
           action_env_to_array_fix "$SURGE_FILES_PROXY" "PROXY_RULES" "$METACUBEX_BASE_DIR"
 
-          merge_rules "$DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
-          merge_rules "$PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
+          merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
+          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
 
       #     # direct
       #     curl -L -o "custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
