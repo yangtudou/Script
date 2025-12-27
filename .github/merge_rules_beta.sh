@@ -15,7 +15,14 @@
 
 # 新的传递 env 的方法
 # 大大减少了重复代码
+# 目前不具有通用性
 add_action_env() {
+    # $1 新环境变量名
+    # $2 输入 github action env 内容
+    # $3 来自 domain 的基础路径, 带默认配置
+    # $4 来自 ip 的基础路径, 带默认配置
+    # $5 定义文件名后缀, 带默认配置
+
     local new_env_name="$1"
     local action_env_content="$2"
     local domain_path="${3:-geo/geosite}"
