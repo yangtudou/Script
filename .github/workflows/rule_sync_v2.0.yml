@@ -78,7 +78,7 @@ env:
     private #aio direct
     telegram #aio proxy
     cloudflare #aio proxy
-    geolocation-!cn proxy
+    geolocation-!cn #proxy
     missav #proxy
     javbus #proxy
 
