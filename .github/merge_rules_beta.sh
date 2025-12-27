@@ -468,7 +468,8 @@ _handle_directory_to_directory() {
         fi
         
         echo "去重 & 删除空行、#注释"
-        sed '/^#/d; /^$/d' "$target_dir_file" | awk '!seen[$0]++' | sponge "$target_dir_file"
+        sed '/^#/d; /^$/d' "${target_dir_file}"
+        awk '!visited[$0]++' "${target_dir_file}" > target_dir_temp_file && mv "${target_dir_file}"
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
 }
 
