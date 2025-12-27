@@ -470,7 +470,7 @@ _handle_directory_to_directory() {
             echo "" >> "$target_dir_file"
             cat "$file" >> "$target_dir_file"
             echo "追加后step: 去重 & 删除空行、#注释"
-            sed '/^#/d; /^$/d' "${target_dir_file}"
+            sed -i '/^#/d; /^$/d' "${target_dir_file}"
         else
             echo "不存在 $filename 同名文件, 开启移动模式"
             mv "$file" "$target_dir_file"
