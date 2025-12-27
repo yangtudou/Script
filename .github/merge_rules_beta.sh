@@ -23,7 +23,7 @@ add_action_env() {
     local file_suffix="${5:-yaml}"
 
     # 初始化路径存储数组
-    declare -a main_paths      # 主环境变量路径
+    declare -a main_paths       # 主环境变量路径
     declare -a direct_paths     # direct环境变量路径
     declare -a proxy_paths      # proxy环境变量路径
 
@@ -466,10 +466,10 @@ _handle_directory_to_directory() {
             echo "不存在 $filename 同名文件, 开启移动模式"
             mv "$file" "$target_dir_file"
         fi
+        
+        echo "去重 & 删除空行、#注释"
+        sed '/^#/d; /^$/d' "$target_dir_file" | awk '!seen[$0]++' | sponge "$target_dir_file"
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
-    
-    
-
 }
 
 #######################################################################
