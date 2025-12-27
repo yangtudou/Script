@@ -1,5 +1,5 @@
 # version: v2.1_beta
-# updated at: 2025-12-24
+# updated at: 2025-12-27
 # 改用 checkout sparse-checkout
 # 改用 rules 分支管理
 # 使用外部 shell 脚本处理规则文件, 简化了整个 Github Action 流程
@@ -28,47 +28,6 @@ permissions:
 
 env:
   METACUBEX_BASE_DIR: "meta-rules-dat"
-  METACUBEX_SURGE_PROXY_FILES: |
-    geo/geosite/classical/missav.list
-    geo/geosite/classical/javbus.list
-    geo/geosite/classical/gfw.list
-    geo/geosite/classical/pinterest.list
-    geo/geosite/classical/github.list
-    geo/geosite/classical/meta.list
-    geo/geosite/classical/tld-!cn.list
-    geo/geosite/classical/cloudflare.list
-    geo/geoip/classical/cloudflare.list
-    geo/geosite/classical/telegram.list
-    geo/geoip/classical/telegram.list
-    geo/geosite/classical/google.list
-    geo/geoip/classical/google.list
-  METACUBEX_SURGE_DIRECT_FILES: |
-    geo/geosite/classical/icloud@cn.list
-    geo/geosite/classical/apple@cn.list
-    geo/geosite/classical/tesla@cn.list
-    geo/geosite/classical/tencent.list
-    geo/geosite/classical/xunlei.list
-    geo/geosite/classical/tld-cn.list
-    geo/geosite/classical/cn.list
-    geo/geosite/classical/private.list
-    geo/geoip/classical/private.list
-  METACUBEX_CLASH_DOMAIN_FILES: |
-    geo/geosite/cn.yaml
-    geo/geosite/meta.yaml
-    geo/geosite/apple.yaml
-    geo/geosite/google.yaml
-    geo/geosite/github.yaml
-    geo/geosite/private.yaml
-    geo/geosite/telegram.yaml
-    geo/geosite/cloudflare.yaml
-    geo/geosite/javbus.yaml
-    geo/geosite/geolocation-!cn.yaml
-  METACUBEX_CLASH_IP_FILES: |
-    geo/geoip/cn.yaml
-    geo/geoip/google.yaml
-    geo/geoip/private.yaml
-    geo/geoip/telegram.yaml
-    geo/geoip/cloudflare.yaml
   GEOX: |
     cn #aio direct
     meta #proxy
@@ -122,18 +81,17 @@ jobs:
 
           sparse-checkout-cone-mode: false
 
-      # - name: "📥 AWAvenue 仓库 main 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: TG-Twilight/AWAvenue-Ads-Rule
-      #     ref: main
-      #     fetch-depth: 1
-      #     path: AWAvenue-Ads-Rule
-      #     sparse-checkout: |
-      #       Filters/AWAvenue-Ads-Rule-Clash.yaml
-      #       Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
-
-      #     sparse-checkout-cone-mode: false
+      - name: "📥 AWAvenue 仓库 main 分支"
+        uses: actions/checkout@v5
+        with:
+          repository: TG-Twilight/AWAvenue-Ads-Rule
+          ref: main
+          fetch-depth: 1
+          path: AWAvenue-Ads-Rule
+          sparse-checkout: |
+            Filters/AWAvenue-Ads-Rule-Clash.yaml
+            Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+          sparse-checkout-cone-mode: false
 
       # - name: "📥 Loyalsoldier/surge-rules 仓库 release 分支"
       #   uses: actions/checkout@v6
@@ -162,8 +120,8 @@ jobs:
           # ip
           merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
 
-      #     # AWAvenue-Ads-Rule
-      #     merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
           
       - name: 整理 Surge 规则
         run: |
@@ -186,7 +144,7 @@ jobs:
             return 1
           fi
 
-          # proxy
+          #
           # curl -L -o "custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
 
           action_env_to_array_fix "$SURGE_FILES_DIRECT" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
@@ -195,15 +153,11 @@ jobs:
           merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
           merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
 
-      #     # direct
-      #     curl -L -o "custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
-          
-      #     action_env_to_array_fix "$METACUBEX_SURGE_DIRECT_FILES" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
-      #     DIRECT_RULES+=("custom_direct.txt")
-      #     merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite/classical" "rule_sync_temp/Surge" "directory"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geoip/classical" "rule_sync_temp/Surge" "directory"
 
-      #     # AWAvenue-Ads-Rule
-      #     merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
+          # AWAvenue-Ads-Rule
+          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
       
       - name: 提交变更
         working-directory: rule_sync_temp
