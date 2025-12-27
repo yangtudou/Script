@@ -8,7 +8,6 @@
 #
 # 支持 Surge ClashMeta、Clash Premium
 #
-# tip: 这里 env 下不能写任何注释
 
 name: 自动化规则下载 v2.1_beta
 
@@ -97,6 +96,7 @@ jobs:
           source ./merge_rules.sh
 
           add_action_env "CLASH_FILES" "$GEOX" >> $GITHUB_ENV
+
           add_action_env "SURGE_FILES" "$GEOX" \
           "geo/geosite/classical" \
           "geo/geoip/classical" \
@@ -152,11 +152,6 @@ jobs:
           # 引入外部 shell 脚本
           source ./merge_rules.sh
 
-          echo "================="
-          echo "$CLASH_FILES_DIRECT"
-          echo "================="
-          echo "$CLASH_FILES_PROXY"
-          echo "================="
           echo "开始整理 ClashMeta 规则..."
           rm -rf rule_sync_temp/ClashMeta
           mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
@@ -170,35 +165,32 @@ jobs:
       #     # AWAvenue-Ads-Rule
       #     merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
           
-      # - name: 整理 Surge 规则
-      #   run: |
-      #     set -e
-
-      #     # 引入外部 shell 脚本
-      #     source ./merge_rules.sh
+      - name: 整理 Surge 规则
+        run: |
+          # 引入外部 shell 脚本
+          source ./merge_rules.sh
           
-      #     echo "开始整理 Surge 规则..."
+          echo "开始整理 Surge 规则..."
           
-      #     if rm -rf "rule_sync_temp/Surge"; then
-      #       echo "✓ 目录删除成功: rule_sync_temp/Surge"
-      #     else
-      #       echo "✗ 删除失败: 权限不足或文件系统错误" >&2
-      #       return 1
-      #     fi
+          if rm -rf "rule_sync_temp/Surge"; then
+            echo "✓ 目录删除成功: rule_sync_temp/Surge"
+          else
+            echo "✗ 删除失败: 权限不足或文件系统错误" >&2
+            return 1
+          fi
 
-      #     if mkdir -p "rule_sync_temp/Surge"; then
-      #       echo "✓ 目录重建成功: rule_sync_temp/Surge"
-      #     else
-      #       echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
-      #       return 1
-      #     fi
+          if mkdir -p "rule_sync_temp/Surge"; then
+            echo "✓ 目录重建成功: rule_sync_temp/Surge"
+          else
+            echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
+            return 1
+          fi
 
-      #     # proxy
-      #     curl -L -o "custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
+          # proxy
+          # curl -L -o "custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
           
-      #     action_env_to_array_fix "$METACUBEX_SURGE_PROXY_FILES" "PROXY_RULES" "$METACUBEX_BASE_DIR"
-      #     PROXY_RULES+=("custom_proxy.txt")
-      #     merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geosite/classical" "rule_sync_temp/Surge" "directory"
+          merge_rules "$METACUBEX_BASE_DIR/geo/geoip/classical" "rule_sync_temp/Surge" "directory"
 
       #     # direct
       #     curl -L -o "custom_direct.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt
