@@ -242,6 +242,8 @@ _handle_file_to_file() {
         echo "$input_basename 存在同名, 将执行追加模式"
         echo "" >> "$output"
         cat "$input" >> "$output"
+        echo "去重 排序"
+        awk "!seen[$0]++" "$output" | sort
     else
         echo "$input_basename 不存在同名, 将执行移动模式"
         mv "$input" "$output"
