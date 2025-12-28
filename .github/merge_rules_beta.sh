@@ -24,20 +24,14 @@ _process_merged_content() {
     
     echo "✓ 开始清理文件内容: $merged_content"
     
-    # 第一步：删除空行和仅含空格的行
     grep -v '^[[:space:]]*$' "$merged_content" > "${temp_file}.step1"
-    
-    # 第二步：删除行首行尾空格
     sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
-    
-    # 第三步：删除注释行（以#开头的行）
     grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
+    awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
 
     # 开始判断 surge 还是 clash
-    if [[ "$output_type" == "surge" ]]; then
+    if [[ "$merged_content" == "*.list" ]]; then
         grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
-        
-        # 使用 awk 处理 IP-CIDR 规则
         awk '
         {
             # 检查是否是 IP-CIDR 规则
@@ -56,66 +50,50 @@ _process_merged_content() {
             print $0      
         }
         ' "${temp_file}.step4" > "${temp_file}.step5"
-    fi 
-    
-    # 第六步：使用 awk 进行排序（按优先级）
-    echo "✓ 步骤6: 使用 awk 进行排序..."
-    awk '
-    {
-        # 为每行添加排序键（按指定优先级）
-        if ($0 ~ /^DOMAIN,/) {
-            # DOMAIN 规则 - 最高优先级
+        
+        awk '
+        {
+            if ($0 ~ /^DOMAIN,/) {
             sort_key = "1_" $0
-        }
-        else if ($0 ~ /^DOMAIN-SUFFIX,/) {
-            # DOMAIN-SUFFIX 规则 - 第二优先级
+            }
+            
+            else if ($0 ~ /^DOMAIN-SUFFIX,/) {
             sort_key = "2_" $0
-        }
-        else if ($0 ~ /^DOMAIN-KEYWORD,/) {
-            # DOMAIN-KEYWORD 规则 - 第三优先级
+            }
+            
+            else if ($0 ~ /^DOMAIN-KEYWORD,/) {
             sort_key = "3_" $0
-        }
-        else if ($0 ~ /^IP-CIDR,/) {
-            # IP-CIDR 规则 - 第四优先级
+            }
+            
+            else if ($0 ~ /^IP-CIDR,/) {
             sort_key = "4_" $0
-        }
-        else if ($0 ~ /^IP-CIDR6,/) {
-            # IP-CIDR6 规则 - 第五优先级
+            }
+            
+            else if ($0 ~ /^IP-CIDR6,/) {
             sort_key = "5_" $0
-        }
-        else {
-            # 其他规则 - 最低优先级
+            }
+            
+            else {
             sort_key = "6_" $0
+            }
+            
+            lines[sort_key] = $0
         }
-        
-        # 存储行和排序键
-        lines[sort_key] = $0
-    }
-    END {
-        # 按排序键排序并输出
-        n = asorti(lines, sorted)
-        for (i = 1; i <= n; i++) {
-            print lines[sorted[i]]
+        END {
+            n = asorti(lines, sorted)
+            for (i = 1; i <= n; i++) {
+                print lines[sorted[i]]
+            }
         }
-    }
-    ' "${temp_file}.step5" > "${temp_file}.step6"
-    
-    echo "  → 已完成规则分类排序（按优先级）"
-    
-    # 第七步：去重（保留顺序）
-    echo "✓ 步骤7: 去重处理..."
-    awk '!seen[$0]++' "${temp_file}.step6" > "${temp_file}.step7"
-    
-    # 替换原文件
-    mv "${temp_file}.step7" "$merged_content"
+        ' "${temp_file}.step5" > "${temp_file}.step6"
         
-    # 清理临时文件
-    rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6"
+        mv "${temp_file}.step6" "$merged_content"
+        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4" "${temp_file}.step5"
+    else
+        mv "${temp_file}.step4" "$merged_content"
+        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
+    fi
 }
-
-
-
-
 
 
 # 新的传递 env 的方法
@@ -575,7 +553,7 @@ _handle_directory_to_directory() {
             echo "" >> "$target_dir_file"
             cat "$file" >> "$target_dir_file"
             echo "追加后step: 去重 & 删除空行、#注释"
-            _process_merged_content "$target_dir_file" "surge"
+            _process_merged_content "$target_dir_file"
         else
             echo "不存在 $filename 同名文件, 开启移动模式"
             mv "$file" "$target_dir_file"
