@@ -16,19 +16,20 @@
 # 处理合并/追加 内容
 _process_merged_content() {
     local merged_content="$1"
-    local output_type=${2:-clash}
     local temp_file=$(mktemp) || {
         echo "✗ 错误: 无法创建临时文件" >&2
         return 1
     }
     
-    grep -v '^[[:space:]]*$' "$merged_content" > "${temp_file}.step1"
+    echo "删除空格"
+    grep -v '^[[:space:]]*$' "${merged_content}" > "${temp_file}.step1"
     sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
     grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
     awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
 
     # 开始判断 surge 还是 clash
-    if [[ "$merged_content" == "*.list" ]]; then
+    if [[ "${merged_content}" == *.list ]]; then
+        echo "判断为 list 后缀"
         grep -v '^DOMAIN-REGEX' "${temp_file}.step4" > "${temp_file}.step5"
         awk '
         {
