@@ -91,6 +91,13 @@ _process_merged_content() {
         # 存储行和排序键
         lines[sort_key] = $0
     }
+    END {
+        # 按排序键排序并输出
+        n = asorti(lines, sorted)
+        for (i = 1; i <= n; i++) {
+            print lines[sorted[i]]
+        }
+    }
     ' "${temp_file}.step5" > "${temp_file}.step6"
     
     echo "  → 已完成规则分类排序（按优先级）"
