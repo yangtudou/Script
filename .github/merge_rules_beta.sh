@@ -13,6 +13,153 @@
 # 5. 数组 → 文件（写入内容）
 
 
+# 处理合并/追加 内容
+# 文件内容清理函数（修复版）
+_process_merged_content() {
+    local merged_content="$1"
+    local output_type=${2:-clash}
+    local temp_file=$(mktemp) || {
+        echo "✗ 错误: 无法创建临时文件" >&2
+        return 1
+    }
+    
+    echo "✓ 开始清理文件内容: $merged_content"
+    
+    # 第一步：删除空行和仅含空格的行
+    grep -v '^[[:space:]]*$' "$merged_content" > "${temp_file}.step1"
+    
+    # 第二步：删除行首行尾空格
+    sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
+    
+    # 第三步：删除注释行（以#开头的行）
+    grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
+
+    # 开始判断 surge 还是 clash
+    if [[ "$output_type" == "surge" ]]; then
+        grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
+        
+        # 使用 awk 处理 IP-CIDR 规则
+        awk '
+        {
+            # 检查是否是 IP-CIDR 规则
+            if ($0 ~ /^IP-CIDR,/) {
+                # 检查是否是 IPv6 地址（包含冒号）
+                if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
+                    # 替换为 IP-CIDR6
+                    sub(/^IP-CIDR,/, "IP-CIDR6,", $0)
+                }
+            
+                # 检查是否已经有 no-resolve
+                if ($0 !~ /,no-resolve$/) {
+                    $0 = $0 ",no-resolve"
+                }
+            }
+            print $0      
+        }
+        ' "${temp_file}.step4" > "${temp_file}.step5"
+    fi 
+    
+    # 第六步：使用 awk 进行排序（按优先级）
+    echo "✓ 步骤6: 使用 awk 进行排序..."
+    awk '
+    {
+        # 为每行添加排序键（按指定优先级）
+        if ($0 ~ /^DOMAIN,/) {
+            # DOMAIN 规则 - 最高优先级
+            sort_key = "1_" $0
+        }
+        else if ($0 ~ /^DOMAIN-SUFFIX,/) {
+            # DOMAIN-SUFFIX 规则 - 第二优先级
+            sort_key = "2_" $0
+        }
+        else if ($0 ~ /^DOMAIN-KEYWORD,/) {
+            # DOMAIN-KEYWORD 规则 - 第三优先级
+            sort_key = "3_" $0
+        }
+        else if ($0 ~ /^IP-CIDR,/) {
+            # IP-CIDR 规则 - 第四优先级
+            sort_key = "4_" $0
+        }
+        else if ($0 ~ /^IP-CIDR6,/) {
+            # IP-CIDR6 规则 - 第五优先级
+            sort_key = "5_" $0
+        }
+        else {
+            # 其他规则 - 最低优先级
+            sort_key = "6_" $0
+        }
+        
+        # 存储行和排序键
+        lines[sort_key] = $0
+    }
+    END {
+        # 按排序键排序并输出
+        n = asorti(lines, sorted)
+        for (i = 1; i <= n; i++) {
+            print lines[sorted[i]]
+        }
+    }
+    ' "${temp_file}.step5" > "${temp_file}.step6"
+    
+    echo "  → 已完成规则分类排序（按优先级）"
+    
+    # 第七步：去重（保留顺序）
+    echo "✓ 步骤7: 去重处理..."
+    local before_duplicates=$after_ip_cidr
+    awk '!seen[$0]++' "${temp_file}.step6" > "${temp_file}.step7"
+    local after_duplicates=$(wc -l < "${temp_file}.step7" 2>/dev/null || echo 0)
+    removed_duplicates=$((before_duplicates - after_duplicates))
+    echo "  → 删除了 $removed_duplicates 个重复行"
+    
+    # 检查清理后的文件是否为空
+    if [[ ! -s "${temp_file}.step7" ]]; then
+        echo "⚠️ 警告: 清理后文件为空，保留原始内容"
+        cp "$file" "$temp_file"
+    else
+        cp "${temp_file}.step7" "$temp_file"
+    fi
+    
+    # 替换原文件
+    if mv "$temp_file" "$file"; then
+        local final_size=$(wc -c < "$file")
+        local final_lines=$(wc -l < "$file")
+        local total_removed=$((original_lines - final_lines))
+        
+        echo ""
+        echo "✅ 文件清理完成:"
+        echo "  → 原始: $original_lines 行, $original_size 字节"
+        echo "  → 最终: $final_lines 行, $final_size 字节"
+        echo "  → 总共删除了 $total_removed 行"
+        echo ""
+        echo "📊 清理统计:"
+        echo "  - 空行: $removed_empty 行"
+        echo "  - 注释: $removed_comments 行"
+        echo "  - DOMAIN-REGEX: $removed_domain_regex 行"
+        echo "  - IP-CIDR 修改: $modified_ip_cidr 个规则添加了 ,no-resolve"
+        echo "  - IP-CIDR6 转换: $modified_ip_cidr6 个 IPv6 规则转换为 IP-CIDR6"
+        echo "  - 排序: 已按优先级排序 (DOMAIN > DOMAIN-SUFFIX > DOMAIN-KEYWORD > IP-CIDR > IP-CIDR6 > 其他)"
+        echo "  - 重复: $removed_duplicates 行"
+        echo "  - 空格: 已清理所有行首行尾空格"
+        
+        # 清理临时文件
+        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" 
+        rm -f "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6" "${temp_file}.step7"
+        
+        return 0
+    else
+        echo "✗ 错误: 无法替换原文件" >&2
+        # 清理临时文件
+        rm -f "$temp_file" "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
+        rm -f "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6" "${temp_file}.step7"
+        return 1
+    fi
+}
+
+
+
+
+
+
 # 新的传递 env 的方法
 # 大大减少了重复代码
 # 目前不具有通用性
