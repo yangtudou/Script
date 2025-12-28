@@ -14,7 +14,6 @@
 
 
 # 处理合并/追加 内容
-# 文件内容清理函数（修复版）
 _process_merged_content() {
     local merged_content="$1"
     local output_type=${2:-clash}
@@ -92,67 +91,19 @@ _process_merged_content() {
         # 存储行和排序键
         lines[sort_key] = $0
     }
-    END {
-        # 按排序键排序并输出
-        n = asorti(lines, sorted)
-        for (i = 1; i <= n; i++) {
-            print lines[sorted[i]]
-        }
-    }
     ' "${temp_file}.step5" > "${temp_file}.step6"
     
     echo "  → 已完成规则分类排序（按优先级）"
     
     # 第七步：去重（保留顺序）
     echo "✓ 步骤7: 去重处理..."
-    local before_duplicates=$after_ip_cidr
     awk '!seen[$0]++' "${temp_file}.step6" > "${temp_file}.step7"
-    local after_duplicates=$(wc -l < "${temp_file}.step7" 2>/dev/null || echo 0)
-    removed_duplicates=$((before_duplicates - after_duplicates))
-    echo "  → 删除了 $removed_duplicates 个重复行"
-    
-    # 检查清理后的文件是否为空
-    if [[ ! -s "${temp_file}.step7" ]]; then
-        echo "⚠️ 警告: 清理后文件为空，保留原始内容"
-        cp "$file" "$temp_file"
-    else
-        cp "${temp_file}.step7" "$temp_file"
-    fi
     
     # 替换原文件
-    if mv "$temp_file" "$file"; then
-        local final_size=$(wc -c < "$file")
-        local final_lines=$(wc -l < "$file")
-        local total_removed=$((original_lines - final_lines))
+    mv "${temp_file}.step7" "$merged_content"
         
-        echo ""
-        echo "✅ 文件清理完成:"
-        echo "  → 原始: $original_lines 行, $original_size 字节"
-        echo "  → 最终: $final_lines 行, $final_size 字节"
-        echo "  → 总共删除了 $total_removed 行"
-        echo ""
-        echo "📊 清理统计:"
-        echo "  - 空行: $removed_empty 行"
-        echo "  - 注释: $removed_comments 行"
-        echo "  - DOMAIN-REGEX: $removed_domain_regex 行"
-        echo "  - IP-CIDR 修改: $modified_ip_cidr 个规则添加了 ,no-resolve"
-        echo "  - IP-CIDR6 转换: $modified_ip_cidr6 个 IPv6 规则转换为 IP-CIDR6"
-        echo "  - 排序: 已按优先级排序 (DOMAIN > DOMAIN-SUFFIX > DOMAIN-KEYWORD > IP-CIDR > IP-CIDR6 > 其他)"
-        echo "  - 重复: $removed_duplicates 行"
-        echo "  - 空格: 已清理所有行首行尾空格"
-        
-        # 清理临时文件
-        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" 
-        rm -f "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6" "${temp_file}.step7"
-        
-        return 0
-    else
-        echo "✗ 错误: 无法替换原文件" >&2
-        # 清理临时文件
-        rm -f "$temp_file" "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
-        rm -f "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6" "${temp_file}.step7"
-        return 1
-    fi
+    # 清理临时文件
+    rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6"
 }
 
 
@@ -593,7 +544,7 @@ _handle_directory_to_file() {
 
 #######################################################################
 #============================ 目录 -> 目录 ============================#
-# 4. 目录 -> 目录（完整版）
+# 4. 目录 -> 目录
 # 功能：将源目录结构完整复制到目标目录，同名文件则追加内容。
 _handle_directory_to_directory() {
     local source_dir="$1"
@@ -617,7 +568,7 @@ _handle_directory_to_directory() {
             echo "" >> "$target_dir_file"
             cat "$file" >> "$target_dir_file"
             echo "追加后step: 去重 & 删除空行、#注释"
-            sed -i '/^#/d; /^$/d' "${target_dir_file}"
+            _process_merged_content "$target_dir_file" "surge"
         else
             echo "不存在 $filename 同名文件, 开启移动模式"
             mv "$file" "$target_dir_file"
