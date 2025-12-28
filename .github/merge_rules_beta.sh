@@ -22,8 +22,6 @@ _process_merged_content() {
         return 1
     }
     
-    echo "✓ 开始清理文件内容: $merged_content"
-    
     grep -v '^[[:space:]]*$' "$merged_content" > "${temp_file}.step1"
     sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
     grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
@@ -31,7 +29,7 @@ _process_merged_content() {
 
     # 开始判断 surge 还是 clash
     if [[ "$merged_content" == "*.list" ]]; then
-        grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
+        grep -v '^DOMAIN-REGEX' "${temp_file}.step4" > "${temp_file}.step5"
         awk '
         {
             # 检查是否是 IP-CIDR 规则
@@ -49,7 +47,7 @@ _process_merged_content() {
             }
             print $0      
         }
-        ' "${temp_file}.step4" > "${temp_file}.step5"
+        ' "${temp_file}.step5" > "${temp_file}.step6"
         
         awk '
         {
@@ -85,10 +83,11 @@ _process_merged_content() {
                 print lines[sorted[i]]
             }
         }
-        ' "${temp_file}.step5" > "${temp_file}.step6"
+        ' "${temp_file}.step6" > "${temp_file}.step7"
         
-        mv "${temp_file}.step6" "$merged_content"
-        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" "${temp_file}.step4" "${temp_file}.step5"
+        mv "${temp_file}.step7" "$merged_content"
+        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" \
+        "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6"
     else
         mv "${temp_file}.step4" "$merged_content"
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
