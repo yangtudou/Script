@@ -38,8 +38,8 @@ env:
     telegram #aio proxy
     cloudflare #aio proxy
     geolocation-!cn #proxy
-    missav #proxy
-    javbus #proxy
+    tesla #direct
+    microsoft #direct
 
 jobs:
   rule_sync:
