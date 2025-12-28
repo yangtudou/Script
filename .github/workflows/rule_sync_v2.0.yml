@@ -82,7 +82,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: "📥 AWAvenue 仓库 main 分支"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: TG-Twilight/AWAvenue-Ads-Rule
           ref: main
