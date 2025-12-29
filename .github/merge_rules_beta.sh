@@ -41,11 +41,12 @@ _process_merged_content() {
 			    # 检查是否是 IPv6 地址（包含冒号）
 				if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
 				    # 替换为 IP-CIDR6
-					sub(/^IP-CIDR,/, "IP-CIDR6,", $0)‘
+					sub(/^IP-CIDR,/, "IP-CIDR6,", $0)
 				}
-				 # 检查是否已经有 no-resolve
-				 if ($0 !~ /,no-resolve$/) {
-				     $0 = $0 ",no-resolve"
+				
+				# 检查是否已经有 no-resolve
+				if ($0 !~ /,no-resolve$/) {
+				    $0 = $0 ",no-resolve"
 				}
 			}
 			# 排序
