@@ -81,19 +81,19 @@ _process_merged_content() {
                 print lines[sorted[i]]
             }
         }
-        ' "${temp_file}.step6" > "${temp_file}.step7"
+        ' "${temp_file}.step4" > "${temp_file}.step5"
+
+		awk '!seen[$0]++' "${temp_file}.step5" > "${temp_file}.step6"
         
-        mv "${temp_file}.step7" "$merged_content"
+        mv "${temp_file}.step6" "$merged_content"
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" \
-        "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6"
+        "${temp_file}.step4" "${temp_file}.step5"
 	elif [[ "${merged_content}" == *.yaml ]]; then
-	    
+	    mv "${temp_file}.step1" "$merged_content"
     else
-        mv "${temp_file}.step4" "$merged_content"
-        rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
+        mv "${temp_file}.step1" "$merged_content"
     fi
 }
-awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
 
 # 新的传递 env 的方法
 # 大大减少了重复代码
