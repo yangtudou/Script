@@ -96,6 +96,7 @@ _process_merged_content() {
     else
         mv "${temp_file}.step1" "$merged_content"
     fi
+	echo "完成整理"
 }
 
 # 新的传递 env 的方法
@@ -559,10 +560,8 @@ _handle_directory_to_directory() {
             mv "$file" "$target_dir_file"
         fi
         
-        
+        _process_merged_content "$target_dir_file"
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
-
-	_process_merged_content "$target_dir_file"
 }
 
 #######################################################################
