@@ -21,18 +21,18 @@ _process_merged_content() {
         echo "✗ 错误: 无法创建临时文件" >&2
         return 1
     }
-    
-    grep -v '^[[:space:]]*$' "${merged_content}" > "${temp_file}.step1"
-    sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
 	# 第一步 去注释
-    grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
-    awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
+    grep -v '^#' "${merged_content}" > "${temp_file}.step1"
 
     # 开始判断 surge 还是 clash
 	# 目前是靠不同文件来判断
     if [[ "${merged_content}" == *.list ]]; then
-        echo "判断为 list 后缀"
-        grep -v '^DOMAIN-REGEX' "${temp_file}.step4" > "${temp_file}.step5"
+	    # 删除空格
+	    grep -v '^[[:space:]]*$' "${temp_file}.step1" > "${temp_file}.step2"
+		# 删除前后空格
+        sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step2" > "${temp_file}.step3"
+		# 删除 DOMAIN-REGEX 行
+        grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
         awk '
         {
             # 检查是否是 IP-CIDR 规则
@@ -54,6 +54,19 @@ _process_merged_content() {
         
         awk '
         {
+		    # 检查是否是 IP-CIDR 规则
+			if ($0 ~ /^IP-CIDR,/) {
+			    # 检查是否是 IPv6 地址（包含冒号）
+				if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
+				    # 替换为 IP-CIDR6
+					sub(/^IP-CIDR,/, "IP-CIDR6,", $0)‘
+				}
+				 # 检查是否已经有 no-resolve
+				 if ($0 !~ /,no-resolve$/) {
+				     $0 = $0 ",no-resolve"
+				}
+			}
+			# 排序部分
             if ($0 ~ /^DOMAIN,/) {
             sort_key = "1_" $0
             }
@@ -91,13 +104,14 @@ _process_merged_content() {
         mv "${temp_file}.step7" "$merged_content"
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" \
         "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6"
-	
+	elif [[ "${merged_content}" == *.yaml ]]; then
+	    
     else
         mv "${temp_file}.step4" "$merged_content"
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
     fi
 }
-
+awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
 
 # 新的传递 env 的方法
 # 大大减少了重复代码
