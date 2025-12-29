@@ -559,8 +559,10 @@ _handle_directory_to_directory() {
             mv "$file" "$target_dir_file"
         fi
         
-        _process_merged_content "$target_dir_file"
+        
     done < <(find "$source_dir" -maxdepth 1 -type f -print0 2>/dev/null)
+
+	_process_merged_content "$target_dir_file"
 }
 
 #######################################################################
