@@ -35,7 +35,7 @@ _process_merged_content() {
         grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
         awk '
         {
-            # 检查是否是 IP-CIDR 规则
+            
             if ($0 ~ /^IP-CIDR,/) {
                 # 检查是否是 IPv6 地址（包含冒号）
                 if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
@@ -54,7 +54,7 @@ _process_merged_content() {
         
         awk '
         {
-		    # 检查是否是 IP-CIDR 规则
+		    # ===== 第一部分：Surge 规则转换逻辑 =====
 			if ($0 ~ /^IP-CIDR,/) {
 			    # 检查是否是 IPv6 地址（包含冒号）
 				if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
@@ -64,9 +64,7 @@ _process_merged_content() {
 				 # 检查是否已经有 no-resolve
 				 if ($0 !~ /,no-resolve$/) {
 				     $0 = $0 ",no-resolve"
-				}
-			}
-			# 排序部分
+				}排序}p
             if ($0 ~ /^DOMAIN,/) {
             sort_key = "1_" $0
             }
