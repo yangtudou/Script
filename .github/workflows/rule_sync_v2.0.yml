@@ -27,6 +27,7 @@ permissions:
   actions: write
 
 env:
+  TZ: Asia/shanghai
   METACUBEX_BASE_DIR: "meta-rules-dat"
   GEOX: |
     cn #aio direct
@@ -170,7 +171,7 @@ jobs:
           git checkout --orphan rules
           
           git add .
-          git commit -m "CI: Auto Update at 北京时间 $(TZ='Asia/Shanghai' date +'%Y-%m-%d')"
+          git commit -m "CI: Last Update at $(date +"%Y-%m-%d %H:%M")"
           git push -f origin rules
 
       - name: 清除工作流
