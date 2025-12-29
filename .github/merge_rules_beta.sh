@@ -14,6 +14,7 @@
 
 
 # 处理合并/追加 内容
+# 目前按照不同后缀去判断 surge 还是 clash
 _process_merged_content() {
     local merged_content="$1"
     local temp_file=$(mktemp) || {
@@ -21,13 +22,14 @@ _process_merged_content() {
         return 1
     }
     
-    echo "删除空格"
     grep -v '^[[:space:]]*$' "${merged_content}" > "${temp_file}.step1"
     sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step1" > "${temp_file}.step2"
+	# 第一步 去注释
     grep -v '^#' "${temp_file}.step2" > "${temp_file}.step3"
     awk '!seen[$0]++' "${temp_file}.step3" > "${temp_file}.step4"
 
     # 开始判断 surge 还是 clash
+	# 目前是靠不同文件来判断
     if [[ "${merged_content}" == *.list ]]; then
         echo "判断为 list 后缀"
         grep -v '^DOMAIN-REGEX' "${temp_file}.step4" > "${temp_file}.step5"
@@ -89,6 +91,7 @@ _process_merged_content() {
         mv "${temp_file}.step7" "$merged_content"
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3" \
         "${temp_file}.step4" "${temp_file}.step5" "${temp_file}.step6"
+	
     else
         mv "${temp_file}.step4" "$merged_content"
         rm -f "${temp_file}.step1" "${temp_file}.step2" "${temp_file}.step3"
