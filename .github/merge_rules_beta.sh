@@ -33,24 +33,6 @@ _process_merged_content() {
         sed 's/^[[:space:]]*//; s/[[:space:]]*$//' "${temp_file}.step2" > "${temp_file}.step3"
 		# 删除 DOMAIN-REGEX 行
         grep -v '^DOMAIN-REGEX' "${temp_file}.step3" > "${temp_file}.step4"
-        awk '
-        {
-            
-            if ($0 ~ /^IP-CIDR,/) {
-                # 检查是否是 IPv6 地址（包含冒号）
-                if ($0 ~ /^IP-CIDR,[^,]*(:[^,]*)/) {
-                    # 替换为 IP-CIDR6
-                    sub(/^IP-CIDR,/, "IP-CIDR6,", $0)
-                }
-            
-                # 检查是否已经有 no-resolve
-                if ($0 !~ /,no-resolve$/) {
-                    $0 = $0 ",no-resolve"
-                }
-            }
-            print $0      
-        }
-        ' "${temp_file}.step5" > "${temp_file}.step6"
         
         awk '
         {
@@ -64,7 +46,9 @@ _process_merged_content() {
 				 # 检查是否已经有 no-resolve
 				 if ($0 !~ /,no-resolve$/) {
 				     $0 = $0 ",no-resolve"
-				}排序}p
+				}
+			}
+			# 排序
             if ($0 ~ /^DOMAIN,/) {
             sort_key = "1_" $0
             }
