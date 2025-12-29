@@ -91,6 +91,7 @@ _process_merged_content() {
         "${temp_file}.step4" "${temp_file}.step5"
 	elif [[ "${merged_content}" == *.yaml ]]; then
 	    awk '!seen[$0]++' "${temp_file}.step1" > "${temp_file}.step2"
+		sort -nu "${temp_file}.step2"
 	    mv "${temp_file}.step2" "$merged_content"
 		rm -f "${temp_file}.step1"
     else
