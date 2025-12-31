@@ -176,6 +176,7 @@ jobs:
 
   clean_workflow:
     runs-on: ubuntu-latest
+    needs: rule_sync
     steps:
       - name: clean_workflow
         uses: Mattraks/delete-workflow-runs@v2
