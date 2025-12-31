@@ -174,7 +174,10 @@ jobs:
           git commit -m "CI: Last Update at $(date +"%Y-%m-%d %H:%M")"
           git push -f origin rules
 
-      - name: 清除工作流
+  clean_workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clean_workflow
         uses: Mattraks/delete-workflow-runs@v2
         with:
           retain_days: 0
