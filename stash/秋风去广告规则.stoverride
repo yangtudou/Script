@@ -1,12 +1,13 @@
-#SUBSCRIBED https://raw.githubusercontent.com/yangtudou/Script/main/stash/秋风去广告规则.stoverride
-
 name: '添加 秋风取广告规则'
 desc: |-
+  搬运
   秋风去广告规则
-  挺好的
+  挺好用
+author: |-
+  yangtudou[https://github.com/yangtudou]
 category: '广告屏蔽'
-date: '2026-04-01'
-version: '0.1-beta'
+date: '2026-03-01'
+version: '1.0-beta'
 
 
 rules:
