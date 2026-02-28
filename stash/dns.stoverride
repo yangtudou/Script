@@ -1,0 +1,21 @@
+name: DNS 优化
+desc: |-
+  DNS 部分
+author: |-
+  yangtudou[https://github.com/yangtudou]
+category: DNS
+date: '2026-03-01'
+version: '1.0-beta'
+
+
+dns:
+  default-nameserver: #!replace
+    - 223.5.5.5
+    - 218.2.2.2
+  nameserver: #!replace
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fake-ip-filter:
+    - geosite:connectivity-check
+    - geosite:private
+    - geosite:cn
