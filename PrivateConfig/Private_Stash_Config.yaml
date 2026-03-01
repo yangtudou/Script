@@ -1,0 +1,172 @@
+#  iPhone Stash 自用配置，仅供参考
+#  规则主要使用了 geosite & geoip
+#  geoip 使用了第三方数据库
+#
+#  stash geoip 原版地址
+#  https://fastly.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb
+#  geosite 受限于 Stash 不支持更改，使用了原版
+#
+#  stash DNS 部分存在一点缺陷
+#  目前配合 stoverride 在使用
+#
+#
+#  本人很懒，常用基本都选择的香港节点
+#  
+#
+#  ✍️ yyy
+#  🕙 last update：2026-03-01
+
+
+# 全局配置
+mode: rule
+log-level: info
+
+# dns 配置
+dns:
+  # 专门用来解析在 nameserver 中填写的 DNS 服务的域名
+  # 只能填写纯 IP 地址，不支持域名
+  default-nameserver:
+    - 223.5.5.5 # 阿里
+    - 218.2.2.2
+
+  # 用于解析日常网络访问的主力 DNS 服务器
+  # 并发请求，采用最快响应的结果
+  # 不要超过 2 个，耗电
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+
+  # 不使用 fake ip
+  # 直接返回实际 ip 地址
+  fake-ip-filter:
+    - +.lan
+    - +.local
+
+# 本地代理
+proxies: [ ]
+
+# 远程代理集
+proxy-providers:
+  provider_name:
+    interval: 86400
+    url: ${url}
+
+# 策略组
+proxy-groups:
+  - name: PROXY
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Auto.png
+    type: select
+    lazy: true
+    proxies:
+      - "香港自动"
+      - "日本自动"
+      - "美国自动"
+      - "新加坡自动"
+
+  - name: 手动选择
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Static.png
+    type: select
+    lazy: true
+    include-all: true
+    proxies:
+      - DIRECT
+
+  # =========================== #
+  # 基于地区分组
+  - name: "香港自动"
+    filter: "澳门|🇲🇴|港|🇭🇰|HK|(?i)Hong"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png
+    interval: 120
+    lazy: true
+    tolerance: 50
+    type: url-test
+    hidden: true
+    include-all: true
+
+  - name: "日本自动"
+    filter: "日|🇯🇵|东京|JP|(?i)Japan"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png
+    interval: 120
+    lazy: true
+    tolerance: 50
+    type: url-test
+    hidden: true
+    include-all: true
+
+  - name: "美国自动"
+    filter: "美|🇺🇲|US|(?i)States|America"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png
+    interval: 120
+    lazy: true
+    tolerance: 50
+    type: url-test
+    hidden: true
+    include-all: true
+
+  - name: "新加坡自动"
+    filter: "新加坡|坡|狮城|🇸🇬|SG|(?i)Singapore"
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png
+    interval: 120
+    lazy: true
+    tolerance: 50
+    type: url-test
+    hidden: true
+    include-all: true
+
+# 分流规则
+rules:
+  # 私域
+  - GEOSITE,private,DIRECT
+
+  # 连通性相关域名
+  - GEOSITE,connectivity-check,DIRECT 
+
+  # apple 相关
+  - GEOSITE,apple,DIRECT
+  - DOMAIN-SUFFIX,oss-enet.aliyuncs.com,DIRECT # 阿里云相关 icloud
+
+  # meta
+  - GEOSITE,meta,香港自动
+
+  # github
+  # 需要写在 microsoft 之前
+  - GEOSITE,github,香港自动
+  - GEOSITE,microsoft,DIRECT
+
+  # cloudflare
+  # 这个直连存疑
+  - GEOSITE,cloudflare,DIRECT
+
+  # 电报
+  - GEOSITE,telegram,香港自动
+
+  # google
+  # gemini 没有单拎出来
+  - GEOSITE,google,香港自动
+
+  # 笼统部分
+  - GEOSITE,geolocation-!cn@cn,DIRECT # 非中国域名里的中国网站
+  - GEOSITE,geolocation-!cn,PROXY # 非中国域名
+  - GEOSITE,cn,DIRECT # 中国域名
+
+  # 以下为 ip 兜底
+  # 私域
+  - GEOIP,LAN,DIRECT,no-resolve
+
+  # 电报
+  - GEOIP,telegram,香港自动,no-resolve
+
+  # cloudflare
+  - GEOIP,cloudflare,DIRECT,no-resolve
+
+  # google
+  - GEOIP,google,香港自动,no-resolve
+
+  # fackebook 应该是属于 meta
+  - GEOIP,facebook,香港自动,no-resolve
+
+  # CN 的 ip
+  - GEOIP,CN,DIRECT,no-resolve
+
+  # 最终兜底为直连
+  - MATCH,DIRECT
