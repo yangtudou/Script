@@ -1,9 +1,8 @@
-name: 节点清空测试模块
-desc: 动态清空配置文件中的所有代理节点和 Provider，仅用于 DNS 或纯直连环境测试。
-author: Gemini_Assistant
+name: "远程脚本注入测试"
+desc: "使用 GitHub 脚本动态修改配置"
 
-# 核心部分：声明脚本逻辑
+# 正确的 Overrides 语法：script 下面直接跟脚本名作为键
 script:
-  - name: node_cleaner
-    type: config  # 关键点：type 为 config 表示它在配置文件加载时注入
+  node_cleaner:  # 这里不要加横杠 -
+    type: config
     script-path: "https://raw.githubusercontent.com/yangtudou/Script/main/stash/demo.js"
