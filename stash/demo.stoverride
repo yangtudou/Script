@@ -1,8 +1,15 @@
-name: "远程脚本注入测试"
-desc: "使用 GitHub 脚本动态修改配置"
+name: "我的测试瓷砖"
+desc: "在首页显示一个简单的信息面板"
 
-# 正确的 Overrides 语法：script 下面直接跟脚本名作为键
+# 2026年 Stash 标准控制面板配置
+panel:
+  - name: "DNS测试插件"
+    # 这里引用下面的脚本名
+    script: "my_tile_script"
+    update-interval: 10 # 每10秒刷新一次
+
 script:
-  node_cleaner:  # 这里不要加横杠 -
-    type: config
+  - name: "my_tile_script"
+    type: tile
+    # 替换为你 GitHub 上的 demo.js 链接
     script-path: "https://raw.githubusercontent.com/yangtudou/Script/main/stash/demo.js"
