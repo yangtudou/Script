@@ -13,6 +13,10 @@ version: 1.0-beta
 # 截止 2026-03-01
 # Stash nameserver-policy、fake-ip-filter
 # 不支持 geosite:private 的写法
+#
+# 所以除了本覆写文件外
+# 还会有一个 fake-ip-filter 文件
+# 解决 stash 不支持 geosite:xxx 语法
 
 dns:
 
@@ -30,9 +34,3 @@ dns:
   nameserver: #!replace
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
-
-  # 不使用 fake ip 列表
-  # 直接返回实际 ip 地址
-  fake-ip-filter:
-    - '*.lan'
-    - '*.local'

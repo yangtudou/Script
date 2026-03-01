@@ -1,14 +1,16 @@
 name: DNS fake-ip-filter 列表
 desc: |-
   fake-ip-filter 列表
+  解决 stash 不支持 geosite:xxx 语法
 
 category: DNS
 date: 2026-03-01
 version: 1.0_beta
 
 # 截止 2026-03-01
-# Stash nameserver-policy、fake-ip-filter
+# stash nameserver-policy、fake-ip-filter
 # 不支持 geosite:xxx rule-set:xxx 的写法
+# 本文件为解决 stash 不支持 geosite:xxx 语法
 
 # 本覆写文件不会覆盖原配置
 # 操作是合并
