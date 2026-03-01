@@ -1,0 +1,29 @@
+name: 'DNS fake-ip-filter List'
+desc: |-
+  fake-ip-filter 列表
+
+category: 'DNS'
+date: '2026-03-01'
+version: '1.0_beta'
+
+dns:
+  # 不会覆盖
+  # 会添加到原列表前面
+  fake-ip-filter:
+    # connectivity-check domain start
+    # 连通性检查域名
+    - ping.archlinux.org
+    - redirect.archlinux.org
+    - connectivitycheck.platform.hihonorcloud.com
+    - connectivitycheck.platform.hicloud.com
+    - connect.rom.miui.com
+    - connectivity-check.ubuntu.com
+    - +.msftconnecttest.com
+    - +.msftncsi.com
+    - +.captive.apple.com
+    - +.cp.cloudflare.com
+    - +.network-test.debian.org
+    - +.detectportal.firefox.com
+    - +.connectivitycheck.gstatic.com
+    - +.networkcheck.kde.org
+    # connectivity-check domain end
