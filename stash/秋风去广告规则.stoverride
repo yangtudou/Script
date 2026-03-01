@@ -11,7 +11,7 @@ version: '1.0-beta'
 
 
 rules:
-  - RULE-SET,秋风去广告规则,REJECT
+  - RULE-SET,秋风去广告规则,REJECT,no-track
 
 rule-providers:
   秋风去广告规则:
