@@ -6,4 +6,4 @@ author: Gemini_Assistant
 script:
   - name: node_cleaner
     type: config  # 关键点：type 为 config 表示它在配置文件加载时注入
-    script-path: "https://raw.githubusercontent.com/yangtudou/Script/main/stash/demo.js" # 或者使用本地路径
+    script-path: "https://raw.githubusercontent.com/yangtudou/Script/main/stash/demo.js"
