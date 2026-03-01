@@ -16,6 +16,19 @@ dns:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   fake-ip-filter:
-    - geosite:connectivity-check
-    - geosite:private
-    - geosite:cn
+    # 来自 geosite:ccb 的域名后缀（已合并简化，覆盖主要子域）
+    - +.ccb.com
+    - +.ccb.cn
+    - +.ccb.com.cn
+    - +.95599.cn
+    - +.ccbfund.com
+    - +.ccbfund.cn
+    - +.ccbfund.com.cn
+    - +.ccbfutures.com
+    - +.ccbfutures.cn
+    - +.ccbinternational.com.hk
+    - +.ccbleasing.com
+    - +.ccblife-test.com.cn
+    - +.ccbseoul.com
+    - +.ccitrust.com.cn
+    - +.ccbxt.com
