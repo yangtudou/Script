@@ -31,14 +31,8 @@ dns:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
 
-  # 对部分域名使用单独的 DNS 服务器
-  # 这里的香港自动是自己的代理策略
-  nameserver-policy:
-    '+.google.com': 'https://8.8.8.8/dns-query#香港自动&ecs=120.76.0.0/14&ecs-override=true'
-
   # 不使用 fake ip 列表
   # 直接返回实际 ip 地址
   fake-ip-filter:
     - '*.lan'
     - '*.local'
-    - '+.google.com'
