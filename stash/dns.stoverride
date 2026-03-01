@@ -9,26 +9,30 @@ version: '1.0-beta'
 
 
 dns:
+
+  # 专门用来解析在 nameserver 中填写的 DNS 服务的域名
+  # 只能填写纯 IP 地址，不支持域名
   default-nameserver: #!replace
     - 223.5.5.5
     - 218.2.2.2
+
+  # 用于解析日常网络访问的主力 DNS 服务器
+  # 并发请求，采用最快响应的结果
+  # 不要超过 2 个，耗电
   nameserver: #!replace
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+
+  # 对部分域名使用单独的 DNS 服务器
+  # 截止 2026-03-01
+  # Stash 不支持 geosite:private 的写法
+  # nameserver-policy:
+  #   'google.com': 'https://dns.google/dns-query'
+
+  # 不使用 fake ip 列表
+  # 截止 2026-03-01
+  # Stash 不支持 geosite:private 的写法
+  # 直接返回实际 ip 地址
   fake-ip-filter:
-    # 来自 geosite:ccb 的域名后缀（已合并简化，覆盖主要子域）
-    - +.ccb.com
-    - +.ccb.cn
-    - +.ccb.com.cn
-    - +.95599.cn
-    - +.ccbfund.com
-    - +.ccbfund.cn
-    - +.ccbfund.com.cn
-    - +.ccbfutures.com
-    - +.ccbfutures.cn
-    - +.ccbinternational.com.hk
-    - +.ccbleasing.com
-    - +.ccblife-test.com.cn
-    - +.ccbseoul.com
-    - +.ccitrust.com.cn
-    - +.ccbxt.com
+    - '*.lan'
+    - '*.local'
