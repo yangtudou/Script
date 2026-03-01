@@ -1,16 +1,14 @@
 name: "我的 DNS 信息瓷砖"
 desc: "在 Stash 首页添加一个动态显示 IP 的小方块"
 
-# 正确字段是 tiles (注意是复数)
+# 1. 定义瓷砖布局 (注意：这里也不要加横杠)
 tiles:
   - name: "网络监测"
-    # 这里引用 script 模块中定义的脚本名
     script: "my_tile_script"
-    # 刷新间隔，单位为秒
     update-interval: 30
 
-# 定义脚本属性
+# 2. 定义脚本模块 (关键点：这里是键值对结构，不要加 -)
 script:
-  - name: "my_tile_script"
+  my_tile_script: # <--- 这里绝对不能有横杠
     type: tile
     script-path: "https://raw.githubusercontent.com/yangtudou/Script/main/stash/demo.js"
