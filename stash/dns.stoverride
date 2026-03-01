@@ -3,6 +3,7 @@ desc: |-
   DNS 部分
 author: |-
   yangtudou[https://github.com/yangtudou]
+icon: https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Prevent_DNS_Leaks.png
 category: DNS
 date: '2026-03-01'
 version: '1.0-beta'
