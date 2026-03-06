@@ -34,14 +34,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
    
-      - name: "📥 当前仓库 rules 分支"
+      - name: "当前仓库 rules 分支"
         uses: actions/checkout@v6
         with:
           path: rule_sync_temp
           ref: rules
           fetch-depth: 1
 
-      - name: "📥 MetaCubeX 仓库 meta 分支"
+      - name: "MetaCubeX 仓库 meta 分支"
         uses: actions/checkout@v6
         with:
           repository: MetaCubeX/meta-rules-dat
@@ -49,8 +49,8 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
-            geo/geosite/classical/google.list
-            geo/geosite/classical/meta.list
+            geo/geosite/google.list
+            geo/geosite/meta.list
 
           sparse-checkout-cone-mode: false
           
@@ -66,15 +66,46 @@ jobs:
             return 1
           fi
 
-          if mkdir -p "rule_sync_temp/Surge"; then
-            echo "✓ 目录重建成功: rule_sync_temp/Surge"
+          if mkdir -p "rule_sync_temp/Surge/domainset"; then
+            echo "✓ 目录重建成功: rule_sync_temp/Surge/domainset"
           else
             echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
             return 1
           fi
 
-          # 规则转换逻辑
+          # 规则转换逻辑：针对 MetaCubeX classical .list 文件（+ 前缀格式）
+          echo "开始转换 classical .list → DOMAIN-SET 兼容格式..."
 
+          SOURCE_DIR="meta-rules-dat/geo/geosite"
+          TARGET_DIR="rule_sync_temp/Surge/domainset"
+
+          for src_file in "$SOURCE_DIR"/*.list; do
+            if [ -f "$src_file" ]; then
+              base_name=$(basename "$src_file")
+              target_file="$TARGET_DIR/$base_name"
+
+              echo "处理文件: $base_name (原始行数: $(wc -l < "$src_file"))"
+
+              # 转换核心：替换行首 +\. → . ，删除空行，保留纯域名行
+              sed '
+                /^$/d                          # 删除空行
+                s/^+\./\./                     # +. 开头的后缀 → . 开头
+                # 如果有注释行，保留（当前文件基本无，但防未来）
+                /^#/! s/^\+//                  # 如果有 + 开头但无 .，也转成 .（保险）
+                1i # Converted from MetaCubeX/meta-rules-dat/classical/$(basename "$src_file") for DOMAIN-SET
+              ' "$src_file" > "$target_file"
+
+              converted_count=$(wc -l < "$target_file")
+              echo "转换完成: $target_file (行数: $converted_count)"
+              echo "前3行预览:"
+              head -n 3 "$target_file" || echo "(文件为空或预览失败)"
+              echo ""
+            else
+              echo "未找到文件: $src_file"
+            fi
+          done
+
+          echo "所有规则转换完成。"
       
       - name: 提交变更
         working-directory: rule_sync_temp
