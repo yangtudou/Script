@@ -1,5 +1,5 @@
 # version: v2.1_beta
-# updated at: 2025-12-27
+# updated at: 2026-03-07
 # 改用 checkout sparse-checkout
 # 改用 rules 分支管理
 # 使用外部 shell 脚本处理规则文件, 简化了整个 Github Action 流程
@@ -28,40 +28,12 @@ permissions:
 
 env:
   TZ: Asia/shanghai
-  METACUBEX_BASE_DIR: "meta-rules-dat"
-  GEOX: |
-    cn #aio direct
-    meta #proxy
-    apple #direct
-    google #aio proxy
-    github #proxy
-    private #aio direct
-    telegram #aio proxy
-    cloudflare #aio proxy
-    geolocation-!cn #proxy
-    tesla #direct
-    microsoft #direct
 
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: "下载脚本"
-        run: |
-          curl -L -o merge_rules.sh https://raw.githubusercontent.com/yangtudou/Script/main/.github/merge_rules_beta.sh
-          chmod +x merge_rules.sh
-
-      - name: "写入变量 -> sparse-checkout"
-        run: |
-          source ./merge_rules.sh
-
-          add_action_env "CLASH_FILES" "$GEOX" >> $GITHUB_ENV
-
-          add_action_env "SURGE_FILES" "$GEOX" \
-          "geo/geosite/classical" \
-          "geo/geoip/classical" \
-          "list" >> $GITHUB_ENV
-          
+   
       - name: "📥 当前仓库 rules 分支"
         uses: actions/checkout@v6
         with:
@@ -75,59 +47,15 @@ jobs:
           repository: MetaCubeX/meta-rules-dat
           ref: meta
           fetch-depth: 1
-          path: ${{ env.METACUBEX_BASE_DIR }}
+          path: meta-rules-dat
           sparse-checkout: |
-            ${{ env.SURGE_FILES }}
-            ${{ env.CLASH_FILES }}
+            geo/geosite/classical/google.list
+            geo/geosite/classical/meta.list
 
           sparse-checkout-cone-mode: false
-
-      - name: "📥 AWAvenue 仓库 main 分支"
-        uses: actions/checkout@v6
-        with:
-          repository: TG-Twilight/AWAvenue-Ads-Rule
-          ref: main
-          fetch-depth: 1
-          path: AWAvenue-Ads-Rule
-          sparse-checkout: |
-            Filters/AWAvenue-Ads-Rule-Clash.yaml
-            Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
-          sparse-checkout-cone-mode: false
-
-      # - name: "📥 Loyalsoldier/surge-rules 仓库 release 分支"
-      #   uses: actions/checkout@v6
-      #   with:
-      #     repository: Loyalsoldier/surge-rules
-      #     ref: release
-      #     fetch-depth: 1
-      #     path: Loyalsoldier_surge-rules
-      #     sparse-checkout: |
-      #       ruleset/apple.txt
-
-      #     sparse-checkout-cone-mode: false
- 
-      - name: 整理 ClashMeta 规则
-        run: |
-          # 引入外部 shell 脚本
-          source ./merge_rules.sh
-
-          echo "开始整理 ClashMeta 规则..."
-          rm -rf rule_sync_temp/ClashMeta
-          mkdir -p rule_sync_temp/ClashMeta/{domain,ip}
-
-          # domain
-          merge_rules "$METACUBEX_BASE_DIR/geo/geosite" "rule_sync_temp/ClashMeta/domain" "directory"
-
-          # ip
-          merge_rules "$METACUBEX_BASE_DIR/geo/geoip" "rule_sync_temp/ClashMeta/ip" "directory"
-
-          # AWAvenue-Ads-Rule
-          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Clash.yaml" "rule_sync_temp/ClashMeta/domain/AWAvenue-Ads-Rule-Clash.yaml" "file"
           
       - name: 整理 Surge 规则
         run: |
-          # 引入外部 shell 脚本
-          source ./merge_rules.sh
           
           echo "开始整理 Surge 规则..."
           
@@ -145,20 +73,8 @@ jobs:
             return 1
           fi
 
-          #
-          # curl -L -o "custom_proxy.txt" https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_proxy.txt
+          # 规则转换逻辑
 
-          action_env_to_array_fix "$SURGE_FILES_DIRECT" "DIRECT_RULES" "$METACUBEX_BASE_DIR"
-          action_env_to_array_fix "$SURGE_FILES_PROXY" "PROXY_RULES" "$METACUBEX_BASE_DIR"
-
-          merge_rules "DIRECT_RULES" "rule_sync_temp/Surge/y3_direct_rules@surge.list" "file"
-          merge_rules "PROXY_RULES" "rule_sync_temp/Surge/y3_proxy_rules@surge.list" "file"
-
-          merge_rules "$METACUBEX_BASE_DIR/geo/geosite/classical" "rule_sync_temp/Surge" "directory"
-          merge_rules "$METACUBEX_BASE_DIR/geo/geoip/classical" "rule_sync_temp/Surge" "directory"
-
-          # AWAvenue-Ads-Rule
-          merge_rules "AWAvenue-Ads-Rule/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list" "rule_sync_temp/Surge" "directory"
       
       - name: 提交变更
         working-directory: rule_sync_temp
