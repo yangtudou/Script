@@ -1,0 +1,287 @@
+# 基于 GEOSITE & GEOIP
+# 辅以 RULE-SET 进行细化
+# 主要用于手机等移动设备
+# 本配置由 yyy 维护
+# 最后更新时间: 2026-03-06
+
+# ═══════════════════════════════  锚点  ═══════════════════════════════
+
+# 在锚点区定义节点筛选正则（YAML 锚点也可以存储字符串）
+FilterHK: &FilterHK '^(?=.*(🇭🇰|港|HK|Hong Kong))(?!.*(回国|校园|游戏|剩余|到期|官网|客服|订阅|节点|过期|时间)).*$'
+FilterJP: &FilterJP '^(?=.*(🇯🇵|日|JP|Japan|Tokyo|Osaka))(?!.*(回国|校园|游戏|剩余|到期|官网|客服|订阅|节点|过期|时间)).*$'
+FilterSG: &FilterSG '^(?=.*(🇸🇬|新|SG|Singapore))(?!.*(回国|校园|游戏|剩余|到期|官网|客服|订阅|节点|过期|时间)).*$'
+FilterUS: &FilterUS '^(?=.*(🇺🇸|美|US|United States|Los Angeles|Silicon|Seattle))(?!.*(回国|校园|游戏|剩余|到期|官网|客服|订阅|节点|过期|时间)).*$'
+
+# ═══════════════════════════════  全局设置  ═══════════════════════════════
+
+mixed-port: 7890          # HTTP + SOCKS5 混合端口（推荐只用这一个）
+allow-lan: false          # 是否允许局域网内其他设备接入代理
+                          # 个人电脑设 false；软路由/共享代理设 true
+bind-address: "*"         # allow-lan 为 true 时绑定哪些网卡，* 表示全部
+
+                          # 运行模式
+mode: rule                # rule=按规则分流（日常使用）
+                          # global=所有流量走代理（调试用）
+                          # direct=所有流量直连（调试用）
+
+                          # 日志等级
+log-level: warning        # silent / error / warning / info / debug
+                          # 日常用 warning；排查问题时改 debug
+
+                          # 其他杂项
+ipv6: false               # 不建议新手开启，避免意外问题
+find-process-mode: strict # 是否匹配进程名（路由器/软路由推荐 off）
+unified-delay: true       # 统一延迟测试：用实际往返时间，更准确
+tcp-concurrent: true      # TCP 并发：同时向所有解析 IP 发起连接，选最快的
+global-client-fingerprint: chrome  # 全局 TLS 指纹伪装
+
+# 外部控制（Web 面板）
+external-controller: 127.0.0.1:9090
+# secret: "your_strong_password"    # 如果对外暴露务必设置密码
+external-ui: ui                     # Web UI 存放目录（相对于配置文件目录）
+external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+
+# GeoData 数据库地址
+geox-url:
+  geoip:   "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb:    "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+
+# 配置持久化
+profile:
+  store-selected: true    # 记住你在 Web UI 中的节点选择，重启后不丢失
+  store-fake-ip: true     # 持久化 fake-ip 映射表
+
+
+# ═══════════════════════════════  DNS 设置  ═══════════════════════════════
+
+dns:
+  enable: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  prefer-h3: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  respect-rules: true
+  proxy-server-nameserver:
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
+  # 使用 SukkA 的 nameserver-policy（质量极高）
+  # 需配套 rule-providers 远程规则集
+  # 参见：https://ruleset.skk.moe/Internal/clash_nameserver_policy.yaml
+  nameserver-policy:
+    dns.alidns.com: quic://223.5.5.5:853
+    dot.pub: 119.29.29.29
+    doh.pub: 119.29.29.29
+    dns.pub: 119.29.29.29
+    doh.360.cn: 101.198.198.198
+    rule-set:mihomo_nameserver_policy_alibaba: quic://dns.alidns.com:853
+    rule-set:mihomo_nameserver_policy_tencent: https://doh.pub/dns-query
+    rule-set:mihomo_nameserver_policy_bilibili: https://doh.pub/dns-query
+    rule-set:mihomo_nameserver_policy_xiaomi: https://doh.pub/dns-query
+    rule-set:mihomo_nameserver_policy_bytedance: 180.184.2.2
+    rule-set:mihomo_nameserver_policy_baidu: 180.76.76.76
+    rule-set:mihomo_nameserver_policy_qihoo360: https://doh.360.cn/dns-query
+    rule-set:mihomo_nameserver_policy_hotspot_captive_portal: system
+    "*.m2m": system
+    injections.adguard.org: system
+    local.adguard.org: system
+    "*.bogon": system
+    rule-set:mihomo_nameserver_policy_lan_without_real_ip: system
+    rule-set:mihomo_nameserver_policy_lan_with_realip: system
+  # 默认 nameserver（nameserver-policy 未覆盖的域名使用这里）
+  nameserver:
+    - system
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
+
+hosts:
+  dns.alidns.com:
+    - 223.5.5.5
+    - 223.6.6.6
+    - 2400:3200:baba::1
+    - 2400:3200::1
+  127.0.0.1.sslip.io: 127.0.0.1
+  127.atlas.skk.moe: 127.0.0.1
+  cdn.jsdelivr.net: cdn.jsdelivr.net.cdn.cloudflare.net
+
+
+# ═══════════════════════════════  域名嗅探  ═══════════════════════════════
+
+sniffer:
+  enable: true
+  # override-destination：用嗅探到的真实域名覆盖连接目标
+  # 在 TUN 模式下必须开启，否则拿到的是 IP，域名规则无法匹配
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"            # 小米云，跳过嗅探
+    - "+.push.apple.com"       # 苹果推送
+    - "+.icloud.com"          # 苹果 iCloud
+
+# ════════════════════════════  出站代理节点  ═══════════════════════════
+
+# proxies:[]
+
+# ════════════════════════  代理提供者 / 机场订阅  ═══════════════════════
+
+proxy-providers:
+  机场A:
+    type: http
+    url: "https://your-airport.com/subscribe?token=xxx"
+    interval: 86400 # 每天自动更新一次
+    path: ./proxy_providers/airport-a.yaml
+    health-check:
+      enable: true
+      url: "https://www.gstatic.com/generate_204"
+      # 注意：不建议用 google.com 测速，可能触发 Google 对 IP 的风控
+      interval: 300
+      timeout: 5000
+      lazy: true # 懒加载：只在有流量时测速，节省资源
+    # 过滤掉机场的"流量剩余/到期提醒"等信息节点
+    filter: "^(?!.*(剩余|到期|官网|免费|试用|套餐|重置|过期|流量|时间)).*$"
+
+# ════════════════════════  代理组 / 策略核心  ═══════════════════════
+
+g_urltest: &g_urltest
+  type: url-test
+  url: "https://www.gstatic.com/generate_204"
+  interval: 300
+  lazy: true
+  tolerance: 50
+  timeout: 2000
+  max-failed-times: 3
+  include-all: true
+
+g_fallback: &g_fallback
+  <<: *g_urltest
+  type: fallback
+
+proxy-groups:
+  - name: 手动切换
+    type: select    
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Stack.png   
+    proxies: [ DIRECT, 自动回退 ]
+
+  - name: 自动回退
+    <<: *g_fallback
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Round_Robin.png
+    proxies: [香港自动, 日本自动, 美国自动, 狮城自动]
+
+  - name: 默认情况
+    type: select
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Final.png
+    proxies: [ DIRECT, 手动切换 ]
+
+  - { name: 香港自动, <<: *g_urltest, filter: *FilterHK }
+  - { name: 日本自动, <<: *g_urltest, filter: *FilterJP }
+  - { name: 美国自动, <<: *g_urltest, filter: *FilterUS }
+  - { name: 狮城自动, <<: *g_urltest, filter: *FilterSG }
+
+
+# ════════════════════════  路由规则  ═══════════════════════
+
+# mihomo 遵循的子集在前，通用在后
+
+rules:
+  - GEOIP,private,DIRECT,no-resolve
+
+  - GEOSITE,apple,DIRECT
+  - GEOSITE,microsoft,DIRECT
+  
+  - GEOSITE,github,手动切换
+  - GEOSITE,meta,手动切换
+  - GEOSITE,google,手动切换
+  - GEOSITE,telegram,手动切换
+
+  - GEOSITE,CN,DIRECT
+  - GEOSITE,geolocation-!cn,手动切换
+
+  - GEOIP,google,手动切换,no-resolve
+  - GEOIP,telegram,手动切换,no-resolve
+
+  - GEOIP,CN,DIRECT,no-resolve
+
+  - MATCH,默认情况
+
+
+rule-providers:
+  # ========
+  # mihomo 的 nameserver-policy 规则集，针对不同运营商/场景细化 DNS 策略
+  mihomo_nameserver_policy_alibaba:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_alibaba.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/alibaba.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_tencent:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_tencent.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/tencent.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_bilibili:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_bilibili.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/bilibili.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_xiaomi:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_xiaomi.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/xiaomi.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_bytedance:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_bytedance.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/bytedance.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_baidu:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_baidu.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/baidu.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_qihoo360:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_qihoo360.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/qihoo360.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_hotspot_captive_portal:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_hotspot_captive_portal.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/hotspot_captive_portal.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_lan_without_real_ip:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_lan_without_real_ip.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/lan_without_real_ip.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  mihomo_nameserver_policy_lan_with_realip:
+    type: http
+    path: ./sukkaw_ruleset/mihomo_nameserver_policy_lan_with_realip.txt
+    url: https://ruleset.skk.moe/Internal/mihomo_nameserver_policy/lan_with_realip.txt
+    behavior: classical
+    format: text
+    interval: 43200
+  # ========
