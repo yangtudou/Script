@@ -50,11 +50,11 @@ jobs:
           path: meta-rules-dat
           sparse-checkout: |
             geo/geosite/private.list
-            geo/geoip/classical/private.list
+            geo/geoip/private.list
             geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
             geo/geosite/telegram.list
-            geo/geoip/classical/telegram.list
+            geo/geoip/telegram.list
             geo/geosite/meta.list
             geo/geosite/category-porn.list
             geo/geosite/geolocation-!cn.list
