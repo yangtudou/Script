@@ -94,11 +94,10 @@ jobs:
             target="rule_sync_temp/Surge/ruleset/$(basename "$src_file")"
 
             awk '
-              /^[0-9]/     { print "IP-CIDR," $0 }
-              /^:/         { print "IP-CIDR6," $0 }
-              # 如果已有 IP-CIDR 前缀，就保持原样
-              /^IP-CIDR,/  { print $0 }
-              /^IP-CIDR6,/ { print $0 }
+              /^IP-CIDR,/  { print $0; next }
+              /^IP-CIDR6,/ { print $0; next }
+              /:/          { print "IP-CIDR6," $0; next }
+              { print "IP-CIDR," $0 }
             ' "$src_file" | sort -u > "$target"
           done
 
