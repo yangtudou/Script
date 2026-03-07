@@ -49,12 +49,12 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
+            geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
-            geo/geosite/meta.list
-            geo/geosite/geolocation-!cn.list
             geo/geosite/telegram.list
+            geo/geosite/meta.list
             geo/geosite/category-porn.list
-            geo/geosite/openai.list
+            geo/geosite/geolocation-!cn.list
             geo/geosite/cn.list
             geo/geosite/private.list
 
@@ -80,7 +80,7 @@ jobs:
           fi
 
           # 规则转换逻辑：针对 MetaCubeX *.list 文件（+ 前缀格式）
-          echo "开始转换 *.list → DOMAIN-SET 兼容格式..."
+          echo "开始转换 *.list → Surge DOMAIN-SET 兼容格式..."
 
           SOURCE_DIR="meta-rules-dat/geo/geosite"
           TARGET_DIR="rule_sync_temp/Surge/domainset"
