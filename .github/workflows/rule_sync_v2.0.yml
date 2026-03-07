@@ -97,7 +97,7 @@ jobs:
                 s/^+\./\./                     # +. 开头的后缀 → . 开头
                 # 如果有注释行，保留（当前文件基本无，但防未来）
                 /^#/! s/^\+//                  # 如果有 + 开头但无 .，也转成 .（保险）
-                1i # Converted from MetaCubeX/meta-rules-dat/classical/$(basename "$src_file") for DOMAIN-SET
+                1i # 由 Github Action 脚本转换
               ' "$src_file" > "$target_file"
 
               converted_count=$(wc -l < "$target_file")
