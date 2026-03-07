@@ -54,6 +54,7 @@ jobs:
             geo/geosite/geolocation-!cn.list
             geo/geosite/telegram.list
             geo/geosite/category-porn.list
+            geo/geosite/openai.list
             geo/geosite/cn.list
             geo/geosite/private.list
 
