@@ -51,6 +51,11 @@ jobs:
           sparse-checkout: |
             geo/geosite/google.list
             geo/geosite/meta.list
+            geo/geosite/geolocation-!cn.list
+            geo/geosite/telegram.list
+            geo/geosite/category-porn.list
+            geo/geosite/cn.list
+            geo/geosite/private.list
 
           sparse-checkout-cone-mode: false
           
@@ -73,8 +78,8 @@ jobs:
             return 1
           fi
 
-          # 规则转换逻辑：针对 MetaCubeX classical .list 文件（+ 前缀格式）
-          echo "开始转换 classical .list → DOMAIN-SET 兼容格式..."
+          # 规则转换逻辑：针对 MetaCubeX *.list 文件（+ 前缀格式）
+          echo "开始转换 *.list → DOMAIN-SET 兼容格式..."
 
           SOURCE_DIR="meta-rules-dat/geo/geosite"
           TARGET_DIR="rule_sync_temp/Surge/domainset"
