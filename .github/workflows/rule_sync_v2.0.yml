@@ -2,7 +2,7 @@
 # updated at: 2026-03-07
 # 改用 checkout sparse-checkout
 # 改用 rules 分支管理
-# 使用外部 shell 脚本处理规则文件, 简化了整个 Github Action 流程
+
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
 #
@@ -49,14 +49,17 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
+            geo/geosite/private.list
+            geo/geoip/private.list
             geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
             geo/geosite/telegram.list
+            geo/geoip/telegram.list
             geo/geosite/meta.list
             geo/geosite/category-porn.list
             geo/geosite/geolocation-!cn.list
             geo/geosite/cn.list
-            geo/geosite/private.list
+            
 
           sparse-checkout-cone-mode: false
           
@@ -65,50 +68,38 @@ jobs:
           
           echo "开始整理 Surge 规则..."
           
-          if rm -rf "rule_sync_temp/Surge"; then
-            echo "✓ 目录删除成功: rule_sync_temp/Surge"
-          else
-            echo "✗ 删除失败: 权限不足或文件系统错误" >&2
-            return 1
-          fi
+          # 删除旧的 Surge 规则目录
+          rm -rf rule_sync_temp/Surge
 
-          if mkdir -p "rule_sync_temp/Surge/domainset"; then
-            echo "✓ 目录重建成功: rule_sync_temp/Surge/domainset"
-          else
-            echo "✗ 目录重建失败: 权限不足或文件系统错误" >&2
-            return 1
-          fi
+          # 重建 Surge/domainset 目录
+          mkdir -p rule_sync_temp/Surge/{domainset,ruleset}
 
-          # 规则转换逻辑：针对 MetaCubeX *.list 文件（+ 前缀格式）
-          echo "开始转换 *.list → Surge DOMAIN-SET 兼容格式..."
+          # geosite 规则转换
+          for src_file in meta-rules-dat/geo/geosite/*.list; do
 
-          SOURCE_DIR="meta-rules-dat/geo/geosite"
-          TARGET_DIR="rule_sync_temp/Surge/domainset"
+            [ -f "$src_file" ] || continue
+            
+            sed '
+              /^$/d                          # 删除空行
+              s/^+\././                      # +. 开头的后缀 → . 开头
+              1i # 由 Github Action 脚本转换
+            ' "$src_file" > "rule_sync_temp/Surge/domainset/$(basename "$src_file")"
+          done
 
-          for src_file in "$SOURCE_DIR"/*.list; do
-            if [ -f "$src_file" ]; then
-              base_name=$(basename "$src_file")
-              target_file="$TARGET_DIR/$base_name"
+          # geoip 规则转换
+          for src_file in meta-rules-dat/geo/geoip/*.list; do
 
-              echo "处理文件: $base_name (原始行数: $(wc -l < "$src_file"))"
+            [ -f "$src_file" ] || continue
+            
+            target="rule_sync_temp/Surge/ruleset/$(basename "$src_file")"
 
-              # 转换核心：替换行首 +\. → . ，删除空行，保留纯域名行
-              sed '
-                /^$/d                          # 删除空行
-                s/^+\./\./                     # +. 开头的后缀 → . 开头
-                # 如果有注释行，保留（当前文件基本无，但防未来）
-                /^#/! s/^\+//                  # 如果有 + 开头但无 .，也转成 .（保险）
-                1i # 由 Github Action 脚本转换
-              ' "$src_file" > "$target_file"
-
-              converted_count=$(wc -l < "$target_file")
-              echo "转换完成: $target_file (行数: $converted_count)"
-              echo "前3行预览:"
-              head -n 3 "$target_file" || echo "(文件为空或预览失败)"
-              echo ""
-            else
-              echo "未找到文件: $src_file"
-            fi
+            awk '
+              /^[0-9]/     { print "IP-CIDR," $0 }
+              /^:/         { print "IP-CIDR6," $0 }
+              # 如果已有 IP-CIDR 前缀，就保持原样
+              /^IP-CIDR,/  { print $0 }
+              /^IP-CIDR6,/ { print $0 }
+            ' "$src_file" | sort -u > "$target"
           done
 
           echo "所有规则转换完成。"
