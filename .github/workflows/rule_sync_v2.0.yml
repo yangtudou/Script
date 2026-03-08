@@ -52,6 +52,7 @@ jobs:
           sparse-checkout: |
             geo/geosite/private.list
             geo/geoip/private.list
+            geo/geosite/category-ntp.list
             geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
             geo/geosite/telegram.list
