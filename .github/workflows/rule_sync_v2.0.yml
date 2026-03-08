@@ -50,6 +50,7 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
+            geo/geosite/category-ntp.list
             geo/geosite/private.list
             geo/geoip/private.list
             geo/geosite/category-ai-chat-!cn.list
