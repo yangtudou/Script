@@ -2,6 +2,7 @@
 # updated at: 2026-03-07
 # 改用 checkout sparse-checkout
 # 改用 rules 分支管理
+# 所有 IP-CIDR/IP-CIDR6 規則自動追加 ,no-resolve（防重複）
 
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
@@ -50,11 +51,11 @@ jobs:
           path: meta-rules-dat
           sparse-checkout: |
             geo/geosite/private.list
-            geo/geoip/private.list
+            geo/geoip/classical/private.list
             geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
             geo/geosite/telegram.list
-            geo/geoip/telegram.list
+            geo/geoip/classical/telegram.list
             geo/geosite/meta.list
             geo/geosite/category-porn.list
             geo/geosite/geolocation-!cn.list
@@ -86,18 +87,37 @@ jobs:
             ' "$src_file" > "rule_sync_temp/Surge/domainset/$(basename "$src_file")"
           done
 
-          # geoip 规则转换
-          for src_file in meta-rules-dat/geo/geoip/*.list; do
+          # geoip 规则转换（已添加 ,no-resolve 防重复逻辑）
+          for src_file in meta-rules-dat/geo/geoip/classical/*.list; do
 
             [ -f "$src_file" ] || continue
             
             target="rule_sync_temp/Surge/ruleset/$(basename "$src_file")"
 
             awk '
-              /^IP-CIDR,/  { print $0; next }
-              /^IP-CIDR6,/ { print $0; next }
-              /:/          { print "IP-CIDR6," $0; next }
-              { print "IP-CIDR," $0 }
+              {
+                line = $0
+
+                # 先移除任何已存在的 ,no-resolve（包含可能的前後空格變體）
+                gsub(/,[[:space:]]*no-resolve[[:space:]]*$/, "", line)
+
+                # 清理行尾多餘空格
+                sub(/[[:space:]]+$/, "", line)
+
+                # 根據情況補前綴 + 後綴 ,no-resolve
+                if (line ~ /^IP-CIDR,/) {
+                  print line ",no-resolve"
+                }
+                else if (line ~ /^IP-CIDR6,/) {
+                  print line ",no-resolve"
+                }
+                else if (line ~ /:/) {
+                  print "IP-CIDR6," line ",no-resolve"
+                }
+                else {
+                  print "IP-CIDR," line ",no-resolve"
+                }
+              }
             ' "$src_file" | sort -u > "$target"
           done
 
@@ -114,7 +134,7 @@ jobs:
           git checkout --orphan rules
           
           git add .
-          git commit -m "CI: Last Update at $(date +"%Y-%m-%d %H:%M")"
+          git commit -m "CI: Last Update at $(date +"%Y-%m-%d %H:%M") + no-resolve for IP rules"
           git push -f origin rules
 
   clean_workflow:
