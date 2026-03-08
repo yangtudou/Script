@@ -51,11 +51,11 @@ jobs:
           path: meta-rules-dat
           sparse-checkout: |
             geo/geosite/private.list
-            geo/geoip/classical/private.list
+            geo/geoip/private.list
             geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
             geo/geosite/telegram.list
-            geo/geoip/classical/telegram.list
+            geo/geoip/telegram.list
             geo/geosite/meta.list
             geo/geosite/category-porn.list
             geo/geosite/geolocation-!cn.list
@@ -88,7 +88,7 @@ jobs:
           done
 
           # geoip 规则转换（已添加 ,no-resolve 防重复逻辑）
-          for src_file in meta-rules-dat/geo/geoip/classical/*.list; do
+          for src_file in meta-rules-dat/geo/geoip/*.list; do
 
             [ -f "$src_file" ] || continue
             
