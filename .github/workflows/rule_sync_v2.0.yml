@@ -50,17 +50,17 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
-            geo/geosite/classical/private.list
-            geo/geosite/classical/category-ntp.list
-            geo/geosite/classical/category-ai-chat-!cn.list
-            geo/geosite/classical/google.list
-            geo/geosite/classical/telegram.list
-            geo/geosite/classical/meta.list
-            geo/geosite/classical/category-porn.list
-            geo/geosite/classical/geolocation-!cn.list
-            geo/geosite/classical/cn.list
-            geo/geoip/telegram.list
+            geo/geosite/private.list
             geo/geoip/private.list
+            geo/geosite/category-ai-chat-!cn.list
+            geo/geosite/google.list
+            geo/geosite/telegram.list
+            geo/geoip/telegram.list
+            geo/geosite/meta.list
+            geo/geosite/category-porn.list
+            geo/geosite/geolocation-!cn.list
+            geo/geosite/cn.list
+            
 
           sparse-checkout-cone-mode: false
           
@@ -75,8 +75,17 @@ jobs:
           # 重建 Surge/domainset 目录
           mkdir -p rule_sync_temp/Surge/{domainset,ruleset}
 
-          # geosite 规则直接从 classical 目录复制过来
-          cp -f meta-rules-dat/geo/geosite/classical/*.list rule_sync_temp/Surge/domainset/ 2>/dev/null || true
+          # geosite 规则转换
+          for src_file in meta-rules-dat/geo/geosite/*.list; do
+
+            [ -f "$src_file" ] || continue
+            
+            sed '
+              /^$/d                          # 删除空行
+              s/^+\././                      # +. 开头的后缀 → . 开头
+              1i # 由 Github Action 脚本转换
+            ' "$src_file" > "rule_sync_temp/Surge/domainset/$(basename "$src_file")"
+          done
 
           # geoip 规则转换（已添加 ,no-resolve 防重复逻辑）
           for src_file in meta-rules-dat/geo/geoip/*.list; do
