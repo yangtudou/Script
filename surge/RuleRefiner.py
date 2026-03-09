@@ -7,8 +7,6 @@ from pathlib import Path
 # ================= 配置区 =================
 HEADER_TEMPLATE = """# 标题: {name}
 # 更新时间: {c_time}
-# 策略: 精品化 / 智能精炼 / 冗余剔除
-# 来源: MetaCubeX/meta-rules-dat (洋山芋定制)
 """
 # ==========================================
 
