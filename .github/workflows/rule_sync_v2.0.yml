@@ -59,7 +59,7 @@ jobs:
             geo/geoip/telegram.list
             geo/geosite/meta.list
             geo/geosite/category-porn.list
-            geo/geosite/geolocation-!cn
+            geo/geosite/geolocation-!cn.list
             
 
           sparse-checkout-cone-mode: false
