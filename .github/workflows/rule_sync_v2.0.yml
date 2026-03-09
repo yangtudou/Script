@@ -68,61 +68,14 @@ jobs:
       - name: 整理 Surge 规则
         run: |
           
-          echo "开始整理 Surge 规则..."
-          
-          # 删除旧的 Surge 规则目录
-          rm -rf rule_sync_temp/Surge
+          # 下载主分支下的 python 脚本
+          curl -sSL https://raw.githubusercontent.com/yangtudou/Script/main/surge/RuleRefiner.py -o RuleRefiner.py
 
-          # 重建 Surge/domainset 目录
-          mkdir -p rule_sync_temp/Surge/{domainset,ruleset}
-
-          # geosite 规则转换
-          for src_file in meta-rules-dat/geo/geosite/*.list; do
-
-            [ -f "$src_file" ] || continue
-            
-            sed '
-              /^$/d                          # 删除空行
-              s/^+\././                      # +. 开头的后缀 → . 开头
-              1i # 由 Github Action 脚本转换
-            ' "$src_file" > "rule_sync_temp/Surge/domainset/$(basename "$src_file")"
-          done
-
-          # geoip 规则转换（已添加 ,no-resolve 防重复逻辑）
-          for src_file in meta-rules-dat/geo/geoip/*.list; do
-
-            [ -f "$src_file" ] || continue
-            
-            target="rule_sync_temp/Surge/ruleset/$(basename "$src_file")"
-
-            awk '
-              {
-                line = $0
-
-                # 先移除任何已存在的 ,no-resolve（包含可能的前後空格變體）
-                gsub(/,[[:space:]]*no-resolve[[:space:]]*$/, "", line)
-
-                # 清理行尾多餘空格
-                sub(/[[:space:]]+$/, "", line)
-
-                # 根據情況補前綴 + 後綴 ,no-resolve
-                if (line ~ /^IP-CIDR,/) {
-                  print line ",no-resolve"
-                }
-                else if (line ~ /^IP-CIDR6,/) {
-                  print line ",no-resolve"
-                }
-                else if (line ~ /:/) {
-                  print "IP-CIDR6," line ",no-resolve"
-                }
-                else {
-                  print "IP-CIDR," line ",no-resolve"
-                }
-              }
-            ' "$src_file" | sort -u > "$target"
-          done
-
-          echo "所有规则转换完成。"
+          # 开始
+          python3 RuleRefiner.py \
+            -s "meta-rules-dat/geo/geosite" \
+            -i "meta-rules-dat/geo/geoip" \
+            -o "rule_sync_temp/Surge"
       
       - name: 提交变更
         working-directory: rule_sync_temp
