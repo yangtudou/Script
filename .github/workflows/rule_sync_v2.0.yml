@@ -1,9 +1,9 @@
 # version: v2.1_beta
-# updated at: 2026-03-07
+# updated at: 2026-03-09
 # 改用 checkout sparse-checkout
 # 改用 rules 分支管理
-# 所有 IP-CIDR/IP-CIDR6 規則自動追加 ,no-resolve（防重複）
-
+# 改用 python 脚本转换
+#
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
 #
@@ -59,7 +59,7 @@ jobs:
             geo/geoip/telegram.list
             geo/geosite/meta.list
             geo/geosite/category-porn.list
-            geo/geosite/geolocation-!cn.list
+            geo/geosite/geolocation-!cn
             
 
           sparse-checkout-cone-mode: false
@@ -72,6 +72,9 @@ jobs:
 
           echo "🌐 正在下载 SukkaW domestic.conf ..."
           curl -sSL https://raw.githubusercontent.com/SukkaW/Surge/refs/heads/master/Source/non_ip/domestic.conf > meta-rules-dat/geo/geosite/my_direct.list
+
+          echo "🌐 正在下载 geo-lite cn.list ..."
+          curl -sSL https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo-lite/geosite/cn.list > meta-rules-dat/geo/geosite/cn_lite.list
 
           echo "🚀 运行 RuleRefiner..."
           python3 -u RuleRefiner.py \
