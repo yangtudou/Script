@@ -68,11 +68,13 @@ jobs:
       - name: 整理 Surge 规则
         run: |
           
-          # 下载主分支下的 python 脚本
-          curl -sSL https://raw.githubusercontent.com/yangtudou/Script/main/surge/RuleRefiner.py -o RuleRefiner.py
+          echo "🌐 正在下载 RuleRefiner.py..."
+          curl -v -sSL https://raw.githubusercontent.com/yangtudou/Script/main/surge/RuleRefiner.py -o RuleRefiner.py
+          echo "📂 检查当前目录结构..."
+          ls -R meta-rules-dat/geo/
 
-          # 开始
-          python3 RuleRefiner.py \
+          echo "🚀 运行 RuleRefiner..."
+          python3 -u RuleRefiner.py \
             -s "meta-rules-dat/geo/geosite" \
             -i "meta-rules-dat/geo/geoip" \
             -o "rule_sync_temp/Surge"
