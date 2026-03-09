@@ -74,7 +74,7 @@ jobs:
           curl -sSL -w "\n" https://raw.githubusercontent.com/SukkaW/Surge/refs/heads/master/Source/non_ip/domestic.conf > meta-rules-dat/geo/geosite/my_direct.list
 
           echo "🌐 正在下载 geo-lite cn.list ..."
-          curl -sSL https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo-lite/geosite/cn.list > meta-rules-dat/geo/geosite/my_direct.list
+          curl -sSL https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo-lite/geosite/cn.list >> meta-rules-dat/geo/geosite/my_direct.list
 
           echo "🚀 运行 RuleRefiner..."
           python3 -u RuleRefiner.py \
