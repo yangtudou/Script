@@ -50,9 +50,9 @@ jobs:
           fetch-depth: 1
           path: meta-rules-dat
           sparse-checkout: |
-            geo/geosite/category-ntp.list
             geo/geosite/private.list
             geo/geoip/private.list
+            geo/geosite/category-ntp.list
             geo/geosite/category-ai-chat-!cn.list
             geo/geosite/google.list
             geo/geosite/telegram.list
@@ -60,7 +60,6 @@ jobs:
             geo/geosite/meta.list
             geo/geosite/category-porn.list
             geo/geosite/geolocation-!cn.list
-            geo/geosite/cn.list
             
 
           sparse-checkout-cone-mode: false
@@ -70,8 +69,9 @@ jobs:
           
           echo "🌐 正在下载 RuleRefiner.py..."
           curl -v -sSL https://raw.githubusercontent.com/yangtudou/Script/main/surge/RuleRefiner.py -o RuleRefiner.py
-          echo "📂 检查当前目录结构..."
-          ls -R meta-rules-dat/geo/
+
+          echo "🌐 正在下载 SukkaW domestic.conf ..."
+          curl -sSL https://raw.githubusercontent.com/SukkaW/Surge/refs/heads/master/Source/non_ip/domestic.conf > meta-rules-dat/geo/geosite/my_direct.list
 
           echo "🚀 运行 RuleRefiner..."
           python3 -u RuleRefiner.py \
