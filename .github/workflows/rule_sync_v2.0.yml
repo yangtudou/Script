@@ -75,6 +75,8 @@ jobs:
 
           # echo "🌐 正在下载 SukkaW domestic.conf ..."
           # curl -sSL -w "\n" https://raw.githubusercontent.com/SukkaW/Surge/refs/heads/master/Source/non_ip/domestic.conf > meta-rules-dat/geo/geosite/my_direct.list
+          
+          curl -sSL https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt > meta-rules-dat/geo/geosite/custom_direct.list
 
           cp meta-rules-dat/geo-lite/geosite/cn.list meta-rules-dat/geo/geosite/cn-lite.list
 
