@@ -6,16 +6,20 @@
 # 最后更新时间 2026-03-10
 
 # ========== 工具类  ==========
-# hub.kelee.one # 可莉去广告插件中心 loon相关
+# 可莉去广告插件中心 loon相关
+# hub.kelee.one
 +.kelee.one
-proxy.scdn.io # 免费代理节点的网站，可直连
-+.ugnas.com # 绿联
-+.ug.link # 绿联
+# 免费代理节点的网站，可直连
+proxy.scdn.io
+# 绿联
++.ugnas.com
++.ug.link
 
 # ========== 博客类 ==========
 blog.l3zc.com
 
 # ========== 资源类 ==========
-dl.bobpony.com # 一个国外的资源网站，建议代理
+# 一个国外的资源网站，建议代理
+dl.bobpony.com
 
 
