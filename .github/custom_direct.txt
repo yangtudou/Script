@@ -9,11 +9,16 @@
 # 可莉去广告插件中心 loon相关
 # hub.kelee.one
 +.kelee.one
+
 # 免费代理节点的网站，可直连
 proxy.scdn.io
+
 # 绿联
 +.ugnas.com
 +.ug.link
+
+# Sukka
++.skk.moe
 
 # ========== 博客类 ==========
 blog.l3zc.com
