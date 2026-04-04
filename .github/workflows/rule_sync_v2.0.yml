@@ -62,6 +62,7 @@ jobs:
             geo-lite/geosite/cn.list
             geo/geoip/private.list
             geo/geoip/telegram.list
+            geo/geoip/google.list
 
             
 
