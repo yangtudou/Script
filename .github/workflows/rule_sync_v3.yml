@@ -64,16 +64,16 @@ jobs:
           ./geox geosite \
             -f geosite.dat \
             -t clash \
-            -o rule_sync_temp \
-            -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn
+            -o rule_sync_temp
+            # -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn
 
       - name: 生成 Surge 规则
         run: |
           ./geox geosite \
             -f geosite.dat \
             -t surge \
-            -o rule_sync_temp \
-            -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn
+            -o rule_sync_temp
+            # -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn
       
       - name: 提交变更
         working-directory: rule_sync_temp
