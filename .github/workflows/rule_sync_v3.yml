@@ -64,7 +64,7 @@ jobs:
           ./geox geosite \
             -f geosite.dat \
             -t clash \
-            -o rule_sync_temp/clash
+            -o rule_sync_temp/clash \
             -s google
 
 
