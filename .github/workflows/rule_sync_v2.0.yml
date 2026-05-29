@@ -1,16 +1,14 @@
-# version: v2.1_beta
-# updated at: 2026-03-09
-# 改用 checkout sparse-checkout
-# 改用 rules 分支管理
-# 改用 python 脚本转换
+# version: v3_beta
+# updated at: 2026-05-30
+# 直接从 geo 源中提取
 #
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
 #
-# 支持 Surge ClashMeta、Clash Premium
+# 支持 surge mihomo
 #
 
-name: 自动化规则下载 v2.1_beta
+name: 自动化规则下载 v3_beta
 
 on:
   # schedule:
@@ -42,50 +40,34 @@ jobs:
           ref: rules
           fetch-depth: 1
 
-      - name: "MetaCubeX 仓库 meta 分支"
-        uses: actions/checkout@v6
-        with:
-          repository: MetaCubeX/meta-rules-dat
-          ref: meta
-          fetch-depth: 1
-          path: meta-rules-dat
-          sparse-checkout: |
-            geo/geosite/private.list
-            geo/geosite/apple.list
-            geo/geosite/category-ntp.list
-            geo/geosite/category-ai-chat-!cn.list
-            geo/geosite/google.list
-            geo/geosite/telegram.list
-            geo/geosite/meta.list
-            geo/geosite/category-porn.list
-            geo/geosite/geolocation-!cn.list
-            geo-lite/geosite/cn.list
-            geo/geoip/private.list
-            geo/geoip/telegram.list
-            geo/geoip/google.list
-
-            
-
-          sparse-checkout-cone-mode: false
-          
-      - name: 整理 Surge 规则
+      - name: "下载转换器 geo"
         run: |
-          
-          echo "🌐 正在下载 RuleRefiner.py..."
-          curl -v -sSL https://raw.githubusercontent.com/yangtudou/Script/main/surge/RuleRefiner.py -o RuleRefiner.py
+          curl -L \
+            -o geox \
+            https://github.com/yangtudou/Script/raw/refs/heads/main/.github/geox-linux-amd64
 
-          # echo "🌐 正在下载 SukkaW domestic.conf ..."
-          # curl -sSL -w "\n" https://raw.githubusercontent.com/SukkaW/Surge/refs/heads/master/Source/non_ip/domestic.conf > meta-rules-dat/geo/geosite/my_direct.list
-          
-          curl -sSL https://raw.githubusercontent.com/yangtudou/Script/main/.github/custom_direct.txt > meta-rules-dat/geo/geosite/custom_direct.list
+          chmod +x geox
 
-          cp meta-rules-dat/geo-lite/geosite/cn.list meta-rules-dat/geo/geosite/cn-lite.list
+      - name: "下载转换器 geosite.dat"
+        run: |
+          curl -L \
+            -o geosite.dat \
+            https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geosite.dat
 
-          echo "🚀 运行 RuleRefiner..."
-          python3 -u RuleRefiner.py \
-            -s "meta-rules-dat/geo/geosite" \
-            -i "meta-rules-dat/geo/geoip" \
-            -o "rule_sync_temp/Surge"
+      - name: 清理旧规则
+        run: |
+          rm -rf rule_sync_temp/Surge
+          rm -rf rule_sync_temp/ClashMeta
+
+      - name: 生成 Mihomo
+        run: |
+          ./geox geosite \
+            -f geosite.dat \
+            -t clash \
+            -o rule_sync_temp/clash
+            -s google
+
+
       
       - name: 提交变更
         working-directory: rule_sync_temp
