@@ -56,18 +56,24 @@ jobs:
 
       - name: 清理旧规则
         run: |
-          rm -rf rule_sync_temp/Surge
-          rm -rf rule_sync_temp/ClashMeta
+          rm -rf rule_sync_temp
+          mkdir rule_sync_temp
 
-      - name: 生成 Mihomo
+      - name: 生成 Mihomo 规则
         run: |
           ./geox geosite \
             -f geosite.dat \
             -t clash \
-            -o rule_sync_temp/clash \
+            -o rule_sync_temp \
             -s google
 
-
+      - name: 生成 Surge 规则
+        run: |
+          ./geox geosite \
+            -f geosite.dat \
+            -t surge \
+            -o rule_sync_temp \
+            -s google
       
       - name: 提交变更
         working-directory: rule_sync_temp
