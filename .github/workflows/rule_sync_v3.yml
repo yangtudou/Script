@@ -56,8 +56,9 @@ jobs:
 
       - name: 清理旧规则
         run: |
-          rm -rf rule_sync_temp
-          mkdir rule_sync_temp
+          rm -rf rule_sync_temp/clash/clash
+          rm -rf rule_sync_temp/clash
+          rm -rf rule_sync_temp/surge
 
       - name: 生成 Mihomo 规则
         run: |
