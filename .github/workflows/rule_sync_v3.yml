@@ -56,7 +56,6 @@ jobs:
 
       - name: 清理旧规则
         run: |
-          rm -rf rule_sync_temp/clash/clash
           rm -rf rule_sync_temp/clash
           rm -rf rule_sync_temp/surge
 
@@ -66,7 +65,7 @@ jobs:
             -f geosite.dat \
             -t clash \
             -o rule_sync_temp \
-            -s google
+            -s google,category-ntp,apple,category-porn,cn,geolocation-!cn
 
       - name: 生成 Surge 规则
         run: |
@@ -74,7 +73,7 @@ jobs:
             -f geosite.dat \
             -t surge \
             -o rule_sync_temp \
-            -s google
+            -s google,category-ntp,apple,category-porn,cn,geolocation-!cn
       
       - name: 提交变更
         working-directory: rule_sync_temp
