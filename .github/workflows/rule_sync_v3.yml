@@ -40,40 +40,43 @@ jobs:
           ref: rules
           fetch-depth: 1
 
-      - name: "下载转换器 geo"
+      - name: "下载 geox 转换器"
         run: |
-          curl -L \
-            -o geox \
-            https://github.com/yangtudou/Script/raw/refs/heads/main/.github/geox-linux-amd64
-
+          curl -L -o geox https://github.com/yangtudou/Script/raw/refs/heads/main/.github/geox-linux-amd64
           chmod +x geox
 
-      - name: "下载转换器 geosite.dat"
+      - name: "下载 geosite.dat"
         run: |
-          curl -L \
-            -o geosite.dat \
-            https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geosite.dat
+          curl -L -o geosite.dat https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geosite.dat
+
+      - name: "下载 geoip.dat"
+        run: |
+          curl -L -o geoip.dat https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
 
       - name: 清理旧规则
         run: |
           rm -rf rule_sync_temp/clash
           rm -rf rule_sync_temp/surge
 
-      - name: 生成 Mihomo 规则
-        run: |
-          ./geox geosite \
-            -f geosite.dat \
-            -t clash \
-            -o rule_sync_temp
-            # -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn
+#       - name: 生成 Mihomo 规则
+#         run: |
+#           ./geox geosite -f geosite.dat -t clash -o rule_sync_temp \
+#             -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn,github,telegram
 
       - name: 生成 Surge 规则
         run: |
-          ./geox geosite \
-            -f geosite.dat \
-            -t surge \
-            -o rule_sync_temp
-            # -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn
+          ./geox geosite -f geosite.dat -t surge -o rule_sync_temp
+
+          ./geox geoip -f geoip.dat -t surge -s private,cn,google,telegram
+
+          for f in rule_sync_temp/surge/*.txt; do
+              [ -f "$f" ] || continue
+              name=$(basename "$f")
+
+              if [ -f "geoip/surge/$name" ]; then
+                  sort -u "$f" "geoip/surge/$name" -o "$f"
+              fi
+          done
       
       - name: 提交变更
         working-directory: rule_sync_temp
