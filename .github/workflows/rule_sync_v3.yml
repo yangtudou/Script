@@ -33,7 +33,7 @@ jobs:
 
     # 需要转换的分类
     env:
-      GEOSITE_LIST: "private,category-ntp,microsoft@cn,apple@cn,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn"
+      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn"
       GEOIP_LIST: "private,google,telegram,cn"
     
     steps:
