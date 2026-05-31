@@ -1,6 +1,5 @@
 # version: v3_beta
-# updated at: 2026-05-30
-# 直接从 geo 源中提取
+# updated at: 2026-05-31
 #
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
@@ -31,8 +30,13 @@ env:
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
+
+    # 需要转换的分类
+    env:
+      GEOSITE_LIST: "private,category-ntp,microsoft@cn,apple@cn,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn"
+      GEOIP_LIST: "private,google,telegram,cn"
+    
     steps:
-   
       - name: "当前仓库 rules 分支"
         uses: actions/checkout@v6
         with:
@@ -45,13 +49,14 @@ jobs:
           curl -L -o geox https://github.com/yangtudou/Script/raw/refs/heads/main/.github/geox-linux-amd64
           chmod +x geox
 
+      # 数据源 v2fly/domain-list-community
       - name: "下载 geosite.dat"
         run: |
           curl -L -o geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat
 
       - name: "下载 geoip.dat"
         run: |
-          curl -L -o geoip.dat https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
+          curl -L -o geoip.dat https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat
 
       - name: 清理旧规则
         run: |
@@ -65,10 +70,11 @@ jobs:
 
       - name: 生成 Surge 规则
         run: |
-          ./geox geosite -f geosite.dat -t surge -o rule_sync_temp
+          ./geox geosite -f geosite.dat -t surge -o rule_sync_temp -s "$GEOSITE_LIST"
 
-          ./geox geoip -f geoip.dat -t surge -s private,cn,google,telegram
+          ./geox geoip -f geoip.dat -t surge -s "$GEOIP_LIST"
 
+          # 合并 geosite & geoip
           for f in rule_sync_temp/surge/*.txt; do
               [ -f "$f" ] || continue
               name=$(basename "$f")
