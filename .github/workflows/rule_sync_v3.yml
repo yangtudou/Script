@@ -47,7 +47,7 @@ jobs:
 
       - name: "下载 geosite.dat"
         run: |
-          curl -L -o geosite.dat https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/geosite.dat
+          curl -L -o geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat
 
       - name: "下载 geoip.dat"
         run: |
