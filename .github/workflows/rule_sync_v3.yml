@@ -33,7 +33,7 @@ jobs:
 
     # 需要转换的分类
     env:
-      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn"
+      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn,policy-proxy,policy-ai"
       GEOIP_LIST: "private,google,telegram,cn"
     
     steps:
@@ -52,7 +52,8 @@ jobs:
       # 数据源 v2fly/domain-list-community
       - name: "下载 geosite.dat"
         run: |
-          curl -L -o geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat
+          # curl -L -o geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat
+          curl -L -o geosite.dat https://github.com/yangtudou/Script/raw/refs/heads/main/.github/dlc.dat
 
       - name: "下载 geoip.dat"
         run: |
