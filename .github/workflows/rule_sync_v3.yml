@@ -32,11 +32,7 @@ env:
 jobs:
   rule_sync:
     runs-on: ubuntu-latest
-
-    # 需要转换的分类
     env:
-      # 数据源: v2fly/domain-list-community
-      GEOSITE_DAT_URL: "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
       # 数据源: MetaCubeX/meta-rules-dat
       GEOIP_DAT_URL: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
       GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn"
@@ -50,14 +46,43 @@ jobs:
           ref: rules
           fetch-depth: 1
 
-      - name: "下载 geox 转换器"
-        run: |
-          curl -L -o geox https://github.com/yangtudou/Script/raw/refs/heads/main/.github/geox-linux-amd64
-          chmod +x geox
+      - name: "检出当前仓库 main 分支"
+        uses: actions/checkout@v6
+        with:
+          path: main
+          ref: main
+          fetch-depth: 1
+
+      - name: "检出 DLC 仓库"
+        uses: actions/checkout@v6
+        with:
+          repository: v2fly/domain-list-community
+          path: dlc
+          fetch-depth: 1
       
-      - name: "下载 geosite.dat"
+      - name: "合并自定义规则到 data 目录"
         run: |
-          curl -L -o geosite.dat "$GEOSITE_DAT_URL"
+          for file in main/add_rules/*; do
+            [ -f "$file" ] || continue
+
+            name=$(basename "$file")
+
+            if [ -f "dlc/data/$name" ]; then
+              echo "" >> "dlc/data/$name"
+              cat "$file" >> "dlc/data/$name"
+            else
+              cp "$file" "dlc/data/$name"
+            fi
+          done
+
+      - name: "编译 geosite.dat"
+        run: |
+          chmod +x main/tools/dlc-builder-linux-amd64
+          
+          main/.github/dlc-builder-linux-amd64 \
+            -datapath dlc/data \
+            -outputdir . \
+            -outputname geosite.dat
 
       - name: "下载 geoip.dat"
         run: |
@@ -75,9 +100,18 @@ jobs:
 
       - name: 生成 Surge 规则
         run: |
-          ./geox geosite -f geosite.dat -t surge -o rules -s "$GEOSITE_LIST"
+          chmod +x main/.github/geox-linux-amd64
+          
+          main/.github/geox-linux-amd64 geosite \
+            -f geosite.dat \
+            -t surge \
+            -o rules \
+            -s "$GEOSITE_LIST"
 
-          ./geox geoip -f geoip.dat -t surge -s "$GEOIP_LIST"
+          main/.github/geox-linux-amd64 geoip \
+            -f geoip.dat \
+            -t surge \
+            -s "$GEOIP_LIST"
 
           # 合并 geosite & geoip
           for f in rules/surge/*.txt; do
