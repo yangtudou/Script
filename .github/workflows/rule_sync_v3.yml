@@ -34,8 +34,9 @@ jobs:
     env:
       # 数据源: MetaCubeX/meta-rules-dat
       GEOIP_DAT_URL: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
-      # lulian 为自定义
-      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn,xiaomi,lulian,bytedance"
+      # lulian 为自己增加
+      # alibaba 为追加
+      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn,xiaomi,lulian,bytedance,alibaba"
       GEOIP_LIST: "private,google,telegram,cn"
     
     steps:
