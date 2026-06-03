@@ -107,7 +107,7 @@ jobs:
             -o rules \
             -s "$GEOSITE_LIST"
 
-          main/.github/geox-linux-amd64 geoip \
+          main/tools/geox-linux-amd64 geoip \
             -f geoip.dat \
             -t surge \
             -s "$GEOIP_LIST"
