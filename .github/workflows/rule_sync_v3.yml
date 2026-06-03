@@ -12,15 +12,14 @@
 name: 自动化规则下载 v3_beta
 
 on:
-  # schedule:
-  #   - cron: '0 22 * * *'
+  schedule:
+    - cron: '0 22 * * *'
   workflow_dispatch:
   # push:
   #   branches:
   #     - main
   #   paths:
-  #     - ".github/custom_direct.txt"
-  #     - ".github/custom_proxy.txt"
+  #     - "add_rules/*"
 
 permissions:
   contents: write
@@ -79,7 +78,7 @@ jobs:
         run: |
           chmod +x main/tools/dlc-builder-linux-amd64
           
-          main/.github/dlc-builder-linux-amd64 \
+          main/tools/dlc-builder-linux-amd64 \
             -datapath dlc/data \
             -outputdir . \
             -outputname geosite.dat
@@ -100,9 +99,9 @@ jobs:
 
       - name: 生成 Surge 规则
         run: |
-          chmod +x main/.github/geox-linux-amd64
+          chmod +x main/tools/geox-linux-amd64
           
-          main/.github/geox-linux-amd64 geosite \
+          main/tools/geox-linux-amd64 geosite \
             -f geosite.dat \
             -t surge \
             -o rules \
