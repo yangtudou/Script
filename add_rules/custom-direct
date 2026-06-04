@@ -1,0 +1,27 @@
+# > 需要直连的列表
+
+# 常用 app
+# StressWatch
+api.ideation.love
+
+# 中国电信 小翼管家
+staticcdn.189smarthome.com
+
+# 绿联 lulian
+lulian.cn
+
+# 绿联 nas 相关
+ugnas.com
+cn8.ug.link
+
+
+# 字节跳动
+include:bytedance
+
+# 阿里巴巴
+include:alibaba
+# 追加
+alibaba-cn-pvg-00001.oss-enet.aliyuncs.com
+
+# 小米
+include:xiaomi

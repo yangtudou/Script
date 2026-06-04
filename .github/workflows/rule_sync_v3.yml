@@ -36,7 +36,7 @@ jobs:
       GEOIP_DAT_URL: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
       # lulian 为自己增加
       # alibaba 为追加
-      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,geolocation-!cn,xiaomi,lulian,bytedance,alibaba"
+      GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,custom-direct,custom-proxy"
       GEOIP_LIST: "private,google,telegram,cn"
     
     steps:
@@ -91,13 +91,14 @@ jobs:
 
       - name: 清理旧规则
         run: |
-          rm -rf rules/clash
+          rm -rf rules/geo
           rm -rf rules/surge
 
-#       - name: 生成 Mihomo 规则
-#         run: |
-#           ./geox geosite -f geosite.dat -t clash -o rules \
-#             -s google,category-ntp,apple,category-porn,cn,geolocation-!cn,github,meta,category-ai-chat-!cn,github,telegram
+      - name: 生成 GEO 数据
+        run: |
+          cp geoip.dat rules/geo/
+          cp geosite.dat rules/geo/
+
 
       - name: 生成 Surge 规则
         run: |

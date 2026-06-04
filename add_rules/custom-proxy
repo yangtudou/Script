@@ -1,0 +1,21 @@
+# > 需要代理的列表
+
+# 常用网站
+# macos 轻量 docker 面板
+orbstack.dev
+
+# nsfw
+astalavr.com
+
+# vpn 服务商
+include:category-vpnservices
+# justmysocks 追加
+justmysocks5.net
+justmysocks6.net
+# 忍者云
+renzhe.cloud
+# 
+mvipcloud.xyz
+
+# 非中国大分类
+include:geolocation-!cn
