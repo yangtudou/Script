@@ -34,8 +34,6 @@ jobs:
     env:
       # 数据源: MetaCubeX/meta-rules-dat
       GEOIP_DAT_URL: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
-      # lulian 为自己增加
-      # alibaba 为追加
       GEOSITE_LIST: "private,category-ntp,microsoft,apple,github,x,meta,google-gemini,google,openai,telegram,cn,custom-direct,custom-proxy"
       GEOIP_LIST: "private,google,telegram,cn"
     
@@ -96,6 +94,7 @@ jobs:
 
       - name: 生成 GEO 数据
         run: |
+          mkdir -p rules/geo
           cp geoip.dat rules/geo/
           cp geosite.dat rules/geo/
 
