@@ -3,6 +3,13 @@
 # 常用 app
 # StressWatch
 api.ideation.love
+docs.ideation.love
+
+# lucky666 web
+lucky.66666.host
+
+# 鹰迅办公
+inxunoffice.com
 
 # 中国电信 小翼管家
 staticcdn.189smarthome.com
@@ -21,7 +28,15 @@ include:bytedance
 # 阿里巴巴
 include:alibaba
 # 追加
-alibaba-cn-pvg-00001.oss-enet.aliyuncs.com
+aliyuncs.com
 
 # 小米
 include:xiaomi
+
+# raindrop
+api.raindrop.io
+
+# 小红书
+# 网心科技 讯雷
+kuiniuca.com
+xinqiucc.com

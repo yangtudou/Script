@@ -1,0 +1,16 @@
+# 这是 AppsFlyer SDK 
+# 用于在不使用苹果官方 SKAdNetwork（无 SKAN 模式）时
+# 进行归因和数据追踪的专属域名
+appsflyersdk.com
+
+odf.app-ads-services.com
+
+
+# 小红书
+qrstuvwxyzab.com
+
+# 幕后主体根据公开的国内网络备案信息
+# 主域名 tianwenca.com 
+# 备案于“江西节点技术服务有限公司”（赣ICP备2020012058号-13）
+# 这类公司在业界通常提供移动广告聚合、设备指纹风控（反作弊）或灰色流量变现服务
+tianwenca.com
