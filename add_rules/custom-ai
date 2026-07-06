@@ -1,0 +1,10 @@
+# 常用 ai
+
+# grok
+include:x
+
+# openai
+include:openai
+
+# gemini
+include:google-gemini

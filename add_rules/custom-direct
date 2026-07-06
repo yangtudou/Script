@@ -1,4 +1,17 @@
-# > 需要直连的列表
+# 需要直连的列表
+# 
+
+# 时间校准
+include:category-ntp
+
+# apple
+include:apple
+
+# microsoft
+include:microsoft
+
+
+# ------ 以下自定义 ------ #
 
 # 常用 app
 # StressWatch

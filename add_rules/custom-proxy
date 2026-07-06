@@ -1,4 +1,13 @@
-# > 需要代理的列表
+# 需要代理的列表
+#
+
+# 非中国大分类
+include:geolocation-!cn
+
+
+
+# ------ 以下自定义 ------ #
+
 
 # 常用网站
 # macos 轻量 docker 面板
@@ -22,5 +31,3 @@ renzhe.cloud
 # 
 mvipcloud.xyz
 
-# 非中国大分类
-include:geolocation-!cn
