@@ -1,5 +1,7 @@
 # 需要直连的列表
-# 
+# 最小化自己常用的
+# 对应 custom-proxy
+
 
 # 时间校准
 include:category-ntp
@@ -10,10 +12,17 @@ include:apple
 # microsoft
 include:microsoft
 
+# 阿里巴巴
+include:alibaba
+
+# 小米
+include:xiaomi
+
+# 字节跳动
+include:bytedance
 
 # ------ 以下自定义 ------ #
 
-# 常用 app
 # StressWatch
 api.ideation.love
 docs.ideation.love
@@ -41,17 +50,8 @@ prostun-cn.ugreengroup.com
 # STUN 服务器
 stun.syncthing.net
 
-
-# 字节跳动
-include:bytedance
-
 # 阿里巴巴
-include:alibaba
-# 追加
 aliyuncs.com
-
-# 小米
-include:xiaomi
 
 # raindrop
 api.raindrop.io
@@ -60,3 +60,6 @@ api.raindrop.io
 # 网心科技 讯雷
 kuiniuca.com
 xinqiucc.com
+
+# 博客
+aloxaf.com

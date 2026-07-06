@@ -14,3 +14,6 @@ qrstuvwxyzab.com
 # 备案于“江西节点技术服务有限公司”（赣ICP备2020012058号-13）
 # 这类公司在业界通常提供移动广告聚合、设备指纹风控（反作弊）或灰色流量变现服务
 tianwenca.com
+
+# 广告
+include:category-ads
