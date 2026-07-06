@@ -1,9 +1,34 @@
 # 需要代理的列表
 #
+# 最小化常用代理
+# 内容为固定 ip 为主
 
-# 非中国大分类
-include:geolocation-!cn
 
+# ==== 常用 ai ==== #
+# grok
+include:x
+# openai
+include:openai
+# gemini
+include:google-gemini
+
+
+# youtube
+include:youtube
+
+
+# meta
+include:meta
+
+
+# github
+include:github
+
+
+
+
+# 亚马逊
+include:amazon
 
 
 # ------ 以下自定义 ------ #
@@ -21,8 +46,6 @@ astalavr.com
 ## 不然会影响 macos 更新检测
 nssurge.com
 
-# vpn 服务商
-include:category-vpnservices
 # justmysocks 追加
 justmysocks5.net
 justmysocks6.net
