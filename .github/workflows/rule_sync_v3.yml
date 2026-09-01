@@ -1,5 +1,5 @@
 # version: v3_beta
-# updated at: 2026-06-03
+# updated at: 2026-09-01
 #
 #
 # UTC 22:00 (北京时间早 6:00 自动拉取) 
@@ -26,7 +26,7 @@ permissions:
   actions: write
 
 env:
-  TZ: Asia/shanghai
+  TZ: Asia/Shanghai
 
 jobs:
   rule_sync:
@@ -58,34 +58,37 @@ jobs:
           repository: v2fly/domain-list-community
           path: dlc
           fetch-depth: 1
+
+      - name: "设置 Go 环境"
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: dlc/go.mod
+          cache-dependency-path: dlc/go.sum
       
-      - name: "合并自定义规则到 data 目录"
+      - name: "添加自定义规则"
+        shell: bash
         run: |
+          set -euo pipefail
+          mkdir -p dlc/data/_custom
+
           for file in main/add_rules/*; do
             [ -f "$file" ] || continue
-
-            name=$(basename "$file")
-
-            if [ -f "dlc/data/$name" ]; then
-              echo "" >> "dlc/data/$name"
-              cat "$file" >> "dlc/data/$name"
-            else
-              cp "$file" "dlc/data/$name"
-            fi
+            cp "$file" "dlc/data/_custom/$(basename "$file")"
           done
 
       - name: "编译 geosite.dat"
+        working-directory: dlc
         run: |
-          chmod +x main/tools/dlc-builder-linux-amd64
-          
-          main/tools/dlc-builder-linux-amd64 \
-            -datapath dlc/data \
-            -outputdir . \
-            -outputname geosite.dat
+          go run . \
+            --datapath=./data \
+            --outputdir=.. \
+            --outputname=geosite.dat
 
       - name: "下载 geoip.dat"
         run: |
-          curl -L -o geoip.dat "$GEOIP_DAT_URL"
+          curl -fL --retry 3 --retry-delay 2 \
+            -o geoip.dat \
+            "$GEOIP_DAT_URL"
 
       - name: 清理旧规则
         run: |
@@ -100,28 +103,74 @@ jobs:
 
 
       - name: 生成 Surge 规则
+        shell: bash
         run: |
+          set -euo pipefail
+
+          converter="main/tools/geox-linux-amd64"
+          geosite_dir="$RUNNER_TEMP/surge-geosite"
+          geoip_dir="$RUNNER_TEMP/surge-geoip"
+
           chmod +x main/tools/geox-linux-amd64
-          
-          main/tools/geox-linux-amd64 geosite \
+          mkdir -p "$geosite_dir" "$geoip_dir" rules/surge
+
+          "$converter" geosite \
             -f geosite.dat \
             -t surge \
-            -o rules \
-            -s "$GEOSITE_LIST"
+            -o "$geosite_dir"
 
-          main/tools/geox-linux-amd64 geoip \
+          "$converter" geoip \
             -f geoip.dat \
             -t surge \
-            -s "$GEOIP_LIST"
+            -o "$geoip_dir"
 
-          # 合并 geosite & geoip
-          for f in rules/surge/*.txt; do
-              [ -f "$f" ] || continue
-              name=$(basename "$f")
+          declare -A selected_geosite=()
+          declare -A selected_geoip=()
 
-              if [ -f "geoip/surge/$name" ]; then
-                  sort -u "$f" "geoip/surge/$name" -o "$f"
+          IFS=',' read -r -a geosite_names <<< "$GEOSITE_LIST"
+          IFS=',' read -r -a geoip_names <<< "$GEOIP_LIST"
+
+          for name in "${geosite_names[@]}"; do
+            selected_geosite["$name"]=1
+          done
+
+          for name in "${geoip_names[@]}"; do
+            selected_geoip["$name"]=1
+            if [ ! -f "$geoip_dir/$name.list" ]; then
+              echo "::error::缺少 geoip 规则: $name"
+              exit 1
+            fi
+          done
+
+          shopt -s nullglob
+          for name in "${geosite_names[@]}"; do
+            domain_file="$geosite_dir/$name.list"
+            ip_file="$geoip_dir/$name.list"
+
+            if [ ! -f "$domain_file" ]; then
+              echo "::error::缺少 geosite 规则: $name"
+              exit 1
+            fi
+
+            # 保留所选 geosite 的属性变体，例如 google@cn。
+            for source_file in "$domain_file" "$geosite_dir/$name@"*.list; do
+              stem=$(basename "$source_file" .list)
+              output_file="rules/surge/$stem.txt"
+
+              # 同名 geosite 与 geoip 合并为一个 Surge RULE-SET。
+              if [ "$stem" = "$name" ] && [[ -n "${selected_geoip[$name]:-}" ]]; then
+                awk '!seen[$0]++' "$source_file" "$ip_file" > "$output_file"
+              else
+                cp "$source_file" "$output_file"
               fi
+            done
+          done
+
+          # GEOIP_LIST 允许包含没有对应 geosite 的独立条目。
+          for name in "${geoip_names[@]}"; do
+            if [[ -z "${selected_geosite[$name]:-}" ]]; then
+              cp "$geoip_dir/$name.list" "rules/surge/$name.txt"
+            fi
           done
       
       - name: 提交变更
