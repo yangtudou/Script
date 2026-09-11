@@ -1,0 +1,17 @@
+DOMAIN-SUFFIX,ads-twitter.com
+DOMAIN-SUFFIX,ads.youtube.com
+DOMAIN-SUFFIX,amazon-adsystem.com
+DOMAIN-SUFFIX,analytics.facebook.com
+DOMAIN-SUFFIX,collector.github.com
+DOMAIN-SUFFIX,facebookads.com
+DOMAIN-SUFFIX,graph-fallback.instagram.com
+DOMAIN-SUFFIX,graph.instagram.com
+DOMAIN-SUFFIX,graph.whatsapp.com
+DOMAIN-SUFFIX,graph.whatsapp.net
+DOMAIN-SUFFIX,pixel.facebook.com
+DOMAIN-SUFFIX,serving-sys.com
+DOMAIN,browser-intake-datadoghq.com
+DOMAIN,copilot-telemetry-service.githubusercontent.com
+DOMAIN,copilot-telemetry.githubusercontent.com
+DOMAIN,o33249.ingest.sentry.io
+DOMAIN,openai.qualtrics.com
