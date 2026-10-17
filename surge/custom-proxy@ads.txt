@@ -1,0 +1,12 @@
+DOMAIN-SUFFIX,ads-twitter.com
+DOMAIN-SUFFIX,ads.youtube.com
+DOMAIN-SUFFIX,amazon-adsystem.com
+DOMAIN-SUFFIX,analytics.facebook.com
+DOMAIN-SUFFIX,facebookads.com
+DOMAIN-SUFFIX,graph-fallback.instagram.com
+DOMAIN-SUFFIX,graph.instagram.com
+DOMAIN-SUFFIX,pixel.facebook.com
+DOMAIN-SUFFIX,serving-sys.com
+DOMAIN,browser-intake-datadoghq.com
+DOMAIN,o33249.ingest.sentry.io
+DOMAIN,openai.qualtrics.com
